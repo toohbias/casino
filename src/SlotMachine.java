@@ -1,3 +1,5 @@
+package src;
+
 public class SlotMachine
 {
     SlotMachine()       // Konstruktor
@@ -7,7 +9,7 @@ public class SlotMachine
 
     public void einsatzFestlegen()  //durch Tasten gewünschten Einsatz festlegen;
                                     //überprüfen, ob der aktuelle Betrag den Kontostand üerbschreitet
-                                    //bei Roulette auf Felder setzten
+                                    //bei src.Roulette auf Felder setzten
     {
 
     }
