@@ -32,6 +32,7 @@ public class SlotMachine
     }
 
     public void infoZuGrafiken()    //schickt infos an Grafikfenster; gewonnen oder verloren und berechneten Betrag
+                                    //Observer controller
     {
 
     }
