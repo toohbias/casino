@@ -11,7 +11,8 @@ public class SlotMachine
     {
 
     }
-    public void spin()      //waretet auf Tasteninput zum starten Grafikanimation
+    public void spin()      //methode wartet bis Attribute true ist(man darf spinnen) Methode wird am Ende von CasinoController true gesetzt
+                            //waretet auf Tasteninput zum starten Grafikanimation
                             //startet berechnen und zufallszahl
                             //schickt an Grafikfutzi
     {
