@@ -1,4 +1,4 @@
-package src;
+package src.Logic;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;

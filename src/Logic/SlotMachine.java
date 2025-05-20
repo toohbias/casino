@@ -1,4 +1,4 @@
-package src;
+package src.Logic;
 
 public class SlotMachine
 {
@@ -9,7 +9,7 @@ public class SlotMachine
 
     public void einsatzFestlegen()  //durch Tasten gewünschten Einsatz festlegen;
                                     //überprüfen, ob der aktuelle Betrag den Kontostand üerbschreitet
-                                    //bei src.Roulette auf Felder setzten
+                                    //bei src.Logic.Roulette auf Felder setzten
     {
 
     }

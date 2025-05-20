@@ -1,4 +1,4 @@
-package src;
+package src.Logic;
 
 public class Roulette {
 
@@ -11,7 +11,7 @@ public class Roulette {
     //TODO remove
     public void einsatzFestlegen()  //durch Tasten gewünschten Einsatz festlegen;
     //überprüfen, ob der aktuelle Betrag den Kontostand üerbschreitet
-    //bei src.Roulette auf Felder setzten
+    //bei src.Logic.Roulette auf Felder setzten
     {
 
     }
@@ -52,7 +52,7 @@ public class Roulette {
     }
 }
 
-/* Gewinn bei src.Roulette schwarz/rot und gerade/ungerade 2x
+/* Gewinn bei src.Logic.Roulette schwarz/rot und gerade/ungerade 2x
 bei einzelner Zahl x35
 
  */
