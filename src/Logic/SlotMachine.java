@@ -1,10 +1,10 @@
 package src.Logic;
 
-class SlotMachine {
+public class SlotMachine {
     private int aktuellerkontostand;
     int einsatz;
 
-    SlotMachine()       // Konstruktor
+    public SlotMachine()       // Konstruktor
     {
         aktuellerkontostand = 0;
     }

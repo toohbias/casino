@@ -12,6 +12,12 @@ public class SlotView {
         this.logic = logic;
 
         spinButton = new Button("Spin");
-        spinButton.setOnAction(e -> {logic.spin();});
+        spinButton.setOnAction((event -> {
+            try {
+                logic.spin(1);
+            } catch (IllegalAccessException e) {
+                System.out.println(e.getMessage());
+            }
+        }));
     }
 }
