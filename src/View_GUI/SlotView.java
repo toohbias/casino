@@ -1,5 +1,6 @@
 package src.View_GUI;
 
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import src.Logic.SlotMachine;
 
@@ -19,5 +20,9 @@ public class SlotView {
                 System.out.println(e.getMessage());
             }
         }));
+    }
+
+    public static Node getPane() {
+        return null;
     }
 }

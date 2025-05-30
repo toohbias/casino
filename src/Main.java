@@ -19,11 +19,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(ViewManager.getInstance().getDefaultScene());
-        primaryStage.setTitle("Casino");
-        primaryStage.getIcons().add(new Image("src/assets/Sevensign.png"));
-        primaryStage.setMaximized(true);
-        primaryStage.setResizable(false);
-        primaryStage.show();
+        ViewManager.getInstance().setStage(primaryStage);
     }
 }
