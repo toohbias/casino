@@ -1,5 +1,6 @@
 package src.Logic;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import javafx.beans.property.IntegerProperty;
@@ -11,10 +12,19 @@ public class SlotMachine {
     private int aktuellerkontostand;
     int einsatz;
     IntegerProperty spin1, spin2, spin3;
+    private CasinoController konto;
+    private ArrayList<SlotMaschineObserver> observers;
 
     public SlotMachine()       // Konstruktor
     {
         aktuellerkontostand = 0;
+        observers = new ArrayList<>();
+    }
+
+    public SlotMachine(CasinoController konto){
+        this.konto = konto;
+        aktuellerkontostand = 0;
+        observers = new ArrayList<>();
     }
 
     public void spin(int einsatz) throws IllegalAccessException {      //Methode wartet bis Attribute true ist(man darf spinnen) Methode wird am Ende von CasinoController true gesetzt
@@ -91,9 +101,9 @@ public class SlotMachine {
 //       observers.remove(observer);
 //   }
 //
-//   public void addObserver(SlotMachineObserver observer) {
-//       observers.add(observer);
-//   }
+   public void addObserver(SlotMaschineObserver observer) {
+       observers.add(observer);
+   }
 
 }
 /* Gewinne: 7 = 25x

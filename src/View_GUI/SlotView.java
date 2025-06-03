@@ -11,8 +11,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import src.Logic.SlotMachine;
+import src.Logic.SlotMaschineObserver;
 
-public class SlotView {
+public class SlotView implements SlotMaschineObserver {
 
     private Button spinButton;
     private SlotMachine logic;
@@ -22,6 +23,7 @@ public class SlotView {
 
     public SlotView(SlotMachine logic) {
         this.logic = logic;
+        logic.addObserver(this);
 
         spinButton = new Button("Spin");
         spinButton.setOnAction((event -> {
@@ -63,5 +65,17 @@ public class SlotView {
         root.setBottom(new BorderPane(new StackPane(slotMachine, signBox)));
 
         return root;
+    }
+
+    //TODO
+    @Override
+    public void updateSpielErgebnis(int symbol1, int symbol2, int symbol3, double gewinn) {
+
+    }
+
+    //TODO
+    @Override
+    public void fehler(String fehlermeldung) {
+
     }
 }

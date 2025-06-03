@@ -26,11 +26,11 @@ public class CasinoController {
 
     /**
      * überprüft ob der vergelichswert den Kontostand überschreitet
-     * @param vergeliechsWert
+     * @param vergleichsWert
      * @return
      */
-    public boolean kontostandUeberpruefen(double vergeliechsWert){
-        return money.get() < vergeliechsWert;
+    public boolean kontostandUeberpruefen(double vergleichsWert){
+        return money.get() < vergleichsWert;
     }
 
 }
