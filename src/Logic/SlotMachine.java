@@ -2,11 +2,15 @@ package src.Logic;
 
 import java.util.Random;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 public class SlotMachine {
 
     Random random = new Random();
     private int aktuellerkontostand;
     int einsatz;
+    IntegerProperty spin1, spin2, spin3;
 
     public SlotMachine()       // Konstruktor
     {
@@ -69,28 +73,27 @@ public class SlotMachine {
 
    // public int zufallszahl()   //berechnet, ob gewonnen oder verloren und gibt berechnen Faktor zurück
     //Slotmachine= 3 Zufallszahlen zwischen 1 und 5 jede Steht für ein Symbol, berechnet daaus dann Gewinnmultiplikator
-    {
+    //{
+    //}
 
-    }
 
-
-    public void infoZuGrafiken(int gewinn)    //schickt Infos an Grafikfenster; gewonnen oder verloren und berechneten Betrag
-    //Observer controller
-    {
-        for (SlotMachineObserver observer : observers) {
-            observer.updateSpielErgebnis(symbol1, symbol2, symbol3, gewinn, aktuellerkontostand);
-
-        }
-
-    }
-
-    public void removeObserver(SlotMachineObserver observer) {
-        observers.remove(observer);
-    }
-
-    public void addObserver(SlotMachineObserver observer) {
-        observers.add(observer);
-    }
+//   public void infoZuGrafiken(int gewinn)    //schickt Infos an Grafikfenster; gewonnen oder verloren und berechneten Betrag
+//   //Observer controller
+//   {
+//       for (SlotMachineObserver observer : observers) {
+//           observer.updateSpielErgebnis(symbol1, symbol2, symbol3, gewinn, aktuellerkontostand);
+//
+//       }
+//
+//   }
+//
+//   public void removeObserver(SlotMachineObserver observer) {
+//       observers.remove(observer);
+//   }
+//
+//   public void addObserver(SlotMachineObserver observer) {
+//       observers.add(observer);
+//   }
 
 }
 /* Gewinne: 7 = 25x
