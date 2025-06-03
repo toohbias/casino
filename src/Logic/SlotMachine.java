@@ -24,27 +24,26 @@ public class SlotMachine {
                 {
                     if (symbol1 == 4)
                     {
-                        berechnen(50);       //3 siebenen
+                        berechnen(einsatz, 50);       //3 siebenen
                     }
                     if (symbol1 == 3)
                     {
-                        berechnen(25);       //3 glocken
+                        berechnen(einsatz, 25);       //3 glocken
                     }
                     else
                     {
-                        berechnen(5);        // 3 gleiche früchte
+                        berechnen(einsatz, 5);        // 3 gleiche früchte
                     }
                 }
             }
             else if (symbol1 <= 2 && symbol2 <= 2 && symbol3 <= 2)   //3 unterschiedliche Früchte/ egal welche Früchte
             {
-                berechnen(2);
+                berechnen(einsatz,2);
             }
 
-            berechnen(0) ;
-            zufallszahl();      //brauchen wir Zufallszahl hier? würde die in die berechnen Methode packen
-            berechnen(einsatz);
-        } else {
+            berechnen(einsatz, 0) ;
+        }
+        else {
             throw new IllegalAccessException("Sie haben nicht die liquiden Mittel, bitte laden sie ihren Kontostand in unserem Shop auf");
             //Benutzer ruft die Methode auf; throw= werfen eines Fehlers; Methode überprüft die Eingabe; bei gültiger Eingabe läuft der Code weiter, ansonsten neuer Fehler
         }
@@ -55,12 +54,12 @@ public class SlotMachine {
     //schickt an Grafikfutzi
 
 
-    public void berechnen(int einsatz)       //würde berechnen, auf int setzen, war davor noch void // basierend auf festgelegtem Einsatz und gewünschtem Feld wird der Gewinn berechnet
+    public void berechnen(int einsatz, int multiplikator)       //würde berechnen, auf int setzen, war davor noch void // basierend auf festgelegtem Einsatz und gewünschtem Feld wird der Gewinn berechnet
     // startet automatisch bei Spin,
     // falls gewonnen berechneten Betrag an CasinoController schicken
     {
-        if(einsatz > 0){
-        int gewinn = einsatz * zufallszahl();
+        if(multiplikator > 0){
+        int gewinn = einsatz * multiplikator;
         aktuellerkontostand = aktuellerkontostand + gewinn;
         System.out.println("Herzlichen Glückwunsch sie haben " + gewinn + "V-Bucks gewonnen");
         System.out.println("Ihr neuer Kontostand beträgt" + aktuellerkontostand + "V-Bucks"); }
@@ -68,7 +67,7 @@ public class SlotMachine {
             System.out.println("Niemals Aufgeben");}
     }
 
-    public int zufallszahl()   //berechnet, ob gewonnen oder verloren und gibt berechnen Faktor zurück
+   // public int zufallszahl()   //berechnet, ob gewonnen oder verloren und gibt berechnen Faktor zurück
     //Slotmachine= 3 Zufallszahlen zwischen 1 und 5 jede Steht für ein Symbol, berechnet daaus dann Gewinnmultiplikator
     {
 
