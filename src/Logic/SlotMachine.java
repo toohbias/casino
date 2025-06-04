@@ -30,9 +30,9 @@ public class SlotMachine {
 
     public void spin(int einsatz) throws IllegalAccessException {      //Methode wartet bis Attribute true ist(man darf spinnen) Methode wird am Ende von CasinoController true gesetzt
         if (einsatz <= aktuellerkontostand) {
-            symbol1.set() = random.nextInt(5);
-            symbol2.set() = random.nextInt(5);
-            symbol3.set() = random.nextInt(5);
+            symbol1.set(random.nextInt(5));
+            symbol2.set(random.nextInt(5));
+            symbol3.set(random.nextInt(5));
 
             if (symbol1 == symbol2) {
                 if (symbol1 == symbol3)
