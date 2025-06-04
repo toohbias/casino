@@ -11,7 +11,7 @@ public class SlotMachine {
     Random random = new Random();
     private int aktuellerkontostand;
     int einsatz;
-    IntegerProperty spin1, spin2, spin3;
+    IntegerProperty symbol1, symbol2, symbol3;
     private CasinoController konto;
     private ArrayList<SlotMaschineObserver> observers;
 
@@ -19,6 +19,7 @@ public class SlotMachine {
     {
         aktuellerkontostand = 0;
         observers = new ArrayList<>();
+
     }
 
     public SlotMachine(CasinoController konto){
@@ -29,18 +30,18 @@ public class SlotMachine {
 
     public void spin(int einsatz) throws IllegalAccessException {      //Methode wartet bis Attribute true ist(man darf spinnen) Methode wird am Ende von CasinoController true gesetzt
         if (einsatz <= aktuellerkontostand) {
-            int symbol1 = random.nextInt(5);
-            int symbol2 = random.nextInt(5);
-            int symbol3 = random.nextInt(5);
+            symbol1.set() = random.nextInt(5);
+            symbol2.set() = random.nextInt(5);
+            symbol3.set() = random.nextInt(5);
 
             if (symbol1 == symbol2) {
                 if (symbol1 == symbol3)
                 {
-                    if (symbol1 == 4)
+                    if (symbol1.get() == 4)
                     {
                         berechnen(einsatz, 50);       //3 siebenen
                     }
-                    if (symbol1 == 3)
+                    if (symbol1.get() == 3)
                     {
                         berechnen(einsatz, 25);       //3 glocken
                     }
@@ -50,7 +51,7 @@ public class SlotMachine {
                     }
                 }
             }
-            else if (symbol1 <= 2 && symbol2 <= 2 && symbol3 <= 2)   //3 unterschiedliche Früchte/ egal welche Früchte
+            else if (symbol1.get() <= 2 && symbol2.get() <= 2 && symbol3.get() <= 2)   //3 unterschiedliche Früchte/ egal welche Früchte
             {
                 berechnen(einsatz,2);
             }
