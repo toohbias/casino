@@ -19,3 +19,11 @@
     -fx-font-size: 30pt;
     -fx-font-weight: bold;
 }
+
+.toggle-button {
+    -fx-background-color: transparent;
+}
+
+.toggle-button:disabled {
+    -fx-opacity: 1;
+}

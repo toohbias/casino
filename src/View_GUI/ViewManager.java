@@ -11,6 +11,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import src.Logic.SlotMachine;
 
 import java.util.Objects;
 
@@ -83,6 +84,15 @@ public class ViewManager {
         windowWidthProperty().bind(stage.widthProperty());
         windowHeightProperty().bind(stage.heightProperty());
         setCurrentNode(CasinoView.getPane());
+    }
+
+    // wird von SlotView aufgerufen, wenn der spieler den Hebel zieht
+    public void leverPulled(int einsatz) {
+        try {
+            new SlotMachine().spin(einsatz);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     public Scene getDefaultScene() { return defaultScene; }
