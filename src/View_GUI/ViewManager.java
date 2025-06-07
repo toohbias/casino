@@ -1,12 +1,10 @@
 package src.View_GUI;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BorderPane;
@@ -26,9 +24,13 @@ public class ViewManager {
 
     private static ViewManager instance;
 
+    // View: Szene
     public static final int MAIN_MENU = 0;
     public static final int SLOT_VIEW = 1;
     public static final int ROULETTE_VIEW = 2;
+
+    // Logic: Szene
+    private SlotMachine slotMachine;
 
     /**
      * mit dem Singleton ist z.B. so etwas möglich:
@@ -54,6 +56,8 @@ public class ViewManager {
 
         defaultScene = new Scene(defaultPane);
         defaultScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("View.css")).toExternalForm());
+
+        slotMachine = new SlotMachine();
     }
 
     /**
@@ -63,7 +67,13 @@ public class ViewManager {
     public void setView(int view) {
         switch (view) {
             case MAIN_MENU -> setCurrentNode(CasinoView.getPane());
-            case SLOT_VIEW -> setCurrentNode(SlotView.getPane());
+            case SLOT_VIEW -> {
+                setCurrentNode(SlotView.getPane());
+                // binds the symbols of the view to the rng in SlotMachine
+                SlotView.spin1.bind(slotMachine.symbol1);
+                SlotView.spin2.bind(slotMachine.symbol2);
+                SlotView.spin3.bind(slotMachine.symbol3);
+            }
             case ROULETTE_VIEW -> setCurrentNode(RouletteView.getPane());
         }
     }
@@ -89,10 +99,20 @@ public class ViewManager {
     // wird von SlotView aufgerufen, wenn der spieler den Hebel zieht
     public void leverPulled(int einsatz) {
         try {
-            new SlotMachine().spin(einsatz);
+            slotMachine.spin(einsatz);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // TODO: das ist der Fehler mit den liquiden Mitteln
         }
+    }
+
+    public static ImageView defaultView(Image img, double scale) {
+        ImageView view = new ImageView();
+        if (img != null) {
+            view.setImage(img);
+        }
+        view.setPreserveRatio(true);
+        view.fitHeightProperty().bind(instance.windowHeightProperty().divide(scale));
+        return view;
     }
 
     public Scene getDefaultScene() { return defaultScene; }

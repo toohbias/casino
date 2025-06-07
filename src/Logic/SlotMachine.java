@@ -11,7 +11,7 @@ public class SlotMachine {
     Random random = new Random();
     private int aktuellerkontostand;
     int einsatz;
-    IntegerProperty symbol1, symbol2, symbol3;
+    public IntegerProperty symbol1, symbol2, symbol3;
     private CasinoController konto;
     private ArrayList<SlotMaschineObserver> observers;
 
@@ -19,7 +19,10 @@ public class SlotMachine {
     {
         aktuellerkontostand = 0;
         observers = new ArrayList<>();
-
+        // init IntProperties for spin()
+        symbol1 = new SimpleIntegerProperty(0);
+        symbol2 = new SimpleIntegerProperty(0);
+        symbol3 = new SimpleIntegerProperty(0);
     }
 
     public SlotMachine(CasinoController konto){

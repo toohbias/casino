@@ -25,7 +25,7 @@ public class SlotView implements SlotMaschineObserver {
 
     private Button spinButton;
     private SlotMachine logic;
-    private static IntegerProperty spin1, spin2, spin3;
+    public static IntegerProperty spin1, spin2, spin3;
     private static final double SIGN_SIZE = 12.5;
 
     public SlotView(SlotMachine logic) {
@@ -59,18 +59,14 @@ public class SlotView implements SlotMaschineObserver {
         BorderPane root = new BorderPane();
 
         // show main slot machine
-        ImageView img = new ImageView(new Image("src/assets/Slotmachinev2.png"));
-        img.setPreserveRatio(true);
-        img.fitHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(1.25));
+        ImageView img = ViewManager.defaultView(new Image("src/assets/Slotmachinev2.png"), 1.25);
         Label slotMachine = new Label("", img);
 
         // show slot machine arm
         Image arm = new Image("src/assets/Arm.png");
         Image armPressed = new Image("src/assets/ArmPressedv2.png");
-        ImageView armView = new ImageView(arm);
+        ImageView armView = ViewManager.defaultView(arm, 2);
         ToggleButton slotArm = new ToggleButton("", armView);
-        armView.setPreserveRatio(true);
-        armView.fitHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(2));
         // when pulled: change Image, disable Button, call method of SlotMachine
         armView.imageProperty().bind(Bindings.when(slotArm.selectedProperty()).then(armPressed).otherwise(arm));
         slotArm.setOnAction(e -> {
@@ -79,23 +75,17 @@ public class SlotView implements SlotMaschineObserver {
         });
 
         // init symbol on first reel
-        ImageView spin1View = new ImageView();
+        ImageView spin1View = ViewManager.defaultView(null, SIGN_SIZE);
         ObservableList<Image> sign1 = FXCollections.observableArrayList(signs);
         spin1View.imageProperty().bind(Bindings.valueAt(sign1, spin1));
-        spin1View.setPreserveRatio(true);
-        spin1View.fitHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(SIGN_SIZE));
         // init symbol on second reel
-        ImageView spin2View = new ImageView();
+        ImageView spin2View = ViewManager.defaultView(null, SIGN_SIZE);
         ObservableList<Image> sign2 = FXCollections.observableArrayList(signs);
         spin2View.imageProperty().bind(Bindings.valueAt(sign2, spin2));
-        spin2View.setPreserveRatio(true);
-        spin2View.fitHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(SIGN_SIZE));
         // init symbol on third reel
-        ImageView spin3View = new ImageView();
+        ImageView spin3View = ViewManager.defaultView(null, SIGN_SIZE);
         ObservableList<Image> sign3 = FXCollections.observableArrayList(signs);
         spin3View.imageProperty().bind(Bindings.valueAt(sign3, spin3));
-        spin3View.setPreserveRatio(true);
-        spin3View.fitHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(SIGN_SIZE));
 
         // show reel symbols horizontally
         HBox signBox = new HBox();
@@ -109,11 +99,13 @@ public class SlotView implements SlotMaschineObserver {
         root.setBottom(new BorderPane(hbox));
 
         // show money frame
-        ImageView money = new ImageView(new Image("src/assets/Money Frame.png"));
-        money.setPreserveRatio(true);
-        money.fitHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(7.5));
-        Label moneyFrame = new Label("", money);
-        root.setTop(new BorderPane(moneyFrame));
+        root.setTop(
+            new BorderPane(
+                new Label(
+                    "", ViewManager.defaultView(new Image("src/assets/Money Frame.png"), 7.5)
+                )
+            )
+        );
 
         return root;
     }

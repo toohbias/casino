@@ -27,18 +27,14 @@ public class CasinoView {
         HBox selection = new HBox();
 
         // show slot machine selection button
-        ImageView img = new ImageView(new Image("src/assets/Slotmachinev2.png"));
-        img.setPreserveRatio(true);
-        img.fitHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(3));
+        ImageView img = ViewManager.defaultView(new Image("src/assets/Slotmachinev2.png"), 3);
         Button slotImage = new Button("Slots", img);
         slotImage.setContentDisplay(ContentDisplay.TOP);
         slotImage.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.SLOT_VIEW));
         selection.getChildren().add(slotImage);
 
         // show roulette selection button TODO: change Image
-        ImageView img2 = new ImageView(new Image("src/assets/Slotmachinev2.png"));
-        img2.setPreserveRatio(true);
-        img2.fitHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(3));
+        ImageView img2 = ViewManager.defaultView(new Image("src/assets/Slotmachinev2.png"), 3);
         Button rouletteImage = new Button("Roulette", img2);
         rouletteImage.setContentDisplay(ContentDisplay.TOP);
         rouletteImage.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.ROULETTE_VIEW));
