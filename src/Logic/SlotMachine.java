@@ -29,6 +29,10 @@ public class SlotMachine {
         this.konto = konto;
         aktuellerkontostand = 0;
         observers = new ArrayList<>();
+        // init IntProperties for spin()
+        symbol1 = new SimpleIntegerProperty(0);
+        symbol2 = new SimpleIntegerProperty(0);
+        symbol3 = new SimpleIntegerProperty(0);
     }
 
     public void spin(int einsatz) throws IllegalAccessException {      //Methode wartet bis Attribute true ist(man darf spinnen) Methode wird am Ende von CasinoController true gesetzt

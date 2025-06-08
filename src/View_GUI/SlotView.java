@@ -23,24 +23,8 @@ import java.util.List;
 
 public class SlotView implements SlotMaschineObserver {
 
-    private Button spinButton;
-    private SlotMachine logic;
     public static IntegerProperty spin1, spin2, spin3;
     private static final double SIGN_SIZE = 12.5;
-
-    public SlotView(SlotMachine logic) {
-        this.logic = logic;
-        logic.addObserver(this);
-
-        spinButton = new Button("Spin");
-        spinButton.setOnAction((event -> {
-            try {
-                logic.spin(1);
-            } catch (IllegalAccessException e) {
-                System.out.println(e.getMessage());
-            }
-        }));
-    }
 
     public static Node getPane() {
         // init List of symbols
@@ -97,15 +81,6 @@ public class SlotView implements SlotMaschineObserver {
         HBox hbox = new HBox(new StackPane(slotMachine, signBox), slotArm);
         hbox.setAlignment(Pos.CENTER);
         root.setBottom(new BorderPane(hbox));
-
-        // show money frame
-        root.setTop(
-            new BorderPane(
-                new Label(
-                    "", ViewManager.defaultView(new Image("src/assets/Money Frame.png"), 7.5)
-                )
-            )
-        );
 
         return root;
     }

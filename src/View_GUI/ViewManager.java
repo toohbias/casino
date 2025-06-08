@@ -3,12 +3,14 @@ package src.View_GUI;
 import javafx.beans.property.*;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import src.Logic.CasinoController;
 import src.Logic.SlotMachine;
 
 import java.util.Objects;
@@ -31,6 +33,8 @@ public class ViewManager {
 
     // Logic: Szene
     private SlotMachine slotMachine;
+
+    private CasinoController controller;
 
     /**
      * mit dem Singleton ist z.B. so etwas möglich:
@@ -57,7 +61,9 @@ public class ViewManager {
         defaultScene = new Scene(defaultPane);
         defaultScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("View.css")).toExternalForm());
 
-        slotMachine = new SlotMachine();
+        controller = new CasinoController();
+
+        slotMachine = new SlotMachine(controller);
     }
 
     /**
@@ -93,7 +99,9 @@ public class ViewManager {
         stage.show();
         windowWidthProperty().bind(stage.widthProperty());
         windowHeightProperty().bind(stage.heightProperty());
-        setCurrentNode(CasinoView.getPane());
+        setView(MAIN_MENU);
+        // now that heightProperty has been initialised, we can set the money frame as the top of root
+        ((BorderPane) getCurrentNode().getParent()).setTop(new BorderPane(new Label("", defaultView(new Image("src/assets/Money Frame.png"), 7.5))));
     }
 
     // wird von SlotView aufgerufen, wenn der spieler den Hebel zieht
