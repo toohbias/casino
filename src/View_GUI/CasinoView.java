@@ -1,5 +1,7 @@
 package src.View_GUI;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -10,6 +12,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
 
 public class CasinoView {
 
@@ -45,6 +49,19 @@ public class CasinoView {
 
         root.setCenter(selection);
 
+        return root;
+    }
+
+    public static Node getMoneyFrame(DoubleProperty money) {
+        BorderPane root = new BorderPane();
+        Label moneyLbl = new Label();
+        moneyLbl.textProperty().bind(money.asString());
+        moneyLbl.setAlignment(Pos.CENTER);
+        moneyLbl.getStyleClass().clear();
+        moneyLbl.setGraphic(ViewManager.defaultView(new Image("src/assets/Money Framev2.png"), 5));
+        moneyLbl.setContentDisplay(ContentDisplay.CENTER);
+        moneyLbl.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpt;", ViewManager.getInstance().windowHeightProperty().divide(5).divide(moneyLbl.textProperty().length())));
+        root.setCenter(new StackPane(moneyLbl));
         return root;
     }
 }

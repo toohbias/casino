@@ -26,7 +26,7 @@ public class Datenbank {
     private final String unhashed;
     private String hashed;
 
-    private int money = 0;
+    private double money = 0;
 
     private int userPos = -1;
 
@@ -63,7 +63,7 @@ public class Datenbank {
                     userExists = true;
                     GCMParameterSpec spec = new GCMParameterSpec(128, decode(info[1]));
                     SecretKey key = getKeyFromPassword(unhashed);
-                    money = Integer.decode(decrypt(info[2], key, spec));
+                    money = Double.parseDouble(decrypt(info[2], key, spec));
                     break;
                 }
             }
@@ -80,6 +80,7 @@ public class Datenbank {
                 writer.write(hashed + ":" + encode(spec.getIV()) + ":" + encrypt(String.valueOf(money), key, spec) + System.lineSeparator());
                 writer.close();
                 System.out.println("File successfully created!");
+                userPos = 0;
             } catch (IOException ex) {
                 System.err.println("Invalid File!");
             } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
@@ -95,7 +96,7 @@ public class Datenbank {
     }
 
     @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
-    public void updateMoney(int newValue) {
+    public void updateMoney(double newValue) {
         // wenn es den Spieler in der Liste noch nicht gibt, anhängen
         if(userPos == -1) {
             try {
@@ -105,6 +106,7 @@ public class Datenbank {
                 writer.write(hashed + ":" + encode(spec.getIV()) + ":" + encrypt(String.valueOf(newValue), key, spec) + System.lineSeparator());
                 writer.close();
                 System.out.println("File successfully updated!");
+                money = newValue;
             } catch(IOException e) {
                  System.err.println("Invalid File!");
             } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
@@ -136,6 +138,7 @@ public class Datenbank {
                 writer.write(newContent.toString());
                 writer.close();
                 System.out.println("File successfully updated!");
+                money = newValue;
             } catch (IOException e) {
                 System.err.println("Invalid File!");
             } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
@@ -144,6 +147,10 @@ public class Datenbank {
                 throw new RuntimeException(ex);
             }
         }
+    }
+
+    public double getMoney() {
+        return money;
     }
 
 

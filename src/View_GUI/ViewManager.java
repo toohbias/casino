@@ -60,10 +60,6 @@ public class ViewManager {
 
         defaultScene = new Scene(defaultPane);
         defaultScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("View.css")).toExternalForm());
-
-        controller = new CasinoController();
-
-        slotMachine = new SlotMachine(controller);
     }
 
     /**
@@ -96,12 +92,12 @@ public class ViewManager {
         stage.setMaximized(true);
         stage.setMinHeight(500);
         stage.setMinWidth(700);
+        stage.setMaxHeight(1080);
+        stage.setMaxWidth(1920);
         stage.show();
         windowWidthProperty().bind(stage.widthProperty());
         windowHeightProperty().bind(stage.heightProperty());
         setView(MAIN_MENU);
-        // now that heightProperty has been initialised, we can set the money frame as the top of root
-        ((BorderPane) getCurrentNode().getParent()).setTop(new BorderPane(new Label("", defaultView(new Image("src/assets/Money Frame.png"), 7.5))));
     }
 
     // wird von SlotView aufgerufen, wenn der spieler den Hebel zieht
@@ -121,6 +117,16 @@ public class ViewManager {
         view.setPreserveRatio(true);
         view.fitHeightProperty().bind(instance.windowHeightProperty().divide(scale));
         return view;
+    }
+
+    public CasinoController getController() {
+        return controller;
+    }
+
+    public void setController(CasinoController controller) {
+        this.controller = controller;
+        ((BorderPane) defaultScene.getRoot()).setTop(CasinoView.getMoneyFrame(controller.getMoney()));
+        slotMachine = new SlotMachine(controller);
     }
 
     public Scene getDefaultScene() { return defaultScene; }
