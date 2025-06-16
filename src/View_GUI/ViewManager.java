@@ -3,7 +3,6 @@ package src.View_GUI;
 import javafx.beans.property.*;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -12,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import src.Logic.CasinoController;
 import src.Logic.SlotMachine;
+import src.Logic.SlotMachinev2;
 
 import java.util.Objects;
 
@@ -32,7 +32,7 @@ public class ViewManager {
     public static final int ROULETTE_VIEW = 2;
 
     // Logic: Szene
-    private SlotMachine slotMachine;
+    private SlotMachinev2 slotMachine;
 
     private CasinoController controller;
 
@@ -126,7 +126,7 @@ public class ViewManager {
     public void setController(CasinoController controller) {
         this.controller = controller;
         ((BorderPane) defaultScene.getRoot()).setTop(CasinoView.getMoneyFrame(controller.getMoney()));
-        slotMachine = new SlotMachine(controller);
+        slotMachine = new SlotMachinev2(controller);
     }
 
     public Scene getDefaultScene() { return defaultScene; }

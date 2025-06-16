@@ -22,7 +22,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         ViewManager.getInstance().setStage(primaryStage);
         db = new Datenbank("username", "password");
-        db.updateMoney(10D);
+        db.updateMoney(100D);
         CasinoController controller = new CasinoController(db.getMoney());
         ViewManager.getInstance().setController(controller);
     }
