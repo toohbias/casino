@@ -35,7 +35,7 @@ public class Datenbank {
     private static Datenbank instance;
 
     public static Datenbank getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new Datenbank();
         }
         return instance;
@@ -48,7 +48,7 @@ public class Datenbank {
         FILE = new File(PATH + File.separator + FILENAME);
     }
 
-    public void signUp(String username, String password) {
+    public boolean signUp(String username, String password) {
         // get hash of username + password
         // so that they don't have to be stored as clear text
         unhashed = username + " " + password;
@@ -58,6 +58,30 @@ public class Datenbank {
             hashed = encode(hash);
         } catch (NoSuchAlgorithmException ignored) {
         }
+
+        // and check if hash exists
+        // yes: compare hashes and if successful, return false (user already exists)
+        // no: add user and return true
+        // encryption by: https://www.baeldung.com/java-aes-encryption-decryption
+        try {
+            Scanner scanner = new Scanner(FILE);
+            boolean userExists = false;
+            while (scanner.hasNextLine()) {
+                userPos++;
+                String[] info = scanner.nextLine().split(":");
+                String hash = info[0];
+                if (hash.equals(hashed)) {
+                    userExists = true;
+                    break;
+                }
+            }
+            scanner.close();
+            if (userExists) {
+                System.err.println("Couldn't sign up: User already exists.");
+                userPos = -1; // damit updateMoney() beim Schließen das Geld nicht resetten kann
+                return false;
+            }
+        } catch (FileNotFoundException ignored) {}
 
         // add user to file
         final double startMoney = 2000;
@@ -67,8 +91,10 @@ public class Datenbank {
             SecretKey key = getKeyFromPassword(unhashed);
             writer.write(hashed + ":" + encode(spec.getIV()) + ":" + encrypt(String.valueOf(startMoney), key, spec) + System.lineSeparator());
             writer.close();
-            System.out.println("File successfully updated!");
+            System.out.println("File successfully created/updated!");
             money = startMoney;
+            userPos = userPos == -1 ? 0 : userPos + 1; // kp, random bug
+            return true;
         } catch (IOException e) {
             System.err.println("Invalid File!");
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
@@ -76,9 +102,11 @@ public class Datenbank {
                  IllegalBlockSizeException ex) {
             throw new RuntimeException(ex);
         }
+        userPos = -1;
+        return false;
     }
 
-    public void signIn(String username, String password) {
+    public boolean signIn(String username, String password) {
         // get hash of username + password
         // so that they don't have to be stored as clear text
         unhashed = username + " " + password;
@@ -86,8 +114,7 @@ public class Datenbank {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest((unhashed).getBytes(UTF_8));
             hashed = encode(hash);
-        } catch (NoSuchAlgorithmException ignored) {
-        }
+        } catch (NoSuchAlgorithmException ignored) {}
 
         // check if FILE exists and check if hash exists
         // yes: compare hashes and if successful, read data with unhashed key
@@ -101,6 +128,7 @@ public class Datenbank {
                 String[] info = scanner.nextLine().split(":");
                 String hash = info[0];
                 if (hash.equals(hashed)) {
+                    // get stored money
                     System.out.println("User found!");
                     userExists = true;
                     GCMParameterSpec spec = new GCMParameterSpec(128, decode(info[1]));
@@ -113,28 +141,18 @@ public class Datenbank {
             if (!userExists) {
                 System.err.println("User couldn't be found. Are credentials wrong?");
                 userPos = -1;
+                return false;
             }
+            return true;
         } catch (FileNotFoundException e) {
-            try {
-                FileWriter writer = new FileWriter(FILE);
-                GCMParameterSpec spec = generateIV();
-                SecretKey key = getKeyFromPassword(unhashed);
-                writer.write(hashed + ":" + encode(spec.getIV()) + ":" + encrypt(String.valueOf(money), key, spec) + System.lineSeparator());
-                writer.close();
-                System.out.println("File successfully created!");
-                userPos = 0;
-            } catch (IOException ex) {
-                System.err.println("Invalid File!");
-            } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
-                     InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException |
-                     IllegalBlockSizeException ex) {
-                throw new RuntimeException(ex);
-            }
+            System.err.println("File doesn't exist!");
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
                  InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException |
                  IllegalBlockSizeException e) {
             throw new RuntimeException(e);
         }
+        userPos = -1;
+        return false;
     }
 
     @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
@@ -201,6 +219,7 @@ public class Datenbank {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(Cipher.ENCRYPT_MODE, key, iv);
         byte[] encrypted = cipher.doFinal(input.getBytes());
+        System.out.println(input);
         return encode(encrypted);
     }
 
