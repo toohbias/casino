@@ -3,6 +3,7 @@ package src.View_GUI;
 import javafx.beans.property.*;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -10,6 +11,7 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import src.Logic.CasinoController;
+import src.Logic.Login;
 import src.Logic.SlotMachine;
 import src.Logic.SlotMachinev2;
 
@@ -27,12 +29,13 @@ public class ViewManager {
     private static ViewManager instance;
 
     // View: Szene
-    public static final int MAIN_MENU = 0;
-    public static final int SLOT_VIEW = 1;
-    public static final int ROULETTE_VIEW = 2;
+    public static final int LOGIN_MENU = 0;
+    public static final int MAIN_MENU = 1;
+    public static final int SLOT_VIEW = 2;
+    public static final int ROULETTE_VIEW = 3;
 
     // Logic: Szene
-    private SlotMachinev2 slotMachine;
+    private final SlotMachinev2 slotMachine;
 
     private CasinoController controller;
 
@@ -60,6 +63,8 @@ public class ViewManager {
 
         defaultScene = new Scene(defaultPane);
         defaultScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("View.css")).toExternalForm());
+
+        slotMachine = new SlotMachinev2();
     }
 
     /**
@@ -68,6 +73,15 @@ public class ViewManager {
      */
     public void setView(int view) {
         switch (view) {
+            case LOGIN_MENU -> {
+                Login.anmeldung.bind(LoginView.anmeldung);
+                Login.canSign.bind(LoginView.canSign);
+                Login.is18.bind(LoginView.is18);
+                Login.username.bind(LoginView.username);
+                Login.password.bind(LoginView.password);
+                setShowMoney(false);
+                setCurrentNode(LoginView.getPane());
+            }
             case MAIN_MENU -> setCurrentNode(CasinoView.getPane());
             case SLOT_VIEW -> {
                 setCurrentNode(SlotView.getPane());
@@ -97,18 +111,23 @@ public class ViewManager {
         stage.show();
         windowWidthProperty().bind(stage.widthProperty());
         windowHeightProperty().bind(stage.heightProperty());
-        setView(MAIN_MENU);
+        setView(LOGIN_MENU);
     }
 
     // wird von SlotView aufgerufen, wenn der spieler den Hebel zieht
-    public void leverPulled(int einsatz) {
+    public void leverPulled(int einsatz, ToggleButton slotArm) {
         try {
-            slotMachine.spin(einsatz);
+            slotMachine.spin(einsatz, slotArm);
         } catch (IllegalAccessException e) {
             e.printStackTrace(); // TODO: das ist der Fehler mit den liquiden Mitteln
         }
     }
 
+    public void sign(String username, String password) {
+        Login.login(username, password);
+    }
+
+    // Vereinfachung der Erstellung von Bildern
     public static ImageView defaultView(Image img, double scale) {
         ImageView view = new ImageView();
         if (img != null) {
@@ -125,8 +144,14 @@ public class ViewManager {
 
     public void setController(CasinoController controller) {
         this.controller = controller;
-        ((BorderPane) defaultScene.getRoot()).setTop(CasinoView.getMoneyFrame(controller.getMoney()));
-        slotMachine = new SlotMachinev2(controller);
+    }
+
+    public void setShowMoney(boolean show) {
+        if(show) {
+            ((BorderPane) defaultScene.getRoot()).setTop(CasinoView.getMoneyFrame(controller.getMoney()));
+        } else {
+            ((BorderPane) defaultScene.getRoot()).setTop(null);
+        }
     }
 
     public Scene getDefaultScene() { return defaultScene; }

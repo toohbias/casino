@@ -16,19 +16,17 @@ import src.View_GUI.ViewManager;
  * einer Klasse namens Main initialisiert werden
  */
 public class Main extends Application {
-    private Datenbank db;
 
     @Override
     public void start(Stage primaryStage) {
         ViewManager.getInstance().setStage(primaryStage);
-        db = new Datenbank("username", "password");
-        db.updateMoney(100D);
-        CasinoController controller = new CasinoController(db.getMoney());
+        Datenbank.getInstance().signIn("username", "password");
+        CasinoController controller = new CasinoController(Datenbank.getInstance().getMoney());
         ViewManager.getInstance().setController(controller);
     }
 
     @Override
     public void stop() {
-        db.updateMoney(ViewManager.getInstance().getController().getMoney().get());
+        Datenbank.getInstance().updateMoney(ViewManager.getInstance().getController().getMoney().get());
     }
 }

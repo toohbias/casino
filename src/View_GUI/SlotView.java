@@ -14,11 +14,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import src.Logic.SlotMaschineObserver;
 
 import java.util.Arrays;
 
-public class SlotView implements SlotMaschineObserver {
+public class SlotView {
 
     public static IntegerProperty spin1, spin2, spin3;
     private static final double SIGN_SIZE = 15;
@@ -53,10 +52,7 @@ public class SlotView implements SlotMaschineObserver {
         ToggleButton slotArm = new ToggleButton("", armView);
         // when pulled: change Image, disable Button, call method of SlotMachine
         armView.imageProperty().bind(Bindings.when(slotArm.selectedProperty()).then(armPressed).otherwise(arm));
-        slotArm.setOnAction(e -> {
-            slotArm.setDisable(true);
-            ViewManager.getInstance().leverPulled(10); //TODO: Einsatz bestimmen
-        });
+        slotArm.setOnAction(e -> ViewManager.getInstance().leverPulled(50, slotArm)); // TODO: Einsatz bestimmen
 
         // invisible slot arm to center the slot machine
         ImageView invArmView = ViewManager.defaultView(arm, 2.5);
@@ -88,15 +84,4 @@ public class SlotView implements SlotMaschineObserver {
         return root;
     }
 
-    //TODO
-    @Override
-    public void updateSpielErgebnis(int symbol1, int symbol2, int symbol3, double gewinn) {
-
-    }
-
-    //TODO
-    @Override
-    public void fehler(String fehlermeldung) {
-
-    }
 }

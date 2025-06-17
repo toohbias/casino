@@ -23,7 +23,7 @@ import static java.nio.charset.StandardCharsets.*;
  * Läd den Kontostand
  */
 public class Datenbank {
-    private final String unhashed;
+    private String unhashed;
     private String hashed;
 
     private double money = 0;
@@ -32,7 +32,23 @@ public class Datenbank {
 
     private final File FILE;
 
-    public Datenbank(String username, String password) {
+    private static Datenbank instance;
+
+    public static Datenbank getInstance() {
+        if(instance == null) {
+            instance = new Datenbank();
+        }
+        return instance;
+    }
+
+    private Datenbank() {
+        // get project root path and FILE
+        final String PATH = Objects.requireNonNull(getClass().getResource("/")).getPath();
+        final String FILENAME = "DATA";
+        FILE = new File(PATH + File.separator + FILENAME);
+    }
+
+    public void signUp(String username, String password) {
         // get hash of username + password
         // so that they don't have to be stored as clear text
         unhashed = username + " " + password;
@@ -40,12 +56,38 @@ public class Datenbank {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest((unhashed).getBytes(UTF_8));
             hashed = encode(hash);
-        } catch (NoSuchAlgorithmException ignored) {}
+        } catch (NoSuchAlgorithmException ignored) {
+        }
 
-        // get project root path and FILE
-        final String PATH = Objects.requireNonNull(getClass().getResource("/")).getPath();
-        final String FILENAME = "DATA";
-        FILE = new File(PATH + File.separator + FILENAME);
+        // add user to file
+        final double startMoney = 2000;
+        try {
+            FileWriter writer = new FileWriter(FILE, true);
+            GCMParameterSpec spec = generateIV();
+            SecretKey key = getKeyFromPassword(unhashed);
+            writer.write(hashed + ":" + encode(spec.getIV()) + ":" + encrypt(String.valueOf(startMoney), key, spec) + System.lineSeparator());
+            writer.close();
+            System.out.println("File successfully updated!");
+            money = startMoney;
+        } catch (IOException e) {
+            System.err.println("Invalid File!");
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
+                 InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException |
+                 IllegalBlockSizeException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public void signIn(String username, String password) {
+        // get hash of username + password
+        // so that they don't have to be stored as clear text
+        unhashed = username + " " + password;
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest((unhashed).getBytes(UTF_8));
+            hashed = encode(hash);
+        } catch (NoSuchAlgorithmException ignored) {
+        }
 
         // check if FILE exists and check if hash exists
         // yes: compare hashes and if successful, read data with unhashed key
@@ -54,11 +96,11 @@ public class Datenbank {
         try {
             Scanner scanner = new Scanner(FILE);
             boolean userExists = false;
-            while(scanner.hasNextLine()) {
+            while (scanner.hasNextLine()) {
                 userPos++;
                 String[] info = scanner.nextLine().split(":");
                 String hash = info[0];
-                if(hash.equals(hashed)) {
+                if (hash.equals(hashed)) {
                     System.out.println("User found!");
                     userExists = true;
                     GCMParameterSpec spec = new GCMParameterSpec(128, decode(info[1]));
@@ -68,11 +110,11 @@ public class Datenbank {
                 }
             }
             scanner.close();
-            if(!userExists) {
+            if (!userExists) {
                 System.err.println("User couldn't be found. Are credentials wrong?");
                 userPos = -1;
             }
-        } catch (FileNotFoundException  e) {
+        } catch (FileNotFoundException e) {
             try {
                 FileWriter writer = new FileWriter(FILE);
                 GCMParameterSpec spec = generateIV();
@@ -89,70 +131,55 @@ public class Datenbank {
                 throw new RuntimeException(ex);
             }
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
-                InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException |
-                IllegalBlockSizeException e) {
+                 InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException |
+                 IllegalBlockSizeException e) {
             throw new RuntimeException(e);
         }
     }
 
     @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
     public void updateMoney(double newValue) {
-        // wenn es den Spieler in der Liste noch nicht gibt, anhängen
-        if(userPos == -1) {
-            try {
-                FileWriter writer = new FileWriter(FILE, true);
-                GCMParameterSpec spec = generateIV();
-                SecretKey key = getKeyFromPassword(unhashed);
-                writer.write(hashed + ":" + encode(spec.getIV()) + ":" + encrypt(String.valueOf(newValue), key, spec) + System.lineSeparator());
-                writer.close();
-                System.out.println("File successfully updated!");
-                money = newValue;
-            } catch(IOException e) {
-                 System.err.println("Invalid File!");
-            } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
-                     InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException |
-                     IllegalBlockSizeException ex) {
-                 throw new RuntimeException(ex);
-            }
+        // wenn es den Spieler in der Liste noch nicht gibt
+        if (userPos == -1) {
+            System.out.println("Invalid User!");
+            return;
+        }
         // sonst: in seiner Zeile den Money-Wert aktualisieren
-        } else {
-            try {
-                Scanner scanner = new Scanner(FILE);
-                StringBuilder newContent = new StringBuilder();
+        try {
+            Scanner scanner = new Scanner(FILE);
+            StringBuilder newContent = new StringBuilder();
 
-                int currentLine = -1;
-                while(scanner.hasNextLine()) {
-                    currentLine++;
-                    if(userPos == currentLine) {
-                        String[] old = scanner.nextLine().split(":");
-                        GCMParameterSpec spec = new GCMParameterSpec(128, decode(old[1]));
-                        SecretKey key = getKeyFromPassword(unhashed);
-                        newContent.append(old[0] + ":" + old[1] + ":" + encrypt(String.valueOf(newValue), key, spec) + System.lineSeparator());
-                    } else {
-                        newContent.append(scanner.nextLine() + System.lineSeparator());
-                    }
+            int currentLine = -1;
+            while (scanner.hasNextLine()) {
+                currentLine++;
+                if (userPos == currentLine) {
+                    String[] old = scanner.nextLine().split(":");
+                    GCMParameterSpec spec = new GCMParameterSpec(128, decode(old[1]));
+                    SecretKey key = getKeyFromPassword(unhashed);
+                    newContent.append(old[0] + ":" + old[1] + ":" + encrypt(String.valueOf(newValue), key, spec) + System.lineSeparator());
+                } else {
+                    newContent.append(scanner.nextLine() + System.lineSeparator());
                 }
-                scanner.close();
-
-                FileWriter writer = new FileWriter(FILE);
-                writer.write(newContent.toString());
-                writer.close();
-                System.out.println("File successfully updated!");
-                money = newValue;
-            } catch (IOException e) {
-                System.err.println("Invalid File!");
-            } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
-                    InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException |
-                    IllegalBlockSizeException ex) {
-                throw new RuntimeException(ex);
             }
+            scanner.close();
+
+            FileWriter writer = new FileWriter(FILE);
+            writer.write(newContent.toString());
+            writer.close();
+            System.out.println("File successfully updated!");
+            money = newValue;
+        } catch (IOException e) {
+            System.err.println("Invalid File!");
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
+                 InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException |
+                 IllegalBlockSizeException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     public double getMoney() {
         return money;
     }
-
 
 
     // IGNORE: helper methods
@@ -170,7 +197,7 @@ public class Datenbank {
     }
 
     private static String encrypt(String input, SecretKey key, GCMParameterSpec iv)
-                throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+            throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(Cipher.ENCRYPT_MODE, key, iv);
         byte[] encrypted = cipher.doFinal(input.getBytes());
@@ -178,7 +205,7 @@ public class Datenbank {
     }
 
     private static String decrypt(String input, SecretKey key, GCMParameterSpec iv)
-                throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+            throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(Cipher.DECRYPT_MODE, key, iv);
         byte[] decrypted = cipher.doFinal(decode(input));
