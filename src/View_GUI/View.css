@@ -28,6 +28,12 @@
     -fx-opacity: 1;
 }
 
+.check-box {
+    -fx-text-fill: rgb(200, 200, 200);
+    -fx-font-size: 12pt;
+    -fx-font-weight: normal;
+}
+
 #alternativeAction {
     -fx-text-fill: rgb(150, 150, 150);
     -fx-font-size: 12pt;
@@ -58,4 +64,5 @@
 .text-field {
     -fx-background-color: rgba(0, 0, 0, 0.3);
     -fx-background-radius: 10px;
+    -fx-text-fill: rgb(200, 200, 200);
 }

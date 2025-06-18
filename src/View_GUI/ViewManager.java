@@ -9,10 +9,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import src.Logic.CasinoController;
 import src.Logic.Login;
-import src.Logic.SlotMachine;
 import src.Logic.SlotMachinev2;
 
 import java.util.Objects;
@@ -25,6 +25,8 @@ public class ViewManager {
     private final DoubleProperty windowWidth, windowHeight;
 
     private final Scene defaultScene;
+
+    private final BorderPane fxlayer;
 
     private static ViewManager instance;
 
@@ -57,14 +59,23 @@ public class ViewManager {
 
         currentNode = new SimpleObjectProperty<>();
 
+        fxlayer = new BorderPane();
+        fxlayer.setPickOnBounds(false);
+
         BorderPane defaultPane = new BorderPane();
         defaultPane.setBackground(new Background(new BackgroundImage(new Image("src/assets/Background.png"), null, null, null, null)));
         defaultPane.centerProperty().bind(currentNodeProperty());
 
-        defaultScene = new Scene(defaultPane);
+        StackPane root = new StackPane(defaultPane, fxlayer);
+
+        defaultScene = new Scene(root);
         defaultScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("View.css")).toExternalForm());
 
         slotMachine = new SlotMachinev2();
+    }
+
+    public BorderPane getFXLayer() {
+        return fxlayer;
     }
 
     /**
@@ -111,7 +122,8 @@ public class ViewManager {
         stage.show();
         windowWidthProperty().bind(stage.widthProperty());
         windowHeightProperty().bind(stage.heightProperty());
-        setView(LOGIN_MENU);
+//        setView(LOGIN_MENU); // nur zum testen TODO
+        setView(MAIN_MENU);
     }
 
     // wird von SlotView aufgerufen, wenn der spieler den Hebel zieht
@@ -148,9 +160,9 @@ public class ViewManager {
 
     public void setShowMoney(boolean show) {
         if(show) {
-            ((BorderPane) defaultScene.getRoot()).setTop(CasinoView.getMoneyFrame(controller.getMoney()));
+            ((BorderPane) ((StackPane) defaultScene.getRoot()).getChildren().getFirst()).setTop(CasinoView.getMoneyFrame(controller.getMoney()));
         } else {
-            ((BorderPane) defaultScene.getRoot()).setTop(null);
+            ((BorderPane) ((StackPane) defaultScene.getRoot()).getChildren().getFirst()).setTop(null);
         }
     }
 

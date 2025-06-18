@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.ToggleButton;
+import src.View_GUI.MoneyEffect;
 import src.View_GUI.ViewManager;
 
 public class SlotMachinev2 {
@@ -26,6 +27,9 @@ public class SlotMachinev2 {
     @SuppressWarnings("BusyWait") // Bei Thread.sleep(), wartet ja nicht aktiv auf etwas
     public void spin(int einsatz, ToggleButton slotArm) throws IllegalAccessException {
         if (einsatz > ViewManager.getInstance().getController().getMoney().get()) {
+            // Slot Arm wieder freigeben
+            slotArm.setSelected(false);
+            slotArm.setDisable(false);
             throw new IllegalAccessException("Sie haben nicht die liquiden Mittel, bitte laden sie ihren Kontostand in unserem Shop auf");
         }
         ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() - (double) einsatz); // Geld abziehen
@@ -123,6 +127,17 @@ public class SlotMachinev2 {
             ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() + (double) gewinn);
             System.out.println("Herzlichen Glückwunsch sie haben " + gewinn + " V-Bucks gewonnen");
             System.out.println("Ihr neuer Kontostand beträgt " + ViewManager.getInstance().getController().getMoney().get() + " V-Bucks");
+            // coin animation
+            new Thread(() -> {
+//                Thread anim = new MoneyEffect.AnimationThread();
+//                anim.start();
+                MoneyEffect.animate(100);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ignored) {}
+                Platform.runLater(MoneyEffect::stop);
+//                anim.interrupt();
+            }).start();
         } else {
             System.out.println("Niemals Aufgeben");
         }

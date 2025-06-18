@@ -1,5 +1,6 @@
 package src.View_GUI;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -81,6 +82,7 @@ public class SlotView {
         hbox.setAlignment(Pos.CENTER);
         root.setBottom(new BorderPane(hbox));
 
+        ViewManager.getInstance().getFXLayer().setCenter(MoneyEffect.getRoot());
         return root;
     }
 
