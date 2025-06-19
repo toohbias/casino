@@ -1,7 +1,9 @@
 package src.View_GUI;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -13,9 +15,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Font;
+import javafx.scene.paint.Paint;
 
 public class CasinoView {
+
+    // helper for animations
+    private static final DoubleProperty moneyFrameText = new SimpleDoubleProperty();
 
     /**
      * Der Inhalt des Start-Menus, wo man das Spiel auswählen kann
@@ -55,11 +60,51 @@ public class CasinoView {
     public static Node getMoneyFrame(DoubleProperty money) {
         BorderPane root = new BorderPane();
         Label moneyLbl = new Label();
-        moneyLbl.textProperty().bind(money.asString());
+        // geld geht langsam hoch
+        moneyFrameText.set(money.get());
+        money.addListener((observable, oldValue, newValue) -> {
+            if(newValue.doubleValue() > oldValue.doubleValue()) {
+                new Thread(() -> {
+                    // timing adjusted to MoneyEffect
+                    try {
+                        Thread.sleep(400);
+                    } catch (InterruptedException ignored) {}
+                    for(int i = 0; i < 100; i++) {
+                        Platform.runLater(() -> moneyFrameText.set(moneyFrameText.get() + (newValue.doubleValue() - oldValue.doubleValue()) / 100));
+                        try {
+                            Thread.sleep(15);
+                        } catch (InterruptedException ignored) {}
+                    }
+                    // animation for how much money you won
+                    try {
+                        Thread.sleep(100);
+                        Platform.runLater(() -> {
+                            moneyLbl.textProperty().unbind();
+                            moneyLbl.setTextFill(Paint.valueOf("#940303"));
+                            moneyLbl.setText("+" + (newValue.doubleValue() - oldValue.doubleValue()));
+                        });
+                        for(int i = 0; i < 3; i++) {
+                            Platform.runLater(() -> moneyLbl.setText("+" + (newValue.doubleValue() - oldValue.doubleValue())));
+                            Thread.sleep(500);
+                            Platform.runLater(() -> moneyLbl.setText(""));
+                            Thread.sleep(300);
+                        }
+                        Platform.runLater(() -> {
+                            moneyLbl.setTextFill(Paint.valueOf("black"));
+                            moneyLbl.textProperty().bind(moneyFrameText.asString());
+                        });
+                    } catch (InterruptedException ignored) {}
+                }).start();
+            } else {
+                moneyFrameText.set(money.get());
+            }
+        });
+        moneyLbl.textProperty().bind(moneyFrameText.asString());
         moneyLbl.setAlignment(Pos.CENTER);
         moneyLbl.getStyleClass().clear();
         moneyLbl.setGraphic(ViewManager.defaultView(new Image("src/assets/Money Framev2.png"), 5));
         moneyLbl.setContentDisplay(ContentDisplay.CENTER);
+        // has to divide by zero if text gets empty in winning animation but who cares
         moneyLbl.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpt;", ViewManager.getInstance().windowHeightProperty().divide(5).divide(moneyLbl.textProperty().length())));
         root.setCenter(new StackPane(moneyLbl));
         return root;

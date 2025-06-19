@@ -1,11 +1,11 @@
 package src.View_GUI;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -47,19 +47,21 @@ public class SlotView {
         Label slotMachine = new Label("", img);
 
         // show slot machine arm
-        Image arm = new Image("src/assets/Arm.png");
-        Image armPressed = new Image("src/assets/ArmPressedv2.png");
+        Image arm = new Image("src/assets/Armv2.png");
+        Image armPressed = new Image("src/assets/ArmPressedv3.png");
         ImageView armView = ViewManager.defaultView(arm, 2.5);
         ToggleButton slotArm = new ToggleButton("", armView);
         // when pulled: change Image, disable Button, call method of SlotMachine
         armView.imageProperty().bind(Bindings.when(slotArm.selectedProperty()).then(armPressed).otherwise(arm));
         slotArm.setOnAction(e -> ViewManager.getInstance().leverPulled(50, slotArm)); // TODO: Einsatz bestimmen
+        slotArm.setPadding(new Insets(0));
 
         // invisible slot arm to center the slot machine
         ImageView invArmView = ViewManager.defaultView(arm, 2.5);
         ToggleButton invSlotArm = new ToggleButton("", invArmView);
         invSlotArm.setDisable(true);
         invSlotArm.setVisible(false);
+        invSlotArm.setPadding(new Insets(0));
 
         // init symbol on first reel
         ImageView spin1View = ViewManager.defaultView(null, SIGN_SIZE);

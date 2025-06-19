@@ -18,9 +18,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.QuadCurveTo;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 public class MoneyEffect {
@@ -28,7 +26,7 @@ public class MoneyEffect {
     private static final Pane root = new Pane();
 
     private static final double COIN_SIZE = 15;
-    private static final IntegerProperty coinState = new SimpleIntegerProperty(0);;
+    private static final IntegerProperty coinState = new SimpleIntegerProperty(0);
 
     // init List of coin states
     private static final ObservableList<Image> states = FXCollections.observableArrayList(
