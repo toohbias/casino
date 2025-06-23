@@ -35,6 +35,7 @@ public class ViewManager {
     public static final int MAIN_MENU = 1;
     public static final int SLOT_VIEW = 2;
     public static final int ROULETTE_VIEW = 3;
+    public static final int SHOP_VIEW = 4;
 
     // Logic: Szene
     private final SlotMachinev2 slotMachine;
@@ -104,8 +105,12 @@ public class ViewManager {
                 SlotView.spin2.bind(slotMachine.symbol2);
                 SlotView.spin3.bind(slotMachine.symbol3);
             }
-            case ROULETTE_VIEW -> setCurrentNode(RouletteView.getPane());
-
+            case ROULETTE_VIEW ->{
+                setCurrentNode(RouletteView.getPane());
+            }
+            case SHOP_VIEW -> {
+                setCurrentNode(shopView.getPane());
+            }
         }
     }
 
@@ -127,7 +132,7 @@ public class ViewManager {
         windowWidthProperty().bind(stage.widthProperty());
         windowHeightProperty().bind(stage.heightProperty());
 //        setView(LOGIN_MENU); // nur zum testen TODO
-        //setView(MAIN_MENU); 
+        //setView(MAIN_MENU);
     }
 
     // wird von SlotView aufgerufen, wenn der spieler den Hebel zieht

@@ -38,6 +38,13 @@ public class CasinoView {
 
         root.setTop(new BorderPane(lblHeading));
 
+        //show shop view sleselection button
+        ImageView shopImage = ViewManager.defaultView(new Image("src/assets/Shop.jpg"), 4);
+        Button shopButton = new Button("SHOP", shopImage);
+        shopButton.setContentDisplay(ContentDisplay.TOP);
+        shopButton.setOnAction(e -> ViewManager.getInstance().setView(4));
+        root.setRight(shopButton);
+
         HBox selection = new HBox();
 
         // show slot machine selection button
