@@ -8,6 +8,8 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
@@ -41,6 +43,14 @@ public class SlotView {
         );
 
         BorderPane root = new BorderPane();
+
+        //Rückbotton
+        ImageView zurckImg = ViewManager.defaultView(new Image("src/assets/Pfeilzurück.png"), 3);
+        zurckImg.setFitWidth(SIGN_SIZE*5);
+        Button zurueck = new Button("", zurckImg);
+        zurueck.setContentDisplay(ContentDisplay.TOP);
+        zurueck.setOnAction(e -> {ViewManager.getInstance().setView(1);}); //Was passiert wenn man den Button drückt
+        root.setLeft(zurueck);
 
         // show main slot machine
         ImageView img = ViewManager.defaultView(new Image("src/assets/Slotmachinev2.png"), 1.5);

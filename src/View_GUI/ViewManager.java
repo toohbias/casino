@@ -93,7 +93,10 @@ public class ViewManager {
                 setShowMoney(false);
                 setCurrentNode(LoginView.getPane());
             }
-            case MAIN_MENU -> setCurrentNode(CasinoView.getPane());
+            case MAIN_MENU -> {
+                setCurrentNode(CasinoView.getPane());
+                setShowMoney(true);
+            }
             case SLOT_VIEW -> {
                 setCurrentNode(SlotView.getPane());
                 // binds the symbols of the view to the rng in SlotMachine
@@ -102,6 +105,7 @@ public class ViewManager {
                 SlotView.spin3.bind(slotMachine.symbol3);
             }
             case ROULETTE_VIEW -> setCurrentNode(RouletteView.getPane());
+
         }
     }
 
@@ -123,7 +127,7 @@ public class ViewManager {
         windowWidthProperty().bind(stage.widthProperty());
         windowHeightProperty().bind(stage.heightProperty());
 //        setView(LOGIN_MENU); // nur zum testen TODO
-        setView(MAIN_MENU);
+        //setView(MAIN_MENU); 
     }
 
     // wird von SlotView aufgerufen, wenn der spieler den Hebel zieht

@@ -13,12 +13,12 @@ public class SlotMachine {
     int einsatz;
     public IntegerProperty symbol1, symbol2, symbol3;
     private CasinoController konto;
-    private ArrayList<SlotMaschineObserver> observers;
+   // private ArrayList<SlotMaschineObserver> observers;
 
     public SlotMachine()       // Konstruktor
     {
         aktuellerkontostand = 0;
-        observers = new ArrayList<>();
+       // observers = new ArrayList<>();
         // init IntProperties for spin()
         symbol1 = new SimpleIntegerProperty(0);
         symbol2 = new SimpleIntegerProperty(0);
@@ -28,7 +28,7 @@ public class SlotMachine {
     public SlotMachine(CasinoController konto){
         this.konto = konto;
         aktuellerkontostand = 0;
-        observers = new ArrayList<>();
+       // observers = new ArrayList<>();
         // init IntProperties for spin()
         symbol1 = new SimpleIntegerProperty(0);
         symbol2 = new SimpleIntegerProperty(0);
@@ -109,9 +109,7 @@ public class SlotMachine {
 //       observers.remove(observer);
 //   }
 //
-   public void addObserver(SlotMaschineObserver observer) {
-       observers.add(observer);
-   }
+
 
 }
 /* Gewinne: 7 = 25x

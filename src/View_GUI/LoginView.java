@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import src.Logic.Login;
 
 public class LoginView {
 
@@ -68,12 +69,18 @@ public class LoginView {
         Region placeholder1 = new Region();
         HBox.setHgrow(placeholder1, Priority.ALWAYS);
 
+        //Fehlermeldung
+        Label fehler = new Label();
+        fehler.textProperty().bindBidirectional(Login.error);
+        fehler.visibleProperty().bind(fehler.textProperty().isNotEmpty());
+
         // andere Aktion (anmeldung -> registrieren / registrierung -> anmelden)
         Label altAction = new Label();
         altAction.textProperty().bind(Bindings.when(anmeldung).then("lieber registrieren").otherwise("lieber anmelden"));
         altAction.setOnMouseClicked(e -> {
             anmeldung.set(anmeldung.not().get());
             altAction.requestFocus(); // damit die Prompts aus beiden textfeldern angezeigt werden
+            fehler.setText("");
         });
         altAction.setId("alternativeAction");
         altAction.setPadding(new Insets(0));
@@ -82,8 +89,9 @@ public class LoginView {
         Region placeholder2 = new Region();
         HBox.setHgrow(placeholder2, Priority.ALWAYS);
 
+
         // Szene
-        BorderPane root = new BorderPane(new VBox(user, pass, new HBox(ageCheck, placeholder1, altAction), new HBox(placeholder2, sign)));
+        BorderPane root = new BorderPane(new VBox(user, pass, new HBox(ageCheck, placeholder1, altAction), new HBox(placeholder2, sign),fehler));
         root.setTop(new BorderPane(action));
         root.setId("floatingPane");
         root.maxHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(3));

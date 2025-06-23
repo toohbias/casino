@@ -15,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 
 public class CasinoView {
@@ -31,6 +32,10 @@ public class CasinoView {
 
         Label lblHeading = new Label("Spielauswahl");
         lblHeading.setPadding(new Insets(50, 0, 0, 0));
+
+        // dumme animation, vielleicht integrieren mit neuem gif
+        ImageView casinoLogo = new ImageView(new Image("src/assets/animation.gif"));
+
         root.setTop(new BorderPane(lblHeading));
 
         HBox selection = new HBox();
