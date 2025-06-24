@@ -44,7 +44,7 @@ public class ViewManager {
 
     /**
      * mit dem Singleton ist z.B. so etwas möglich:
-     * button.setOnAction(e -> ViewManager.getInstance().setCurrentNode(CasinoView.getPane()));
+     * button.setOnAction(e → ViewManager.getInstance().setCurrentNode(CasinoView.getPane()));
      * @return ViewManager-Instanz
      */
     public static ViewManager getInstance() {
