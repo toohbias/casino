@@ -8,8 +8,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
@@ -20,11 +18,20 @@ import javafx.scene.layout.StackPane;
 
 import java.util.Arrays;
 
+/**
+ * wrappt die {@code getPane()}-Methode für die Slot Machine
+ * und stellt wiederverwendbare Properties bereit
+ */
 public class SlotView {
 
     public static IntegerProperty spin1, spin2, spin3;
     private static final double SIGN_SIZE = 15;
 
+    /**
+     * Slot Machine-Szene
+     * hier drin kann der Spieler Slots spielen
+     * @return Szene
+     */
     public static Node getPane() {
         // init Integer Properties that determine the current Symbol shown on each reel
         spin1 = new SimpleIntegerProperty();
@@ -43,14 +50,6 @@ public class SlotView {
         );
 
         BorderPane root = new BorderPane();
-
-        //Rückbotton
-        ImageView zurckImg = ViewManager.defaultView(new Image("src/assets/Pfeilzurück.png"), 3);
-        zurckImg.setFitWidth(SIGN_SIZE*5);
-        Button zurueck = new Button("", zurckImg);
-        zurueck.setContentDisplay(ContentDisplay.TOP);
-        zurueck.setOnAction(e -> {ViewManager.getInstance().setView(1);}); //Was passiert wenn man den Button drückt
-        root.setLeft(zurueck);
 
         // show main slot machine
         ImageView img = ViewManager.defaultView(new Image("src/assets/Slotmachinev2.png"), 1.5);

@@ -38,16 +38,15 @@ public class Roulettev2 {
             // Gewinn bestimmen
 
 
-
-        });
-
-
     }
 
     public static void berechnen(int einsatz, int multiplikator) {
         if (multiplikator > 0) {
             int gewinn = einsatz * multiplikator;
-            ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() + (double) gewinn);
+
+            // macht die animation im money frame
+            ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + (double) gewinn);
+
             System.out.println("Herzlichen Glückwunsch sie haben " + gewinn + " V-Bucks gewonnen");
             System.out.println("Ihr neuer Kontostand beträgt " + ViewManager.getInstance().getController().getMoney().get() + " V-Bucks");
             // coin animation
@@ -66,7 +65,4 @@ public class Roulettev2 {
         }
     }
 
-}
-
-void main() {
 }

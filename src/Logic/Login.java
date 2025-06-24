@@ -37,7 +37,7 @@ public class Login {
                     error.set("");
                     ViewManager.getInstance().setView(ViewManager.MAIN_MENU);
                 } else {
-                    error.set("BRuder du hast einen Account!!!");
+                    error.set("Bruder du hast einen Account!!!");
                 }}
                 else{
                     error.set("Bist du nicht 18????");

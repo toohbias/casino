@@ -14,9 +14,12 @@ import javafx.stage.Stage;
 import src.Logic.CasinoController;
 import src.Logic.Login;
 import src.Logic.SlotMachinev2;
-
 import java.util.Objects;
 
+/**
+ * MVC -> Controller
+ * Hier findet die Kommunikation zwischen UI und Logik statt
+ */
 public class ViewManager {
 
     private final ObjectProperty<Node> currentNode;
@@ -27,6 +30,8 @@ public class ViewManager {
     private final Scene defaultScene;
 
     private final BorderPane fxlayer;
+
+    private final StackPane topBar;
 
     private static ViewManager instance;
 
@@ -63,9 +68,12 @@ public class ViewManager {
         fxlayer = new BorderPane();
         fxlayer.setPickOnBounds(false);
 
+        topBar = new StackPane();
+
         BorderPane defaultPane = new BorderPane();
         defaultPane.setBackground(new Background(new BackgroundImage(new Image("src/assets/Background.png"), null, null, null, null)));
         defaultPane.centerProperty().bind(currentNodeProperty());
+        defaultPane.setTop(topBar);
 
         StackPane root = new StackPane(defaultPane, fxlayer);
 
@@ -88,17 +96,23 @@ public class ViewManager {
     public void setView(int view) {
         switch (view) {
             case LOGIN_MENU -> {
+                setCurrentNode(LoginView.getPane());
                 Login.anmeldung.bind(LoginView.anmeldung);
                 Login.canSign.bind(LoginView.canSign);
                 Login.is18.bind(LoginView.is18);
                 Login.username.bind(LoginView.username);
                 Login.password.bind(LoginView.password);
+
+                setShowBack(false);
                 setShowMoney(false);
-                setCurrentNode(LoginView.getPane());
+                setShowShop(false);
             }
             case MAIN_MENU -> {
                 setCurrentNode(CasinoView.getPane());
+
+                setShowBack(false);
                 setShowMoney(true);
+                setShowShop(true);
             }
             case SLOT_VIEW -> {
                 setCurrentNode(SlotView.getPane());
@@ -106,21 +120,36 @@ public class ViewManager {
                 SlotView.spin1.bind(slotMachine.symbol1);
                 SlotView.spin2.bind(slotMachine.symbol2);
                 SlotView.spin3.bind(slotMachine.symbol3);
+
+                setShowBack(true);
+                setShowMoney(true);
+                setShowShop(true);
             }
             case ROULETTE_VIEW ->{
                 setCurrentNode(RouletteView.getPane());
+
+                setShowBack(true);
+                setShowMoney(true);
+                setShowShop(true);
             }
             case SHOP_VIEW -> {
-                setCurrentNode(shopView.getPane());
+                setCurrentNode(ShopView.getPane());
+
+                setShowBack(true);
+                setShowMoney(true);
+                setShowShop(false);
             }
         }
     }
 
     /**
      * initialisiert die Stage (Fenster)
+     * wird in Main aufgerufen
      * @param stage aus Main.start(Stage)
      */
+    @SuppressWarnings("ParameterCanBeLocal")
     public void setStage(Stage stage) {
+        // init window
         stage = new Stage();
         stage.setTitle("Casino");
         stage.getIcons().add(new Image("src/assets/Sevensign.png"));
@@ -131,12 +160,28 @@ public class ViewManager {
         stage.setMaxHeight(1080);
         stage.setMaxWidth(1920);
         stage.show();
+
+        // init size properties
         windowWidthProperty().bind(stage.widthProperty());
         windowHeightProperty().bind(stage.heightProperty());
+
+        // init top bar with its components
+        BorderPane top = new BorderPane();
+        top.setLeft(CasinoView.getBackButton());
+        top.setRight(CasinoView.getShopButton());
+        topBar.getChildren().addAll(top, MoneyFrame.init(controller.getMoney()));
+
         setView(LOGIN_MENU);
     }
 
-    // wird von SlotView aufgerufen, wenn der spieler den Hebel zieht
+    /**
+     * wird von SlotView aufgerufen, wenn der spieler den Hebel zieht
+     * und reicht einfach die Methode aus SlotMachine {@code slotMachine.spin(int einsatz, ToggleButton slotArm)} durch
+     * die nötigen Bindings wurden schon in {@code setView(int view)} gesetzt
+     * <p>
+     * der {@code ToggleButton} ist notwendig, damit der Knopf am Anfang der animation gesperrt
+     * und am Ende wieder entsperrt werden kann, da dies vom Timing der Threads abhängt
+     */
     public void leverPulled(int einsatz, ToggleButton slotArm) {
         try {
             slotMachine.spin(einsatz, slotArm);
@@ -145,11 +190,24 @@ public class ViewManager {
         }
     }
 
+    /**
+     * wird von LoginView aufgerufen, wenn der spieler entweder den anmelden oder registrieren button klickt
+     * und reicht einfach die Methode aus Login {@code Login.login(String username, String password)} durch
+     * die nötigen Bindings wurden schon in {@code setView(int view)} gesetzt
+     * <p>
+     * @param username username
+     * @param password passwort
+     */
     public void sign(String username, String password) {
         Login.login(username, password);
     }
 
-    // Vereinfachung der Erstellung von Bildern
+    /**
+     * Vereinfachte Erstellung von skalierbaren ImageViews
+     * @param img Image
+     * @param scale Skalierfaktor in Abhängigkeit von der Höhe des Fensters
+     * @return ImageView
+     */
     public static ImageView defaultView(Image img, double scale) {
         ImageView view = new ImageView();
         if (img != null) {
@@ -160,24 +218,60 @@ public class ViewManager {
         return view;
     }
 
+    /**
+     * gibt die CasinoController-Instanz zurück
+     * @return CasinoController
+     */
     public CasinoController getController() {
         return controller;
     }
 
+    /**
+     * soll das Money Frame sichtbar oder unsichtbar sein?
+     * @param show Sichtbarkeit
+     */
     public void setShowMoney(boolean show) {
-        if(show) {
-            ((BorderPane) ((StackPane) defaultScene.getRoot()).getChildren().getFirst()).setTop(CasinoView.getMoneyFrame(controller.getMoney()));
-        } else {
-            ((BorderPane) ((StackPane) defaultScene.getRoot()).getChildren().getFirst()).setTop(null);
-        }
+        topBar.getChildren().get(1).setVisible(show);
+    }
+
+    /**
+     * soll der Shop-Button sichtbar oder unsichtbar sein?
+     * @param show Sichtbarkeit
+     */
+    public void setShowShop(boolean show) {
+        ((BorderPane) (topBar.getChildren().getFirst())).getRight().setVisible(show);
+    }
+
+    /**
+     * soll der Zurück-Button sichtbar oder unsichtbar sein?
+     * @param show Sichtbarkeit
+     */
+    public void setShowBack(boolean show) {
+        ((BorderPane) (topBar.getChildren().getFirst())).getLeft().setVisible(show);
     }
 
     public Scene getDefaultScene() { return defaultScene; }
 
+    /**
+     * gibt die aktuelle Breite des Fensters zurück
+     * @return DoubleProperty für Fensterbreite
+     */
     public final DoubleProperty windowWidthProperty() { return windowWidth; }
+
+    /**
+     * gibt die aktuelle Höhe des Fensters zurück
+     * @return DoubleProperty für Fensterhöhe
+     */
     public final DoubleProperty windowHeightProperty() { return windowHeight; }
 
     public final Node getCurrentNode() { return currentNode.get(); }
+
+    /**
+     * ist zum Main-Fenster der Stage gebindet
+     * und soll nur von {@code setView(int view)} genutzt werden
+     * @param node aktuelle Szene
+     */
     public void setCurrentNode(Node node) { currentNode.set(node); }
+
     public ObjectProperty<Node> currentNodeProperty() { return currentNode; }
 }

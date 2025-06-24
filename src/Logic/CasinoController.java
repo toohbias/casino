@@ -2,6 +2,7 @@ package src.Logic;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import src.View_GUI.MoneyFrame;
 
 public class CasinoController {
     private DoubleProperty money;
@@ -22,6 +23,15 @@ public class CasinoController {
 
     public void addMoney(double money) {
         this.money.set(this.money.get() + money);
+    }
+
+    /**
+     * Wie setMoney, aber mit money animation
+     * @param money finaler Geldwert
+     */
+    public void win(double money) {
+        MoneyFrame.animateMoneyFrame(this.money.get(), money);
+        this.money.set(money);
     }
 
     /**

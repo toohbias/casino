@@ -1,9 +1,5 @@
 package src.View_GUI;
 
-import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -12,18 +8,13 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Paint;
+import javafx.scene.layout.*;
 
-import javax.swing.text.View;
-
+/**
+ * Wrapper für kleinere UI-Elemente, für die sich eine ganze Klasse nicht wirklich lohnt.
+ * CasinoView beinhaltet außerdem das Main Menu
+ */
 public class CasinoView {
-
-    // helper for animations
-    private static final DoubleProperty moneyFrameText = new SimpleDoubleProperty();
 
     /**
      * Der Inhalt des Start-Menus, wo man das Spiel auswählen kann
@@ -65,75 +56,38 @@ public class CasinoView {
     }
 
     /**
-     * Zeigt das Money Frame an
-     * @param money DoubleProperty vom angezeigten Geld aus dem {@code CasinoController}
-     * @return MoneyFrame-Node
+     * Zurück-Knopf
+     * wird nur einmal während der initialisierung des Spiels in {@code ViewManager.getInstance.setStage(Stage stage)} aufgerufen
+     * und danach bei jedem {@code ViewManager.getInstance().setView(int view)} entweder angezeigt oder unsichtbar gemacht
+     * @return Knopf mit passender margin
      */
-    public static Node getMoneyFrame(DoubleProperty money) {
-        BorderPane root = new BorderPane();
+    public static Node getBackButton() {
+        ImageView backView = ViewManager.defaultView(new Image("src/assets/Pfeilzurück.png"), 10);
+        Button backButton = new Button("", backView);
+        backButton.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.MAIN_MENU));
+        BorderPane wrapper = new BorderPane(backButton);
+        wrapper.prefWidthProperty().bind(wrapper.heightProperty()
+                .subtract(backButton.heightProperty())
+                .add(backButton.widthProperty()));
+        return wrapper;
+    }
 
-        //Money Frame
-        Label moneyLbl = new Label();
-        // geld geht langsam hoch
-        moneyFrameText.set(money.get());
-        money.addListener((observable, oldValue, newValue) -> {
-            if(newValue.doubleValue() > oldValue.doubleValue()) {
-                new Thread(() -> {
-                    // timing adjusted to MoneyEffect
-                    try {
-                        Thread.sleep(400);
-                    } catch (InterruptedException ignored) {}
-                    for(int i = 0; i < 100; i++) {
-                        Platform.runLater(() -> moneyFrameText.set(moneyFrameText.get() + (newValue.doubleValue() - oldValue.doubleValue()) / 100));
-                        try {
-                            Thread.sleep(15);
-                        } catch (InterruptedException ignored) {}
-                    }
-                    // animation for how much money you won
-                    try {
-                        Thread.sleep(100);
-                        Platform.runLater(() -> {
-                            moneyLbl.textProperty().unbind();
-                            moneyLbl.setTextFill(Paint.valueOf("#940303"));
-                            moneyLbl.setText("+" + (newValue.doubleValue() - oldValue.doubleValue()));
-                        });
-                        for(int i = 0; i < 3; i++) {
-                            Platform.runLater(() -> moneyLbl.setText("+" + (newValue.doubleValue() - oldValue.doubleValue())));
-                            Thread.sleep(500);
-                            Platform.runLater(() -> moneyLbl.setText(""));
-                            Thread.sleep(300);
-                        }
-                        Platform.runLater(() -> {
-                            moneyLbl.setTextFill(Paint.valueOf("black"));
-                            moneyLbl.textProperty().bind(moneyFrameText.asString());
-                        });
-                    } catch (InterruptedException ignored) {}
-                }).start();
-            } else {
-                moneyFrameText.set(money.get());
-            }
-        });
-        moneyLbl.textProperty().bind(moneyFrameText.asString());
-        moneyLbl.setAlignment(Pos.CENTER);
-        moneyLbl.getStyleClass().clear();
-        moneyLbl.setGraphic(ViewManager.defaultView(new Image("src/assets/Money Framev2.png"), 5));
-        moneyLbl.setContentDisplay(ContentDisplay.CENTER);
-        // has to divide by zero if text gets empty in winning animation but who cares
-        moneyLbl.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpt;", ViewManager.getInstance().windowHeightProperty().divide(5).divide(moneyLbl.textProperty().length())));
-        root.setCenter(moneyLbl);
-
+    /**
+     * Shop-Knopf
+     * wird nur einmal während der initialisierung des Spiels in {@code ViewManager.getInstance.setStage(Stage stage)} aufgerufen
+     * und danach bei jedem {@code ViewManager.getInstance().setView(int view)} entweder angezeigt oder unsichtbar gemacht
+     * @return Knopf mit passender margin
+     */
+    public static Node getShopButton() {
         // Shop Button
-        ImageView shopView = ViewManager.defaultView(new Image("src/assets/ShopSymbol.png"), 5);
+        ImageView shopView = ViewManager.defaultView(new Image("src/assets/ShopSymbol.png"), 8);
         Button shopButton = new Button("", shopView);
         shopButton.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.SHOP_VIEW));
-        root.setRight(shopButton);
-
-        ImageView fakeView = ViewManager.defaultView(new Image("src/assets/ShopSymbol.png"), 5);
-        Button fakeButton = new Button("", fakeView);
-        fakeButton.setDisable(true);
-        fakeButton.setVisible(false);
-        root.setLeft(fakeButton);
-        return root;
+        BorderPane wrapper = new BorderPane(shopButton);
+        wrapper.prefWidthProperty().bind(wrapper.heightProperty()
+                .subtract(shopButton.heightProperty())
+                .add(shopButton.widthProperty()));
+        return wrapper;
     }
 }
 

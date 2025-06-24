@@ -21,6 +21,10 @@ import javafx.util.Duration;
 import java.util.Arrays;
 import java.util.Random;
 
+/**
+ * Effekt, der beim Gewinnen von einem Spiel angezeigt wird.
+ * die Details stehen bei {@code animate(int moneyCount)}
+ */
 public class MoneyEffect {
 
     private static final Pane root = new Pane();
@@ -40,11 +44,26 @@ public class MoneyEffect {
             )
     );
 
+    /**
+     * Der MoneyEffect liegt im ViewManager als fxlayer über dem eigentlichen Spiel.
+     * Obwohl er normalerweise durchsichtig ist, absorbiert er die MouseEvents,
+     * wodurch der Spieler die Slot Machine nicht mehr betätigen kann.
+     * das wird durch {@code Pane.setPickOnBounds(false)} vorgebäugt.
+     * @return Szene
+     */
     public static Pane getRoot() {
         root.setPickOnBounds(false); // damit die Mouseevents beim darunterliegenden Layer ankommen
         return root;
     }
 
+    /**
+     * hiermit wird die Coin Animation gestartet.
+     * Dabei wird eine bestimmte Menge Coins zufällig in einem Bereich des Fensters erstellt,
+     * die zum Money Frame fliegen und schließlich verblassen während dieser eine eigene Animation abspielt.
+     * diese Methode wird in {@code SlotMachinev2.berechnen(int einsatz, int multiplikator)} eingesetzt, wenn der Spieler eine Slot-Runde gewinnt.
+     * In Zukunft kann diese Methode auch für andere Spiele wie Roulette verwendet werden.
+     * @param moneyCount Anzahl der Münzen
+     */
     public static void animate(int moneyCount) {
         // fill List of coins
         for(int i = 0; i < moneyCount; i++) {
@@ -103,13 +122,25 @@ public class MoneyEffect {
         }
     }
 
+    /**
+     * hiermit wird die Coin Animation gestoppt.
+     * Alle Coins werden aus der Pane gelöscht.
+     * diese Methode wird in {@code SlotMachinev2.berechnen(int einsatz, int multiplikator)} eingesetzt, wenn der Spieler eine Slot-Runde gewinnt.
+     * In Zukunft kann diese Methode auch für andere Spiele wie Roulette verwendet werden.
+     */
     public static void stop() {
         root.getChildren().clear();
     }
 
+    /**
+     * Dieser Thread ändert die Property für den aktuellen Coin-Frame, bis er interrupted wird
+     * er wird in {@code SlotMachinev2.berechnen(int einsatz, int multiplikator)} eingesetzt, wenn der Spieler eine Slot-Runde gewinnt.
+     * In Zukunft kann diese Methode auch für andere Spiele wie Roulette verwendet werden.
+     * Momentan wird der Coin-Frame nicht geändert
+     */
     public static class AnimationThread extends Thread {
-        @SuppressWarnings("BusyWait")
         @Override
+        @SuppressWarnings("BusyWait")
         public void run() {
             while(!isInterrupted()) {
                 try {

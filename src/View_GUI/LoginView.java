@@ -14,6 +14,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import src.Logic.Login;
 
+/**
+ * wrappt die {@code getPane()}-Methode für den Login
+ * und stellt wiederverwendbare Properties bereit
+ */
 public class LoginView {
 
     public static final StringProperty username = new SimpleStringProperty();
@@ -22,6 +26,13 @@ public class LoginView {
     public static final BooleanProperty anmeldung = new SimpleBooleanProperty(true);
     public static final BooleanProperty is18 = new SimpleBooleanProperty(false);
 
+    /**
+     * Login-Szene
+     * hier drin ist der anfängliche Login Screen.
+     * Wenn es den Spieler schon gibt, dann kann er sich einlogggen und mit seinem bisherigen Konto weiterspielen.
+     * Ansonsten kann er einen Account erstellen und bekommt ein Startguthaben
+     * @return Szene
+     */
     public static Node getPane() {
         // Aktion
         Label action = new Label();

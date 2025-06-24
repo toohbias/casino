@@ -124,7 +124,10 @@ public class SlotMachinev2 {
     public static void berechnen(int einsatz, int multiplikator) {
         if (multiplikator > 0) {
             int gewinn = einsatz * multiplikator;
-            ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() + (double) gewinn);
+
+            // macht die animation im money frame
+            ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + (double) gewinn);
+
             System.out.println("Herzlichen Glückwunsch sie haben " + gewinn + " V-Bucks gewonnen");
             System.out.println("Ihr neuer Kontostand beträgt " + ViewManager.getInstance().getController().getMoney().get() + " V-Bucks");
             // coin animation

@@ -1,6 +1,5 @@
 package src.View_GUI;
 
-import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -15,18 +14,18 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import src.Logic.Shop;
 
-public class shopView {
+/**
+ * wrappt die {@code getPane()}-Methode für den Shop
+ */
+public class ShopView {
 
+    /**
+     * Shop-Szene
+     * hier kann der Spieler sein Geld aufladen
+     * @return Szene
+     */
     public static Node getPane() {
         BorderPane root = new BorderPane();
-
-        // Rück-Button
-        ImageView zurueckImg = ViewManager.defaultView(new Image("src/assets/Pfeilzurück.png"), 3);
-        zurueckImg.setFitWidth(75);
-        Button zurueck = new Button("", zurueckImg);
-        zurueck.setContentDisplay(ContentDisplay.TOP);
-        zurueck.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.MAIN_MENU));
-        root.setLeft(zurueck);
 
         // Zentrum: Frage + Eingabe
         VBox centerBox = new VBox(15);
@@ -48,7 +47,6 @@ public class shopView {
             if (eingabeText.matches("\\d+")) {
                 int betrag = Integer.parseInt(eingabeText);
                 ViewManager.getInstance().getController().addMoney(betrag);
-                ViewManager.getInstance().setShowMoney(true);
                 Shop.errorMessage.set(""); // Fehler löschen
                 eingabe.clear();
             } else {
