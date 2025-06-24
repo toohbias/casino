@@ -107,7 +107,7 @@ public class MoneyEffect {
         root.getChildren().clear();
     }
 
-    static class AnimationThread extends Thread {
+    public static class AnimationThread extends Thread {
         @SuppressWarnings("BusyWait")
         @Override
         public void run() {

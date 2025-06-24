@@ -20,12 +20,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         ViewManager.getInstance().setStage(primaryStage);
-        System.out.println(Datenbank.getInstance().signIn("username", "password"));
-        CasinoController controller = new CasinoController();//Datenbank.getInstance().getMoney()
-        //controller.setMoney(200000D);
-        ViewManager.getInstance().setController(controller);
-        //ViewManager.getInstance().setShowMoney(true); // TODO rausmachen wenn Login fertig ist
-        ViewManager.getInstance().setView(0);
     }
 
     @Override

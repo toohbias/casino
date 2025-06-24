@@ -18,25 +18,24 @@ public class Login {
 
     public static void login(String username, String password) {
         Datenbank datenbank = Datenbank.getInstance();
-        ViewManager vm = ViewManager.getInstance();
         if (username.trim().isEmpty() || password.trim().isEmpty()) {// entfernt Müll Leerzeichen
             error.set("Bruder falsche Eingabe");
         }
         else {
             if (anmeldung.get()) {
                 if (datenbank.signIn(username, password)) {
-                    vm.getController().setMoney(datenbank.getMoney());
+                    ViewManager.getInstance().getController().setMoney(datenbank.getMoney());
                     error.set("");
-                    vm.setView(1);
+                    ViewManager.getInstance().setView(ViewManager.MAIN_MENU);
                 } else {
                     error.set("Bruder du hast keinen Account!!!");
                 }
             } else {
                 if(is18.get()){
                 if (datenbank.signUp(username, password)) {
-                    vm.getController().setMoney(datenbank.getMoney());
+                    ViewManager.getInstance().getController().setMoney(datenbank.getMoney());
                     error.set("");
-                    vm.getInstance().setView(1);
+                    ViewManager.getInstance().setView(ViewManager.MAIN_MENU);
                 } else {
                     error.set("BRuder du hast einen Account!!!");
                 }}
