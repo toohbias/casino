@@ -40,7 +40,7 @@ public class ViewManager {
     // Logic: Szene
     private final SlotMachinev2 slotMachine;
 
-    private CasinoController controller;
+    private final CasinoController controller;
 
     /**
      * mit dem Singleton ist z.B. so etwas möglich:
@@ -73,6 +73,8 @@ public class ViewManager {
         defaultScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("View.css")).toExternalForm());
 
         slotMachine = new SlotMachinev2();
+
+        controller = new CasinoController();
     }
 
     public BorderPane getFXLayer() {
@@ -131,8 +133,7 @@ public class ViewManager {
         stage.show();
         windowWidthProperty().bind(stage.widthProperty());
         windowHeightProperty().bind(stage.heightProperty());
-//        setView(LOGIN_MENU); // nur zum testen TODO
-        //setView(MAIN_MENU);
+        setView(LOGIN_MENU);
     }
 
     // wird von SlotView aufgerufen, wenn der spieler den Hebel zieht
@@ -161,10 +162,6 @@ public class ViewManager {
 
     public CasinoController getController() {
         return controller;
-    }
-
-    public void setController(CasinoController controller) {
-        this.controller = controller;
     }
 
     public void setShowMoney(boolean show) {

@@ -69,6 +69,11 @@ public class CasinoView {
         return root;
     }
 
+    /**
+     * Zeigt das Money Frame an
+     * @param money DoubleProperty vom angezeigten Geld aus dem {@code CasinoController}
+     * @return MoneyFrame-Node
+     */
     public static Node getMoneyFrame(DoubleProperty money) {
         BorderPane root = new BorderPane();
         Label moneyLbl = new Label();
