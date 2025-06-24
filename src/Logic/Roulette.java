@@ -19,11 +19,19 @@ public class Roulette {
     }
 
     //TODO remove
-    public void einsatzFestlegen()  //durch Tasten gewünschten Einsatz festlegen;
-    //überprüfen, ob der aktuelle Betrag den Kontostand üerbschreitet
-    //bei src.Logic.Roulette auf Felder setzten
-    {
+    public boolean einsatzFestlegen(int i) {
+        if (i <= 0) {
+            System.out.println("Der Einsatz muss größer als 0 sein.");
+            return false;
+        }
 
+        if (i > aktuellerkontostand) {
+            System.out.println("Nicht genügend V-Bucks! Ihr aktueller Kontostand beträgt: " + aktuellerkontostand);
+            return false;
+        }
+
+        System.out.println("Einsatz von " + i + " V-Bucks wurde akzeptiert.");
+        return true;
     }
 
     /**
@@ -39,7 +47,7 @@ public class Roulette {
     //schickt an Grafikfutzi
 
     {
-        if (einsatz <= aktuellerkontostand) {
+        if (einsatzFestlegen(einsatz)) {
             int zufaelligeZahl = random.nextInt(37);
 
             if (tipp == zufaelligeZahl)
