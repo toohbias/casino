@@ -15,15 +15,6 @@ public class SlotMachine {
     private CasinoController konto;
    // private ArrayList<SlotMaschineObserver> observers;
 
-    public SlotMachine()       // Konstruktor
-    {
-        aktuellerkontostand = 0;
-       // observers = new ArrayList<>();
-        // init IntProperties for spin()
-        symbol1 = new SimpleIntegerProperty(0);
-        symbol2 = new SimpleIntegerProperty(0);
-        symbol3 = new SimpleIntegerProperty(0);
-    }
 
     public SlotMachine(CasinoController konto){
         this.konto = konto;

@@ -9,13 +9,16 @@ public class Roulette {
     int[] ungerade = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35};
     int [] schwarz = {15, 4, 2, 17, 6, 13, 11, 8, 10, 24, 33, 20, 31, 22, 29, 28, 35, 26};
     int [] rot = {32, 19, 21, 25, 34, 27, 36, 36, 30, 23, 5, 16, 1, 14, 9, 18, 7, 12, 3};
-    int zufallsZahl;
-
+    public IntegerProperty zufallszahlkugel;
     Random random = new Random();
 
-    Roulette()       // Konstruktor
-    {
-    aktuellerkontostand = 0;
+    public Roulette(CasinoController konto){
+        this.konto = konto;
+        aktuellerkontostand = 0;
+        // observers = new ArrayList<>();
+        // init IntProperties for spin()
+        zufallszahlkugel = new SimpleIntegerProperty(0);
+
     }
 
     //TODO remove
@@ -48,22 +51,22 @@ public class Roulette {
 
     {
         if (einsatzFestlegen(einsatz)) {
-            int zufaelligeZahl = random.nextInt(37);
+            zufallszahlkugel.set(random.nextInt(37));
 
-            if (tipp == zufaelligeZahl)
+            if (zufallszahlkugel.get() == tipp)
             {
                 berechnen(einsatz, 35);
             }
-            if (farbe.equals("rot") || zufaelligeZahl == rot[zufaelligeZahl] ){
+            if (farbe.equals("rot") || zufallszahlkugel.get() == rot[zufallszahlkugel.get()] ){
                 berechnen(einsatz, 2);
             }
-            if (farbe.equals("schwarz") || zufaelligeZahl == schwarz[zufaelligeZahl]){
+            if (farbe.equals("schwarz") || zufallszahlkugel.get() == schwarz[zufallszahlkugel.get()]){
                 berechnen(einsatz, 2);
             }
-            if (geradeUngerade.equals("gerade") || zufaelligeZahl == gerade[zufaelligeZahl]){
+            if (geradeUngerade.equals("gerade") || zufallszahlkugel.get() == gerade[zufallszahlkugel.get()]){
                 berechnen(einsatz, 2);
             }
-            if (geradeUngerade.equals("ungerade") || zufaelligeZahl == ungerade[zufaelligeZahl]){
+            if (geradeUngerade.equals("ungerade") || zufallszahlkugel.get() == ungerade[zufallszahlkugel.get()]){
                 berechnen(einsatz, 2);
             }
             else{
