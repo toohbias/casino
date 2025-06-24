@@ -21,7 +21,7 @@ public class CasinoController {
     }
 
     public void addMoney(double money) {
-        this.money.add(money);
+        this.money.set(this.money.get() + money);
     }
 
     /**

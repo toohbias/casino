@@ -1,6 +1,6 @@
 package src.View_GUI;
 
-import javafx.css.PseudoClass;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -10,8 +10,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import src.Logic.Shop;
 
 public class shopView {
@@ -30,27 +31,35 @@ public class shopView {
         // Zentrum: Frage + Eingabe
         VBox centerBox = new VBox(15);
         centerBox.setAlignment(Pos.CENTER);
+
         Label frage = new Label("Wie viel Geld brauchst du?");
         frage.setStyle("-fx-font-size: 24pt; -fx-text-fill: white;");
 
-        TextField eingabe = new TextField();
+        TextField eingabe = new TextField();  // KORREKTUR: nicht 'extField'
         eingabe.setPromptText("Gib den Betrag ein");
-        eingabe.textProperty().bindBidirectional(Shop.Input);
-        eingabe.setOnKeyPressed(e -> {
-            if(e.getCode() == KeyCode.ENTER) {
-                Shop.Geldverändern();
-            }
-        });
-        eingabe.setOnKeyReleased(e -> {
-            if(e.getCode() == KeyCode.ENTER) {
-            }
-        });
-        eingabe.setMaxWidth(2000000);
+        eingabe.setMaxWidth(200);
 
-        centerBox.getChildren().addAll(frage, eingabe);
+        Label fehlerLabel = new Label();
+        fehlerLabel.setStyle("-fx-text-fill: red;");
+        fehlerLabel.textProperty().bind(Shop.errorMessage); // Fehlerbindung
+
+        eingabe.setOnAction(e -> {
+            String eingabeText = eingabe.getText();
+            if (eingabeText.matches("\\d+")) {
+                int betrag = Integer.parseInt(eingabeText);
+                ViewManager.getInstance().getController().addMoney(betrag);
+                ViewManager.getInstance().setShowMoney(true);
+                Shop.errorMessage.set(""); // Fehler löschen
+                eingabe.clear();
+            } else {
+                Shop.errorMessage.set("Bruder gib eine gültige Zahl ein.");
+            }
+        });
+
+        centerBox.getChildren().addAll(frage, eingabe, fehlerLabel);
         root.setCenter(centerBox);
 
-        // Animationen: beliebig im StackPane über den Bildschirm verteilt
+        // Animationen
         StackPane animationLayer = new StackPane();
 
         ImageView anim1 = new ImageView(new Image("src/assets/GewonnenAnimation1make-it-rain-coin.gif"));

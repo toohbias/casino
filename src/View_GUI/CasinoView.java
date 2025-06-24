@@ -18,6 +18,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 
+import javax.swing.text.View;
+
 public class CasinoView {
 
     // helper for animations
@@ -37,13 +39,6 @@ public class CasinoView {
         ImageView casinoLogo = new ImageView(new Image("src/assets/animation.gif"));
 
         root.setTop(new BorderPane(lblHeading));
-
-        //show shop view sleselection button
-        ImageView shopImage = ViewManager.defaultView(new Image("src/assets/Shop.jpg"), 4);
-        Button shopButton = new Button("SHOP", shopImage);
-        shopButton.setContentDisplay(ContentDisplay.TOP);
-        shopButton.setOnAction(e -> ViewManager.getInstance().setView(4));
-        root.setRight(shopButton);
 
         HBox selection = new HBox();
 
@@ -76,6 +71,8 @@ public class CasinoView {
      */
     public static Node getMoneyFrame(DoubleProperty money) {
         BorderPane root = new BorderPane();
+
+        //Money Frame
         Label moneyLbl = new Label();
         // geld geht langsam hoch
         moneyFrameText.set(money.get());
@@ -123,7 +120,19 @@ public class CasinoView {
         moneyLbl.setContentDisplay(ContentDisplay.CENTER);
         // has to divide by zero if text gets empty in winning animation but who cares
         moneyLbl.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpt;", ViewManager.getInstance().windowHeightProperty().divide(5).divide(moneyLbl.textProperty().length())));
-        root.setCenter(new StackPane(moneyLbl));
+        root.setCenter(moneyLbl);
+
+        // Shop Button
+        ImageView shopView = ViewManager.defaultView(new Image("src/assets/ShopSymbol.png"), 5);
+        Button shopButton = new Button("", shopView);
+        shopButton.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.SHOP_VIEW));
+        root.setRight(shopButton);
+
+        ImageView fakeView = ViewManager.defaultView(new Image("src/assets/ShopSymbol.png"), 5);
+        Button fakeButton = new Button("", fakeView);
+        fakeButton.setDisable(true);
+        fakeButton.setVisible(false);
+        root.setLeft(fakeButton);
         return root;
     }
 }

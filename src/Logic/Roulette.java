@@ -1,5 +1,9 @@
 package src.Logic;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import src.View_GUI.ViewManager;
+
 import java.util.Random;
 
 public class Roulette {
@@ -13,7 +17,6 @@ public class Roulette {
     Random random = new Random();
 
     public Roulette(CasinoController konto){
-        this.konto = konto;
         aktuellerkontostand = 0;
         // observers = new ArrayList<>();
         // init IntProperties for spin()
