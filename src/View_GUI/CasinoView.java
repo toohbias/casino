@@ -41,7 +41,7 @@ public class CasinoView {
         selection.getChildren().add(slotImage);
 
         // show roulette selection button TODO: change Image
-        ImageView img2 = ViewManager.defaultView(new Image("src/assets/Slotmachinev2.png"), 3);
+        ImageView img2 = ViewManager.defaultView(new Image("src/assets/Roulette Desk.png"), 3);
         Button rouletteImage = new Button("Roulette", img2);
         rouletteImage.setContentDisplay(ContentDisplay.TOP);
         rouletteImage.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.ROULETTE_VIEW));
