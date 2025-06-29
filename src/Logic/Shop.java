@@ -9,7 +9,8 @@ import src.View_GUI.ViewManager;
 public class Shop {
     public static final StringProperty errorMessage = new SimpleStringProperty("");
     public static final IntegerProperty Input = new SimpleIntegerProperty();
-    public static void Geldverändern (double money){
+
+    public static void Geldverändern (int money) {
         ViewManager.getInstance().getController().addMoney(money);
     }
 }

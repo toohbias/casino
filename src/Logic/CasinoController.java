@@ -1,28 +1,30 @@
 package src.Logic;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import src.View_GUI.MoneyFrame;
 
 public class CasinoController {
 
-    private static final double[] stakeValues = {1, 2, 5, 10, 25, 50, 100, 250, 500, 1000, 2000, 5000, -1};
+    private static final int[] stakeValues = {1, 2, 5, 10, 25, 50, 100, 250, 500, 1000, 2000, 5000, -1};
 
-    private final DoubleProperty money;
+    public static final int DEFAULT_STAKES = 50;
+
+    private final IntegerProperty money;
 
     public CasinoController() {
-        money = new SimpleDoubleProperty(0);
+        money = new SimpleIntegerProperty(0);
     }
 
-    public DoubleProperty getMoney() {
+    public IntegerProperty getMoney() {
         return money;
     }
 
-    public void setMoney(double money) {
+    public void setMoney(int money) {
         this.money.set(money);
     }
 
-    public void addMoney(double money) {
+    public void addMoney(int money) {
         this.money.set(this.money.get() + money);
     }
 
@@ -30,9 +32,8 @@ public class CasinoController {
      * Wie setMoney, aber mit money animation
      * @param money finaler Geldwert
      */
-    public void win(double money) {
+    public void win(int money) {
         MoneyFrame.animateMoneyFrame(this.money.get(), money);
-        this.money.set(money);
     }
 
     /**
@@ -42,7 +43,7 @@ public class CasinoController {
      * @param stakes wie hoch ist der Einsatz gerade?
      * @return neuer Einsatz
      */
-    public static double setStakes(int raiseOrReduce, double stakes) {
+    public static int setStakes(int raiseOrReduce, int stakes) {
         int stakesIndex;
         for(stakesIndex = 0; stakesIndex < stakeValues.length; stakesIndex++) {
             if(stakeValues[stakesIndex] == stakes) {
@@ -50,13 +51,13 @@ public class CasinoController {
             }
         }
         if(stakesIndex == stakeValues.length - 1) {
-            return stakes; // wenn es den Einsatz nicht in der Liste gibt, sollte aber nicht vorkommen
+            return DEFAULT_STAKES; // wenn es den Einsatz nicht in der Liste gibt, sollte aber nicht vorkommen
         }
         if((stakesIndex == stakeValues.length - 2 && raiseOrReduce > 0) || (stakesIndex == 0 && raiseOrReduce < 0)) {
             MoneyFrame.runStakesAnimation(stakes);
             return stakes; // wenn der Einsatz bereits der höchste/niedrigste ist
         }
-        double newStakes = raiseOrReduce > 0 ? stakeValues[stakesIndex + 1] : stakeValues[stakesIndex - 1];
+        int newStakes = raiseOrReduce > 0 ? stakeValues[stakesIndex + 1] : stakeValues[stakesIndex - 1];
         MoneyFrame.runStakesAnimation(newStakes);
         return newStakes;
     }
@@ -66,7 +67,7 @@ public class CasinoController {
      * @param vergleichsWert
      * @return
      */
-    public boolean kontostandUeberpruefen(double vergleichsWert){
+    public boolean kontostandUeberpruefen(int vergleichsWert){
         return money.get() < vergleichsWert;
     }
 

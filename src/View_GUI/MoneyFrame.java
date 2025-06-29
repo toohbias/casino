@@ -2,8 +2,8 @@ package src.View_GUI;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
@@ -16,10 +16,10 @@ import javafx.scene.paint.Paint;
  */
 public class MoneyFrame {
 
-    private static final DoubleProperty money = new SimpleDoubleProperty(0);
+    private static final IntegerProperty money = new SimpleIntegerProperty(0);
 
     // helper for animations
-    private static final DoubleProperty moneyFrameText = new SimpleDoubleProperty();
+    private static final IntegerProperty moneyFrameText = new SimpleIntegerProperty();
 
     // actual frame
     private static final Label moneyLbl = new Label();
@@ -33,7 +33,7 @@ public class MoneyFrame {
      * @param moneyIn DoubleProperty vom angezeigten Geld aus dem {@code CasinoController}
      * @return MoneyFrame-Node
      */
-    public static Node init(DoubleProperty moneyIn) {
+    public static Node init(IntegerProperty moneyIn) {
         money.bind(moneyIn);
         money.addListener((observable, oldValue, newValue) -> moneyFrameText.set(money.get()));
         //Money Frame
@@ -42,8 +42,7 @@ public class MoneyFrame {
         moneyLbl.getStyleClass().clear();
         moneyLbl.setGraphic(ViewManager.defaultView(new Image("src/assets/Money Framev2.png"), 5));
         moneyLbl.setContentDisplay(ContentDisplay.CENTER);
-        // has to divide by zero if text gets empty in winning animation but who cares
-        moneyLbl.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpt;", ViewManager.getInstance().windowHeightProperty().divide(5).divide(moneyLbl.textProperty().length())));
+        moneyLbl.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpt;", ViewManager.getInstance().windowHeightProperty().divide(5).divide(Bindings.when(moneyLbl.textProperty().length().greaterThan(2)).then(moneyLbl.textProperty().length()).otherwise(2))));
         return moneyLbl;
     }
 
@@ -54,7 +53,7 @@ public class MoneyFrame {
      * @param oldValue alter Geldwert (aus {@code money.get()}
      * @param newValue neuer Geldwert
      */
-    public static void animateMoneyFrame(double oldValue, double newValue) {
+    public static void animateMoneyFrame(int oldValue, int newValue) {
         // geld geht langsam hoch
         if (newValue > oldValue) {
             new Thread(() -> {
@@ -66,10 +65,10 @@ public class MoneyFrame {
 
                 // money increase animation
                 double iterator = oldValue;
-                double step = (newValue - oldValue) / 100;
-                while (iterator < newValue) {
+                double step = (double) (newValue - oldValue) / 100;
+                for(int i = 0; i < 100; i++) {
                     final double it = iterator;
-                    Platform.runLater(() -> moneyFrameText.set(it));
+                    Platform.runLater(() -> moneyFrameText.set((int) it));
                     iterator += step;
                     try {
                         Thread.sleep(15);
@@ -99,6 +98,8 @@ public class MoneyFrame {
                     });
                 } catch (InterruptedException ignored) {
                 }
+                // update global money (bugfix: new value gets displayed before animation starts)
+                ViewManager.getInstance().getController().setMoney(newValue);
             }).start();
         } else {
             moneyFrameText.set(newValue);
@@ -112,7 +113,7 @@ public class MoneyFrame {
      * die wiederum von den Einsatz-Knöpfen der Spiele aufgerufen wird.
      * @param stakes Einsatz
      */
-    public static void runStakesAnimation(double stakes) {
+    public static void runStakesAnimation(int stakes) {
         if(!isStakesAnimationRunning) {
             isStakesAnimationRunning = true;
             new AnimationThread().start();

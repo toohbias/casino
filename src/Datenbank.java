@@ -26,7 +26,7 @@ public class Datenbank {
     private String unhashed;
     private String hashed;
 
-    private double money = 0;
+    private int money = 0;
 
     private int userPos = -1;
 
@@ -84,7 +84,7 @@ public class Datenbank {
         } catch (FileNotFoundException ignored) {}
 
         // add user to file
-        final double startMoney = 2000;
+        final int startMoney = 10000;
         try {
             FileWriter writer = new FileWriter(FILE, true);
             GCMParameterSpec spec = generateIV();
@@ -133,7 +133,7 @@ public class Datenbank {
                     userExists = true;
                     GCMParameterSpec spec = new GCMParameterSpec(128, decode(info[1]));
                     SecretKey key = getKeyFromPassword(unhashed);
-                    money = Double.parseDouble(decrypt(info[2], key, spec));
+                    money = Integer.parseInt(decrypt(info[2], key, spec));
                     break;
                 }
             }
@@ -156,7 +156,7 @@ public class Datenbank {
     }
 
     @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
-    public void updateMoney(double newValue) {
+    public void updateMoney(int newValue) {
         // wenn es den Spieler in der Liste noch nicht gibt
         if (userPos == -1) {
             System.out.println("Invalid User!");
@@ -195,7 +195,7 @@ public class Datenbank {
         }
     }
 
-    public double getMoney() {
+    public int getMoney() {
         return money;
     }
 

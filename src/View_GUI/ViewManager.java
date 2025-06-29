@@ -98,6 +98,7 @@ public class ViewManager {
         switch (view) {
             case LOGIN_MENU -> {
                 setCurrentNode(LoginView.getPane());
+                // binds the properties to check to the backend
                 Login.anmeldung.bind(LoginView.anmeldung);
                 Login.canSign.bind(LoginView.canSign);
                 Login.is18.bind(LoginView.is18);
@@ -198,7 +199,7 @@ public class ViewManager {
      * @param current jetziger Einsatz
      * @return neuer Einsatz
      */
-    public double setStake(int raiseOrReduce, double current) {
+    public int setStake(int raiseOrReduce, int current) {
         if(raiseOrReduce == 0) {
             MoneyFrame.stopStakesAnimation();
             return current;

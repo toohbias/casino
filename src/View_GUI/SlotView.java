@@ -13,6 +13,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import src.Logic.CasinoController;
 
 import java.util.Arrays;
 
@@ -23,9 +24,9 @@ import java.util.Arrays;
 public class SlotView {
 
     public static IntegerProperty spin1, spin2, spin3;
-    private static final double SIGN_SIZE = 15;
+    private static final int SIGN_SIZE = 15;
 
-    private static double stakes = 50;
+    private static int stakes = CasinoController.DEFAULT_STAKES;
 
     /**
      * Slot Machine-Szene
@@ -62,7 +63,7 @@ public class SlotView {
         ToggleButton slotArm = new ToggleButton("", armView);
         // when pulled: change Image, disable Button, call method of SlotMachine
         armView.imageProperty().bind(Bindings.when(slotArm.selectedProperty()).then(armPressed).otherwise(arm));
-        slotArm.setOnAction(e -> ViewManager.getInstance().leverPulled((int) stakes, slotArm)); // TODO: see issue #13
+        slotArm.setOnAction(e -> ViewManager.getInstance().leverPulled(stakes, slotArm));
         slotArm.setPadding(Insets.EMPTY);
 
         // make slotmachine symmetric

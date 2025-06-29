@@ -29,7 +29,7 @@ public class MoneyEffect {
 
     private static final Pane root = new Pane();
 
-    private static final double COIN_SIZE = 15;
+    private static final int COIN_SIZE = 15;
     private static final IntegerProperty coinState = new SimpleIntegerProperty(0);
 
     // init List of coin states

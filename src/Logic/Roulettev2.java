@@ -29,7 +29,7 @@ public class Roulettev2 {
             // meldung zu wenig geld
             throw new IllegalAccessException("Sie haben nicht die liquiden Mittel, bitte laden sie ihren Kontostand in unserem Shop auf");
         }
-        ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() - (double) einsatz); // Geld abziehen
+        ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() - einsatz); // Geld abziehen
         //animation start
 
         // 1 thread, der die rotation der scheibe animiert
@@ -45,7 +45,7 @@ public class Roulettev2 {
             int gewinn = einsatz * multiplikator;
 
             // macht die animation im money frame
-            ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + (double) gewinn);
+            ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + gewinn);
 
             System.out.println("Herzlichen Glückwunsch sie haben " + gewinn + " V-Bucks gewonnen");
             System.out.println("Ihr neuer Kontostand beträgt " + ViewManager.getInstance().getController().getMoney().get() + " V-Bucks");
