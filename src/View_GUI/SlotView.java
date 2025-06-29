@@ -12,9 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 
 import java.util.Arrays;
 
@@ -26,6 +24,8 @@ public class SlotView {
 
     public static IntegerProperty spin1, spin2, spin3;
     private static final double SIGN_SIZE = 15;
+
+    private static double stakes = 50;
 
     /**
      * Slot Machine-Szene
@@ -62,15 +62,12 @@ public class SlotView {
         ToggleButton slotArm = new ToggleButton("", armView);
         // when pulled: change Image, disable Button, call method of SlotMachine
         armView.imageProperty().bind(Bindings.when(slotArm.selectedProperty()).then(armPressed).otherwise(arm));
-        slotArm.setOnAction(e -> ViewManager.getInstance().leverPulled(50, slotArm)); // TODO: Einsatz bestimmen
-        slotArm.setPadding(new Insets(0));
+        slotArm.setOnAction(e -> ViewManager.getInstance().leverPulled((int) stakes, slotArm)); // TODO: see issue #13
+        slotArm.setPadding(Insets.EMPTY);
 
-        // invisible slot arm to center the slot machine
-        ImageView invArmView = ViewManager.defaultView(arm, 2.5);
-        ToggleButton invSlotArm = new ToggleButton("", invArmView);
-        invSlotArm.setDisable(true);
-        invSlotArm.setVisible(false);
-        invSlotArm.setPadding(new Insets(0));
+        // make slotmachine symmetric
+        Region slotPlaceholder = new Region();
+        slotPlaceholder.prefWidthProperty().bind(slotArm.widthProperty());
 
         // init symbol on first reel
         ImageView spin1View = ViewManager.defaultView(null, SIGN_SIZE);
@@ -88,8 +85,51 @@ public class SlotView {
         signBox.setAlignment(Pos.CENTER);
         signBox.spacingProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(25));
 
-        // show slot machine, arm and reels
-        HBox hbox = new HBox(invSlotArm, new StackPane(slotMachine, signBox), slotArm);
+        // buttons for setting the stake and to confirm
+        Image arrowUp = new Image("src/assets/ButtonUpv2.png");
+        Image arrowUpPressed = new Image("src/assets/ButtonUpPressedv2.png");
+        ImageView arrowUpView = ViewManager.defaultView(arrowUp, 35);
+        // when pressed: raise stakes
+        arrowUpView.imageProperty().bind(Bindings.when(arrowUpView.pressedProperty()).then(arrowUpPressed).otherwise(arrowUp));
+        arrowUpView.setOnMouseClicked(e -> stakes = ViewManager.getInstance().setStake(1, stakes));
+
+        Image arrowDown = new Image("src/assets/ButtonDownv2.png");
+        Image arrowDownPressed = new Image("src/assets/ButtonDownPressedv2.png");
+        ImageView arrowDownView = ViewManager.defaultView(arrowDown, 35);
+        // when pressed: reduce stakes
+        arrowDownView.imageProperty().bind(Bindings.when(arrowDownView.pressedProperty()).then(arrowDownPressed).otherwise(arrowDown));
+        arrowDownView.setOnMouseClicked(e -> stakes = ViewManager.getInstance().setStake(-1, stakes));
+
+        Image confirm = new Image("src/assets/RoundButtonv2.png");
+        Image confirmPressed = new Image("src/assets/RoundButtonPressedv2.png");
+        ImageView confirmView = ViewManager.defaultView(confirm, 25);
+        // when pressed: confirm stakes
+        confirmView.imageProperty().bind(Bindings.when(confirmView.pressedProperty()).then(confirmPressed).otherwise(confirm));
+        confirmView.setOnMouseClicked(e -> ViewManager.getInstance().setStake(0, stakes));
+
+        // arranges the raise/reduce steaks buttons horizontally
+        VBox raiseAndLowerStakes = new VBox(arrowUpView, arrowDownView);
+        raiseAndLowerStakes.spacingProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(50));
+
+        // [ignore] setting up spacing between the steaks buttons and the left border
+        Region leftDistPlaceholder = new Region();
+        leftDistPlaceholder.setPrefWidth(0);
+
+        // arranges the steaks buttons and confirm button horizontally
+        HBox stake = new HBox(leftDistPlaceholder, raiseAndLowerStakes,confirmView);
+        stake.spacingProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(12.5));
+
+        // [ignore] makes the whole reels and buttons layer centered on the slot machine
+        Region upDownPlaceholder = new Region();
+        upDownPlaceholder.prefHeightProperty().bind(raiseAndLowerStakes.heightProperty());
+
+        // arranges the reels and the steak buttons vertically
+        VBox slotOverlay = new VBox(upDownPlaceholder, signBox, stake);
+        slotOverlay.spacingProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(12.5));
+        slotOverlay.setAlignment(Pos.CENTER);
+
+        // show slot machine, arm, reels and steak buttons
+        HBox hbox = new HBox(slotPlaceholder, new StackPane(slotMachine, slotOverlay), slotArm);
         hbox.setAlignment(Pos.CENTER);
         root.setBottom(new BorderPane(hbox));
 

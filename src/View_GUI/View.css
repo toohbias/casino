@@ -40,22 +40,6 @@
     -fx-font-weight: normal;
 }
 
-#signButton {
-    -fx-background-color: rgba(0, 0, 0, 0.1);
-}
-
-#signButton:hover {
-    -fx-background-color: rgba(0, 0, 0, 0.3);
-}
-
-#signButton:pressed {
-    -fx-background-color: rgba(0, 0, 0, 0.5);
-}
-
-#signButton:disabled {
-    -fx-opacity: 1;
-}
-
 #floatingPane {
     -fx-background-color: rgba(0, 0, 0, 0.05);
     -fx-background-radius: 10px;

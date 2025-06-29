@@ -102,10 +102,10 @@ public class SlotMachinev2 {
                             berechnen(einsatz, 25); //bei dreimal Glocke
                             break;
                         default:
-                            berechnen(einsatz, 5);  //bei dreimal Frucht
+                            berechnen(einsatz, 10);  //bei dreimal Frucht
                     }
                 } else if (s1 >= 2 && s2 >= 2 && s3 >= 2 && s1 != s2 && s1 != s3 && s2 != s3) {
-                    berechnen(einsatz, 2);          // 3 verschiedene Fruchtarten
+                    berechnen(einsatz, 5);          // 3 verschiedene Fruchtarten
                 } else {
                     berechnen(einsatz, 0);          // kein Gewinn
                 }

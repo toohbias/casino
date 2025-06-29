@@ -94,6 +94,7 @@ public class ViewManager {
      * @param view Inhalt
      */
     public void setView(int view) {
+        MoneyFrame.stopStakesAnimation(); // no stakes selection cross scenes plz
         switch (view) {
             case LOGIN_MENU -> {
                 setCurrentNode(LoginView.getPane());
@@ -184,6 +185,7 @@ public class ViewManager {
      */
     public void leverPulled(int einsatz, ToggleButton slotArm) {
         try {
+            MoneyFrame.stopStakesAnimation();
             slotMachine.spin(einsatz, slotArm);
         } catch (IllegalAccessException e) {
             e.printStackTrace(); // TODO: das ist der Fehler mit den liquiden Mitteln
@@ -191,10 +193,23 @@ public class ViewManager {
     }
 
     /**
+     * wird von allen Spielen (z.B. SlotView) aufgerufen, um den Einsatz anzupassen.
+     * @param raiseOrReduce 1 oder -1, um Einsatz zu erhöhen bzw. erniedrigen, 0 um zu bestätigen
+     * @param current jetziger Einsatz
+     * @return neuer Einsatz
+     */
+    public double setStake(int raiseOrReduce, double current) {
+        if(raiseOrReduce == 0) {
+            MoneyFrame.stopStakesAnimation();
+            return current;
+        }
+        return CasinoController.setStakes(raiseOrReduce, current);
+    }
+
+    /**
      * wird von LoginView aufgerufen, wenn der spieler entweder den anmelden oder registrieren button klickt
      * und reicht einfach die Methode aus Login {@code Login.login(String username, String password)} durch
      * die nötigen Bindings wurden schon in {@code setView(int view)} gesetzt
-     * <p>
      * @param username username
      * @param password passwort
      */

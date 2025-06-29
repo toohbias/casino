@@ -24,6 +24,8 @@ public class MoneyFrame {
     // actual frame
     private static final Label moneyLbl = new Label();
 
+    private static boolean isStakesAnimationRunning = false;
+
 
     /**
      * Zeigt das Money Frame an
@@ -100,6 +102,53 @@ public class MoneyFrame {
             }).start();
         } else {
             moneyFrameText.set(newValue);
+        }
+    }
+
+    /**
+     * zeigt eine animation, die den Einsatz anzeigt.
+     * Diese Methode wird aufgerufen von {@code CasinoController.setStakes(int raiseOrReduce, double stakes)}
+     * die wiederum von {@code ViewManager.getInstance().setStakes(int raiseOrReduce, double stakes} aufgerufen wird
+     * die wiederum von den Einsatz-Knöpfen der Spiele aufgerufen wird.
+     * @param stakes Einsatz
+     */
+    public static void runStakesAnimation(double stakes) {
+        if(!isStakesAnimationRunning) {
+            isStakesAnimationRunning = true;
+            new AnimationThread().start();
+        }
+        moneyFrameText.set(stakes);
+    }
+
+    /**
+     * stoppt die animation, die den Einsatz anzeigt.
+     * Diese Methode kann direkt von den {@code ViewManager.getInstance().setStakes(0)} aufgerufen werden
+     * oder von den Action-Wrappern der Spiele in {@code ViewManager}, z.B. {@code ViewManager.getInstance().leverPulled(int einsatz, ToggleButton slotArm)}
+     */
+    public static void stopStakesAnimation() {
+        isStakesAnimationRunning = false;
+        moneyFrameText.set(money.get());
+    }
+
+    /**
+     * Dieser Thread animiert den Einsatz.
+     * Er wird gestartet in {@code MoneyFrame.runStakesAnimation(double stakes)}
+     * und wird gestoppt, wenn in {@code MoneyFrame.stopStakesAnimation} isStakesAnimationRunning auf false gesetzt wird.
+     */
+    private static class AnimationThread extends Thread {
+        @Override
+        @SuppressWarnings("BusyWait")
+        public void run() {
+            int opacity = 0;
+            while(isStakesAnimationRunning) {
+                try {
+                    moneyLbl.setTextFill(Paint.valueOf("rgba(0, 0, 0, " + ((float) Math.abs(opacity % 20 - 10) / 15 + 0.2) + ")"));
+                    opacity++;
+                    Thread.sleep(40);
+                } catch(InterruptedException ignored) {}
+            }
+            moneyLbl.setTextFill(Paint.valueOf("#000000"));
+            interrupt();
         }
     }
 }

@@ -44,7 +44,6 @@ public class LoginView {
         sign.textProperty().bind(Bindings.when(anmeldung).then("Anmelden").otherwise("Registrieren"));
         sign.disableProperty().bind(canSign.not());
         sign.setOnAction(e -> ViewManager.getInstance().sign(username.get(), password.get()));
-        sign.setId("signButton");
         sign.styleProperty().bind(Bindings.format("-fx-text-fill: %s;", Bindings.when(canSign).then("rgb(200, 200, 200)").otherwise("rgb(150, 150, 150)").get()));
         HBox.setMargin(sign, new Insets(10, 20, 20, 20));
 
@@ -62,12 +61,13 @@ public class LoginView {
         // anmeldung mit Enter
         pass.setOnKeyPressed(e -> {
             if(e.getCode() == KeyCode.ENTER) {
-                ViewManager.getInstance().sign(username.get(), password.get());
+                sign.pseudoClassStateChanged(PseudoClass.getPseudoClass("pressed"), true);
             }
         });
         pass.setOnKeyReleased(e -> {
             if(e.getCode() == KeyCode.ENTER) {
                 sign.pseudoClassStateChanged(PseudoClass.getPseudoClass("pressed"), false);
+                ViewManager.getInstance().sign(username.get(), password.get());
             }
         });
 
