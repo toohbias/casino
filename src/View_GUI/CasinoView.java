@@ -47,6 +47,13 @@ public class CasinoView {
         rouletteImage.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.ROULETTE_VIEW));
         selection.getChildren().add(rouletteImage);
 
+        //zeige BlackJack selcetion button
+        ImageView img3 = ViewManager.defaultView(new Image("src/assets/BlackJackTest.png"), 3);
+        Button BlackJackImage = new Button("BlackJack", img3);
+        BlackJackImage.setContentDisplay(ContentDisplay.TOP);
+        BlackJackImage.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.BLACKJACK_VIEW));
+        selection.getChildren().add(BlackJackImage);
+
         selection.spacingProperty().bind(ViewManager.getInstance().windowWidthProperty().divide(10));
         selection.setAlignment(Pos.CENTER);
 

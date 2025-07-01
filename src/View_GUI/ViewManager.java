@@ -41,7 +41,7 @@ public class ViewManager {
     public static final int SLOT_VIEW = 2;
     public static final int ROULETTE_VIEW = 3;
     public static final int SHOP_VIEW = 4;
-
+    public static final int BLACKJACK_VIEW = 5;
     // Logic: Szene
     private final SlotMachinev2 slotMachine;
 
@@ -141,6 +141,13 @@ public class ViewManager {
                 setShowMoney(true);
                 setShowShop(false);
             }
+            case BLACKJACK_VIEW -> {
+            setCurrentNode(BlackjackView.getPane());
+
+            setShowBack(true);
+            setShowMoney(true);
+            setShowShop(true);
+        }
         }
     }
 
