@@ -23,9 +23,20 @@ import java.util.Arrays;
  */
 public class SlotView {
 
+    /**
+     * IntegerProperties, die an die Bilder gebunden sind.
+     * Über die Properties werden die Bilder von {@code SlotMachinev2.spin(int einsatz, ToggleButton slotArm)} gesteuert
+     */
     public static IntegerProperty spin1, spin2, spin3;
+
+    /**
+     * wie groß die Bilder proportional zum Fenster sind
+     */
     private static final int SIGN_SIZE = 15;
 
+    /**
+     * wie hoch der Einsatz ist
+     */
     private static int stakes = CasinoController.DEFAULT_STAKES;
 
     /**

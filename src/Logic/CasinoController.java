@@ -6,9 +6,9 @@ import src.View_GUI.MoneyFrame;
 
 public class CasinoController {
 
-    private static final int[] stakeValues = {1, 2, 5, 10, 25, 50, 100, 250, 500, 1000, 2000, 5000, -1};
+    private static final int[] stakeValues = {1, 2, 5, 10, 25, 100, 500, 1000, 5000, -1};
 
-    public static final int DEFAULT_STAKES = 50;
+    public static final int DEFAULT_STAKES = 100;
 
     private final IntegerProperty money;
 
@@ -33,6 +33,7 @@ public class CasinoController {
      * @param money finaler Geldwert
      */
     public void win(int money) {
+        MoneyFrame.stopStakesAnimation(); // bug, wenn man den Einsatz ändert während man gewinnt
         MoneyFrame.animateMoneyFrame(this.money.get(), money);
     }
 

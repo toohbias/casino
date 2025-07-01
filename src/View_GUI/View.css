@@ -50,3 +50,11 @@
     -fx-background-radius: 10px;
     -fx-text-fill: rgb(200, 200, 200);
 }
+
+#betting-table {
+    -fx-font-weight: normal;
+    -fx-font-family: serif;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+    -fx-alignment: center;
+}

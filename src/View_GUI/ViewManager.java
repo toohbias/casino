@@ -144,10 +144,10 @@ public class ViewManager {
             case BLACKJACK_VIEW -> {
             setCurrentNode(BlackjackView.getPane());
 
-            setShowBack(true);
-            setShowMoney(true);
-            setShowShop(true);
-        }
+                setShowBack(true);
+                setShowMoney(true);
+                setShowShop(true);
+            }
         }
     }
 
