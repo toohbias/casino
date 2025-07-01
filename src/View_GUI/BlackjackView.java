@@ -1,79 +1,106 @@
 package src.View_GUI;
 
-import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
-import src.Logic.BlackJack;
+import src.Logic.Blackjack;
 
-public class BlackjackView  {
+public class BlackjackView {
 
-    private BlackJack game;
-    private TextArea playerArea, dealerArea;
-    private Label resultLabel;
-    private Button hitButton, standButton, newGameButton;
+    public static Node getPane() {
+        BorderPane root = new BorderPane();
+        Blackjack game = new Blackjack();
 
+        Label title = new Label("Blackjack");
+        title.setStyle("-fx-font-size: 28pt; -fx-text-fill: white;");
 
-    public void start(Stage stage) {
-        game = new BlackJack();
+        HBox dealerCards = new HBox(10);
+        HBox playerCards = new HBox(10);
+        dealerCards.setAlignment(Pos.CENTER);
+        playerCards.setAlignment(Pos.CENTER);
 
-        playerArea = new TextArea();
-        dealerArea = new TextArea();
-        resultLabel = new Label();
-        hitButton = new Button("Hit");
-        standButton = new Button("Stand");
-        newGameButton = new Button("Neues Spiel");
+        // Labels für Status
+        Label infoLabel = new Label("Spiel starten...");
+        infoLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16pt;");
+        Label dealerLabel = new Label("Dealer");
+        Label playerLabel = new Label("Spieler");
 
-        playerArea.setEditable(false);
-        dealerArea.setEditable(false);
+        // Buttons
+        Button hitButton = new Button("Karte nehmen");
+        Button standButton = new Button("Passen");
+        Button newGameButton = new Button("Neues Spiel");
 
         hitButton.setOnAction(e -> {
             game.playerHit();
-            updateUI();
+            updateCards(playerCards, game.getPlayerHand());
+            infoLabel.setText(game.getStatus());
+            if (game.isGameOver()) {
+                hitButton.setDisable(true);
+                standButton.setDisable(true);
+                updateCards(dealerCards, game.getDealerHand());
+            }
         });
 
         standButton.setOnAction(e -> {
             game.playerStand();
-            updateUI();
+            updateCards(dealerCards, game.getDealerHand());
+            infoLabel.setText(game.getStatus());
+            hitButton.setDisable(true);
+            standButton.setDisable(true);
         });
 
         newGameButton.setOnAction(e -> {
-            game.startNewGame();
-            updateUI();
-        });
-
-        HBox buttons = new HBox(10, hitButton, standButton, newGameButton);
-        VBox layout = new VBox(10,
-                new Label("Spieler Hand:"), playerArea,
-                new Label("Dealer Hand:"), dealerArea,
-                buttons,
-                resultLabel
-        );
-        layout.setPadding(new Insets(15));
-
-        updateUI();
-
-        Scene scene = new Scene(layout, 400, 500);
-        stage.setTitle("BlackJack");
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    private void updateUI() {
-        playerArea.setText(game.getPlayerHand().toString() + " = " + game.getPlayerTotal());
-        dealerArea.setText(game.getDealerHand().toString() +
-                (game.isGameOver() ? " = " + game.getDealerTotal() : " (verdeckt)"));
-        if (game.isGameOver()) {
-            resultLabel.setText(game.getResultText());
-            hitButton.setDisable(true);
-            standButton.setDisable(true);
-        } else {
-            resultLabel.setText("");
+            game.newGame();
+            updateCards(playerCards, game.getPlayerHand());
+            dealerCards.getChildren().clear(); // Dealer zeigt anfangs nur eine Karte
+            dealerCards.getChildren().add(getCardBackImage()); // verdeckte Karte
+            infoLabel.setText("Karte nehmen oder passen?");
             hitButton.setDisable(false);
             standButton.setDisable(false);
+        });
+
+        // Layout
+        VBox vbox = new VBox(20, title, dealerLabel, dealerCards, playerLabel, playerCards, infoLabel, new HBox(10, hitButton, standButton, newGameButton));
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setPadding(new Insets(20));
+
+        StackPane background = new StackPane();
+        // ToDo HIER BILD ALS HINTERGRUND EINSETZEN (z.B. Spieltisch)
+        // background.getChildren().add(new ImageView(new Image("src/assets/BlackjackBackground.png")));
+
+        background.getChildren().add(vbox);
+
+        root.setCenter(background);
+        return root;
+    }
+
+    private static void updateCards(HBox box, java.util.List<Integer> cards) {
+        box.getChildren().clear();
+        for (int card : cards) {
+            box.getChildren().add(getCardImage(card));
         }
     }
 
+    private static ImageView getCardImage(int cardId) {
+        // TODO HIER BILD ZUR KARTE cardId EINSETZEN
+        // z.B. "src/assets/cards/2H.png" für Zwei Herz
+        String path = "src/assets/cards/" + cardId + ".png"; // Platzhalter
+        ImageView imageView = new ImageView(new Image(path));
+        imageView.setFitHeight(100);
+        imageView.setPreserveRatio(true);
+        return imageView;
+    }
+
+    private static ImageView getCardBackImage() {
+        // ToDO HIER BILD FÜR RÜCKSEITE DER KARTE EINSETZEN
+        ImageView imageView = new ImageView(new Image("src/assets/cards/back.png"));
+        imageView.setFitHeight(100);
+        imageView.setPreserveRatio(true);
+        return imageView;
+    }
 }
