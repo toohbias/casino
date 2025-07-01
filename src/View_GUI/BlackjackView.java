@@ -8,7 +8,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import src.Logic.BlackJack;
 
-public class BlackJackView  {
+public class BlackjackView  {
 
     private BlackJack game;
     private TextArea playerArea, dealerArea;
