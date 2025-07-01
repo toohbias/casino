@@ -53,7 +53,7 @@ public class SlotView {
         BorderPane root = new BorderPane();
 
         // show main slot machine
-        ImageView img = ViewManager.defaultView(new Image("src/assets/Slotmachinev2.png"), 1.5);
+        ImageView img = ViewManager.defaultView(new Image("src/assets/Slotmachine v3.png"), 1.5);
         Label slotMachine = new Label("", img);
 
         // show slot machine arm

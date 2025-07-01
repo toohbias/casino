@@ -34,7 +34,7 @@ public class CasinoView {
         HBox selection = new HBox();
 
         // show slot machine selection button
-        ImageView img = ViewManager.defaultView(new Image("src/assets/Logo Slotmachine.png"), 3);
+        ImageView img = ViewManager.defaultView(new Image("src/assets/Slot machine final logo .png"), 3);
         Button slotImage = new Button("Slots", img);
         slotImage.setContentDisplay(ContentDisplay.TOP);
         slotImage.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.SLOT_VIEW));
