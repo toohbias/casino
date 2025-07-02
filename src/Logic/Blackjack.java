@@ -39,7 +39,6 @@ public class Blackjack {
         playerHand.add(drawCard());
         playerHand.add(drawCard());
         dealerHand.add(drawCard());
-        dealerHand.add(drawCard());
 
     }
 
@@ -91,14 +90,14 @@ public class Blackjack {
         if (dealerValue > 21) {
             GewonnenText.set("Dealer hat überkauft! Du hast gewonnen.");
             VerlorenText.set("");
-            controller.addMoney(AktulerGestzterWert * 2); // Auszahlung über Controller
+            ViewManager.getInstance().getController().win(AktulerGestzterWert * 2); // Auszahlung über Controller
             return;
         }
 
         if (playerValue > dealerValue) {
             GewonnenText.set("Herzlichen Glückwunsch! Du hast gewonnen.");
             VerlorenText.set("");
-            controller.addMoney(AktulerGestzterWert * 2);
+            ViewManager.getInstance().getController().win(AktulerGestzterWert * 2);
         } else if (playerValue < dealerValue) {
             VerlorenText.set("Leider verloren. Dealer hat gewonnen.");
             GewonnenText.set("");
@@ -116,23 +115,43 @@ public class Blackjack {
         return new ArrayList<>(dealerHand);
     }
 
+    /**
+     * Berechnet den Gesamtwert einer Hand im Blackjack.
+     * Kartenwerte basieren auf Standard-Blackjack-Regeln:
+     * - 2 bis 10: Zählen als ihr Wert
+     * - Bube, Dame, König: Jeweils 10 Punkte
+     * - Ass: Zählt als 11 Punkte, wird aber zu 1 reduziert, wenn nötig
+     *
+     * @param hand Liste von Karten (Zahlen von 1–52)
+     * @return Gesamtwert der Hand unter Berücksichtigung von Ass-Anpassung
+     */
     public int getHandValue(List<Integer> hand) {
-        int value = 0;
-        int aces = 0;
+        int value = 0;   // Gesamtpunktzahl der Hand
+        int aces = 0;    // Anzahl der Asse (für spätere Korrektur bei >21)
+
         for (int card : hand) {
+            // Berechne den "Rang" der Karte: 1 = Ass, 2–10 = Zahlenkarten, 11–13 = Bube/Dame/König
             int rank = ((card - 1) % 13) + 1;
-            if (rank >= 10) value += 10;
-            else if (rank == 1) {
-                value += 11;
-                aces++;
-            } else {
+
+            if (rank >= 2 && rank <= 10) {
+                // Karten von 2 bis 10 zählen entsprechend ihrem Wert
                 value += rank;
+            } else if (rank >= 11 && rank <= 13) {
+                // Bube, Dame, König zählen jeweils 10 Punkte
+                value += 10;
+            } else if (rank == 1) {
+                // Ass zählt standardmäßig 11 Punkte
+                value += 11;
+                aces++; // Zähle Ass separat für mögliche Anpassung
             }
         }
+
+        // Wenn der Gesamtwert über 21 ist, reduziere Ass(e) von 11 auf 1 (so lange nötig)
         while (value > 21 && aces > 0) {
-            value -= 10;
+            value -= 10; // Ziehe 10 ab (d.h. 11 wird zu 1)
             aces--;
         }
+
         return value;
     }
 

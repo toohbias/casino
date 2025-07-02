@@ -53,6 +53,7 @@ public class BlackjackView {
 
         einsatzBox.getChildren().addAll(einsatzFrage, einsatzFeld, newGameButton);
 
+        // Neues Spiel starten
         newGameButton.setOnAction(e -> {
             String eingabe = einsatzFeld.getText();
             if (!eingabe.matches("\\d+")) {
@@ -66,7 +67,7 @@ public class BlackjackView {
                 return;
             }
 
-            if (ViewManager.getInstance().getController().getMoney().get() < betrag)  {
+            if (ViewManager.getInstance().getController().getMoney().get() < betrag) {
                 einsatzFehler.setText("Nicht genügend Geld für diesen Einsatz.");
                 return;
             }
@@ -81,6 +82,7 @@ public class BlackjackView {
             updateCardLabels(game, playerHandLabel, dealerHandLabel, playerValueLabel, dealerValueLabel);
         });
 
+        // Karte nehmen
         hitButton.setOnAction(e -> {
             game.playerHit();
             updateCardLabels(game, playerHandLabel, dealerHandLabel, playerValueLabel, dealerValueLabel);
@@ -91,9 +93,11 @@ public class BlackjackView {
             }
         });
 
+        // Bleiben
         standButton.setOnAction(e -> {
             game.playerStand();
             updateCardLabels(game, playerHandLabel, dealerHandLabel, playerValueLabel, dealerValueLabel);
+
             hitButton.setDisable(true);
             standButton.setDisable(true);
         });
@@ -110,4 +114,15 @@ public class BlackjackView {
         root.setCenter(centerBox);
         return root;
     }
+
+    private static void updateCardLabels(Blackjack game, Label playerHandLabel, Label dealerHandLabel,
+                                         Label playerValueLabel, Label dealerValueLabel) {
+        playerHandLabel.setText(game.getPlayerHand().toString());
+        dealerHandLabel.setText(game.getDealerHand().toString());
+
+        playerValueLabel.setText("Punkte: " + game.getHandValue(game.getPlayerHand()));
+        dealerValueLabel.setText("Punkte: " + game.getHandValue(game.getDealerHand()));
+    }
+
+
 }
