@@ -110,13 +110,4 @@ public class BlackjackView {
         root.setCenter(centerBox);
         return root;
     }
-
-    private static void updateCardLabels(Blackjack game, Label playerCards, Label dealerCards,
-                                         Label playerValue, Label dealerValue) {
-        playerCards.setText(game.getPlayerHand().toString());
-        dealerCards.setText(game.getDealerHand().toString());
-
-        playerValue.setText("Punktzahl: " + game.getHandValue(game.getPlayerHand()));
-        dealerValue.setText("Punktzahl: " + game.getHandValue(game.getDealerHand()));
-    }
 }
