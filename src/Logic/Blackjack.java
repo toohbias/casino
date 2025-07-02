@@ -1,33 +1,39 @@
 package src.Logic;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import src.View_GUI.ViewManager;
 
 import java.util.*;
 
+import java.util.Random;
+
 public class Blackjack {
 
+    private final Random random = new Random();
     private final List<Integer> playerHand = new ArrayList<>();
     private final List<Integer> dealerHand = new ArrayList<>();
     private final Stack<Integer> deck = new Stack<>();
     private boolean gameOver = false;
-    private String status = "";
+    public static final StringProperty VerlorenText = new SimpleStringProperty("");
+    public static final StringProperty GewonnenText = new SimpleStringProperty("");
+    private int AktulerGestzterWert ;
 
     public Blackjack() {
-        newGame();
     }
 
-    public void newGame() {
+    public void newGame(int betrag) {
         deck.clear();
         playerHand.clear();
         dealerHand.clear();
         gameOver = false;
-        status = "";
+        AktulerGestzterWert = betrag;
+
 
         // Deck füllen
         for (int i = 1; i <= 52; i++) {
             deck.push(i);
         }
-        Collections.shuffle(deck);
 
         // Karten austeilen
         playerHand.add(drawCard());
@@ -35,41 +41,71 @@ public class Blackjack {
         dealerHand.add(drawCard());
         dealerHand.add(drawCard());
 
-        status = "Karte nehmen oder passen?";
     }
 
     public void playerHit() {
-        if (gameOver) return;
-        playerHand.add(drawCard());
+        if (isGameOver()) {
+            auswertung();
+        }
+        else playerHand.add(drawCard());
         if (getHandValue(playerHand) > 21) {
             gameOver = true;
-            status = "Überkauft! Du verlierst.";
+            auswertung();
         }
     }
 
     public void playerStand() {
-        if (gameOver) return;
-        while (getHandValue(dealerHand) < 17) {
-            dealerHand.add(drawCard());
-        }
-
-        int playerScore = getHandValue(playerHand);
-        int dealerScore = getHandValue(dealerHand);
-
-        if (dealerScore > 21 || playerScore > dealerScore) {
-            status = "Du hast gewonnen!";
-            ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + 100); // 100 als Gewinn
-        } else if (playerScore == dealerScore) {
-            status = "Unentschieden!";
-        } else {
-            status = "Dealer gewinnt!";
-        }
-
         gameOver = true;
+        auswertung();
     }
 
     private int drawCard() {
-        return deck.pop();
+        while (true) {
+            int card = random.nextInt(52) + 1; // Zufallszahl zwischen 1 und 52
+
+            if (deck.contains(card)) {
+                deck.remove((Integer) card);
+                return card;
+            }
+
+            // Wenn die Karte NICHT im Deck ist → einfach nochmal versuchen
+        }
+    }
+    public void auswertung() {
+        int playerValue = getHandValue(playerHand);
+        int dealerValue = getHandValue(dealerHand);
+        CasinoController controller = ViewManager.getInstance().getController();
+        //Objekt von ViewMager der Zugriff auf CasionController hat wird erzeugt
+
+        if (playerValue > 21) {
+            VerlorenText.set("Du hast überkauft! Du hast verloren.");
+            GewonnenText.set("");
+            return;
+        }
+
+        while (dealerValue < 17) {
+            dealerHand.add(drawCard());
+            dealerValue = getHandValue(dealerHand);
+        }
+
+        if (dealerValue > 21) {
+            GewonnenText.set("Dealer hat überkauft! Du hast gewonnen.");
+            VerlorenText.set("");
+            controller.addMoney(AktulerGestzterWert * 2); // Auszahlung über Controller
+            return;
+        }
+
+        if (playerValue > dealerValue) {
+            GewonnenText.set("Herzlichen Glückwunsch! Du hast gewonnen.");
+            VerlorenText.set("");
+            controller.addMoney(AktulerGestzterWert * 2);
+        } else if (playerValue < dealerValue) {
+            VerlorenText.set("Leider verloren. Dealer hat gewonnen.");
+            GewonnenText.set("");
+        } else {
+            VerlorenText.set("Du hast leider verloren, probiere es noch mal");
+            GewonnenText.set("");
+        }
     }
 
     public List<Integer> getPlayerHand() {
@@ -104,7 +140,4 @@ public class Blackjack {
         return gameOver;
     }
 
-    public String getStatus() {
-        return status;
-    }
 }
