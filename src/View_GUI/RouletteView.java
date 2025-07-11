@@ -1,6 +1,8 @@
 package src.View_GUI;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
@@ -28,7 +30,10 @@ public class RouletteView {
     /**
      * wie groß die Zellen proportional zum Fenster sind
      */
-    private static final double CELL_SIZE = 20;
+    private static final double CELL = 40;
+    private static final int CELLS_X = 27;
+    private static final int CELLS_Y = 11;
+    private static final DoubleProperty CELL_ABS = new SimpleDoubleProperty();
 
     /**
      * wie hoch der Einsatz ist
@@ -42,7 +47,7 @@ public class RouletteView {
      */
     public static Node getPane() {
         BorderPane root = new BorderPane();
-        root.setBottom(createBettingTable());
+        root.setBottom(new StackPane(getBettingTable()));
         Image roulette = new Image("src/assets/Roulette Desk.png");
         ImageView rouletteView = ViewManager.defaultView(roulette, 1.8);
         root.setCenter(rouletteView);
@@ -50,105 +55,9 @@ public class RouletteView {
     }
 
     /**
-     * Erstellt die Tabelle, auf der man den Einsatz bestimmen kann
-     * @return Tabelle
+     * Helper, um die Farbe des Chips mit dem zurzeitigen Einsatz zu bestimmen
+     * @return Name der Datei mit dem richtigen Chip
      */
-    private static GridPane createBettingTable() {
-        GridPane bettingTable = new GridPane();
-
-        // 0-Feld ganz links
-        Label zero = createBettingCell("0", 3, 0, 0, 1, 3, bettingTable);
-        zero.setBackground(new Background(new BackgroundFill(Paint.valueOf("#15b500"), null, null)));
-        // rote/schwarze Felder
-        for(int i = 0; i < 3; i++) {
-            for (int j = 0; j < 12; j++) {
-                int num = (j + 1) * 3 - i;
-                Label field = createBettingCell(String.valueOf(num), 3, j + 1, i, 1, 1, bettingTable);
-                field.setBackground(new Background(new BackgroundFill(Paint.valueOf(BLACK.contains(num) ? "#000000" : "#bc0101"), null, null)));
-            }
-            // 2to1-Feld ganz rechts
-            createBettingCell("2to1", 5, 13, i, 1, 1, bettingTable);
-        }
-        // 12er
-        createBettingCell("1st 12", 3, 1, 3, 4, 1, bettingTable);
-        createBettingCell("2nd 12", 3, 5, 3, 4, 1, bettingTable);
-        createBettingCell("3rd 12", 3, 9, 3, 4, 1, bettingTable);
-        // unterste Reihe
-        createBettingCell("1-18", 3, 1, 4, 2, 1, bettingTable);
-        createBettingCell("EVEN", 3, 3, 4, 2, 1, bettingTable);
-        Label red = createBettingCell("", 3, 5, 4, 2, 1, bettingTable);
-        red.setBackground(new Background(new BackgroundFill(Paint.valueOf("#bc0101"), null, null)));
-        Label black = createBettingCell("", 3, 7, 4, 2, 1, bettingTable);
-        black.setBackground(new Background(new BackgroundFill(Paint.valueOf("#000000"), null, null)));
-        createBettingCell("ODD", 3, 9, 4, 2, 1, bettingTable);
-        createBettingCell("19-36", 3, 11, 4, 2, 1, bettingTable);
-
-        // buttons for setting the stake and to confirm
-        Image arrowUp = new Image("src/assets/ButtonUpv2.png");
-        Image arrowUpPressed = new Image("src/assets/ButtonUpPressedv2.png");
-        ImageView arrowUpView = ViewManager.defaultView(arrowUp, 75);
-        // when pressed: raise stakes
-        arrowUpView.imageProperty().bind(Bindings.when(arrowUpView.pressedProperty()).then(arrowUpPressed).otherwise(arrowUp));
-        arrowUpView.setOnMouseClicked(e -> stakes = ViewManager.getInstance().setStake(1, stakes));
-
-        Image arrowDown = new Image("src/assets/ButtonDownv2.png");
-        Image arrowDownPressed = new Image("src/assets/ButtonDownPressedv2.png");
-        ImageView arrowDownView = ViewManager.defaultView(arrowDown, 75);
-        // when pressed: reduce stakes
-        arrowDownView.imageProperty().bind(Bindings.when(arrowDownView.pressedProperty()).then(arrowDownPressed).otherwise(arrowDown));
-        arrowDownView.setOnMouseClicked(e -> stakes = ViewManager.getInstance().setStake(-1, stakes));
-
-        Image confirm = new Image("src/assets/RoundButtonv2.png");
-        Image confirmPressed = new Image("src/assets/RoundButtonPressedv2.png");
-        ImageView confirmView = ViewManager.defaultView(confirm, 60);
-        // when pressed: confirm stakes
-        confirmView.imageProperty().bind(Bindings.when(confirmView.pressedProperty()).then(confirmPressed).otherwise(confirm));
-        confirmView.setOnMouseClicked(e -> ViewManager.getInstance().setStake(0, stakes));
-
-        VBox stakeButtons = new VBox(arrowUpView, confirmView, arrowDownView);
-        stakeButtons.prefHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(CELL_SIZE).multiply(2));
-        stakeButtons.spacingProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(CELL_SIZE * 5));
-        stakeButtons.setAlignment(Pos.CENTER);
-        bettingTable.add(stakeButtons, 0, 3, 1, 2);
-
-        bettingTable.setAlignment(Pos.CENTER);
-        return  bettingTable;
-    }
-
-    /**
-     * Helper-Klasse, um die Zellengenerierung zu vereinfachen
-     * @param text Text in der Zelle
-     * @param textSizeMult wie groß der Text sein soll
-     * @param colIndex in welcher Spalete die Zelle sein soll
-     * @param rowIndex in welcher Reihe die Zelle sein soll
-     * @param colSpan über wie viele Spalten sich die Zelle zieht
-     * @param rowSpan über wie viele Reihen sich die Zelle zieht
-     * @param parent in welche Tabelle die Zelle soll
-     * @return Label (Zelle)
-     */
-    private static Label createBettingCell(String text, double textSizeMult, int colIndex, int rowIndex, int colSpan, int rowSpan, GridPane parent) {
-        // erstellt Zelle
-        Label lbl = new Label(text);
-        lbl.setId("betting-table");
-        lbl.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpt", ViewManager.getInstance().windowHeightProperty().divide(CELL_SIZE * textSizeMult)));
-        parent.add(lbl, colIndex, rowIndex, colSpan, rowSpan);
-        lbl.prefHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(CELL_SIZE).multiply(rowSpan));
-        lbl.prefWidthProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(CELL_SIZE).multiply(colSpan));
-        // Einsatz pro Feld bestimmen
-        lbl.setOnMouseClicked(e -> {
-            if(e.getButton() == MouseButton.PRIMARY) {
-                Image chip = new Image(getStakesChip());
-                ImageView chipView = ViewManager.defaultView(chip, CELL_SIZE + 2.5);
-                lbl.setGraphic(chipView);
-                lbl.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-            } else if(e.getButton() == MouseButton.SECONDARY) {
-                lbl.setContentDisplay(ContentDisplay.TEXT_ONLY);
-                lbl.setGraphic(null);
-            }
-        });
-        return lbl;
-    }
-
     private static String getStakesChip() {
         String result = "src/assets/Standard coin";
         switch (stakes) {
@@ -162,7 +71,163 @@ public class RouletteView {
             case 1000: result += " orange 1000"; break;
             case 5000: result += " grey 5000"; break;
         }
-        return result + ".png";
+        return result + "v2.png";
     }
 
+    /**
+     * Erstellt die Tabelle, auf der man seine Wetten abschließen kann
+     * @return Tabelle
+     */
+    private static GridPane getBettingTable() {
+        GridPane bettingTable = new GridPane();
+        bettingTable.maxWidthProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(CELL).multiply(CELLS_X));
+        bettingTable.maxHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(CELL).multiply(CELLS_Y));
+
+        CELL_ABS.bind(ViewManager.getInstance().windowHeightProperty().divide(CELL));
+
+        // row 1 - 5
+        Label zero = (Label) createVisibleCell("0", 3, 0, 1, 1, 5, bettingTable).getChildren().getFirst();
+        zero.setBackground(new Background(new BackgroundFill(Paint.valueOf("#15b500"), null, null)));
+        for(int y = 1; y <= 5; y++) {
+            for(int x = 1; x < CELLS_X - 2; x++) {
+                if(x % 2 == 0 && y % 2 == 1) {
+                    int num = (x / 2 - 1) * 3 + (3 - (y / 2));
+                    Label pnl = (Label) createVisibleCell(String.valueOf(num), 3, x, y, 1, 1, bettingTable).getChildren().getFirst();
+                    pnl.setBackground(new Background(new BackgroundFill(Paint.valueOf(BLACK.contains(num) ? "#000000" : "#bc0101"), null, null)));
+                }
+            }
+            createUselessCell(CELLS_X - 2, 0, 1, 1, bettingTable);
+            if(y % 2 == 1) {
+                createVisibleCell("2to1", 5, CELLS_X - 1, y, 1, 1, bettingTable);
+            } else {
+                createUselessCell(CELLS_X - 1, y, 1, 1, bettingTable);
+            }
+        }
+
+        // row 0 (now because otherwise the big labels cover the invisible labels)
+        createUselessCell(0, 0, 1, 1, bettingTable);
+        for(int x = 1; x < CELLS_X - 2; x++) {
+            createInvisibleCell(x, 0, 1, 1, bettingTable);
+        }
+        createUselessCell(CELLS_X - 2, 0, 2, 1, bettingTable);
+
+        // back at row 1 - 5
+        for(int y = 1; y <= 5; y++) {
+            for(int x = 1; x < CELLS_X - 2; x++) {
+                if(!(x % 2 == 0 && y % 2 == 1)) {
+                    createInvisibleCell(x, y, 1, 1, bettingTable);
+                }
+            }
+        }
+
+        // row 6
+        createUselessCell(0, 6, CELLS_X, 1, bettingTable);
+
+        // row 7
+        createUselessCell(0, 7, 2, 1, bettingTable);
+        createVisibleCell("1st 12", 3, 2, 7, 7, 1, bettingTable);
+        createUselessCell(9, 7, 1, 1, bettingTable);
+        createVisibleCell("2nd 12", 3, 10, 7, 7, 1, bettingTable);
+        createUselessCell(17, 7, 1, 1, bettingTable);
+        createVisibleCell("3rd 12", 3, 18, 7, 7, 1, bettingTable);
+        createUselessCell(25, 7, 2, 1, bettingTable);
+
+        // row 8
+        createUselessCell(0, 8, CELLS_X, 1, bettingTable);
+
+        // row 9
+        createUselessCell(0, 9, 2, 1, bettingTable);
+        createVisibleCell("1-18", 3, 2, 9, 3, 1, bettingTable);
+        createUselessCell(5, 9, 1, 1, bettingTable);
+        createVisibleCell("EVEN", 3, 6, 9, 3, 1, bettingTable);
+        createUselessCell(9, 9, 1, 1, bettingTable);
+        Label red = (Label) createVisibleCell("", 100, 10, 9, 3, 1, bettingTable).getChildren().getFirst();
+        red.setBackground(new Background(new BackgroundFill(Paint.valueOf("#bc0101"), null, null)));
+        createUselessCell(13, 9, 1, 1, bettingTable);
+        Label black = (Label) createVisibleCell("", 100, 14, 9, 3, 1, bettingTable).getChildren().getFirst();
+        black.setBackground(new Background(new BackgroundFill(Paint.valueOf("#000000"), null, null)));
+        createUselessCell(17, 9, 1, 1, bettingTable);
+        createVisibleCell("ODD", 3, 18, 9, 3, 1, bettingTable);
+        createUselessCell(21, 9, 1, 1, bettingTable);
+        createVisibleCell("19-36", 3, 22, 9, 3, 1, bettingTable);
+        createUselessCell(25, 9, 2, 1, bettingTable);
+
+        // row 10
+        createUselessCell(0, 10, CELLS_X, 1, bettingTable);
+
+        bettingTable.setAlignment(Pos.CENTER);
+        return bettingTable;
+    }
+
+    /**
+     * Helper-Methode für eine Zelle, mit der sich nicht interagieren lässt
+     * @param x Spalte in Tabelle
+     * @param y Zeile in Tabelle
+     * @param span_x Spannweite in x-Richtung
+     * @param span_y Spannweite in y-Richtung
+     * @param parent Tabelle
+     * @return Zelle
+     */
+    private static Pane createUselessCell(int x, int y, int span_x, int span_y, GridPane parent) {
+        Pane r = new Pane();
+        parent.add(r, x, y, span_x, span_y);
+        r.setPrefSize(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        return r;
+    }
+
+    /**
+     * Helper-Methode für eine unsichtbare Zelle, mit der sich interagieren lässt
+     * @param x Spalte der Tabelle
+     * @param y Zeile der Tabelle
+     * @param span_x Spannweite in x-Richtung
+     * @param span_y Spannweiter in y-Richtung
+     * @param parent Tabelle
+     * @return Zelle
+     */
+    private static Pane createInvisibleCell(int x, int y, int span_x, int span_y, GridPane parent) {
+        Pane r = createUselessCell(x, y, span_x, span_y, parent);
+        Label lbl = new Label("");
+        lbl.setId("invisible-cell");
+        lbl.prefWidthProperty().bind(r.widthProperty());
+        lbl.prefHeightProperty().bind(r.heightProperty());
+        lbl.setOnMouseClicked(e -> {
+            if(e.getButton() == MouseButton.PRIMARY) {
+                Image chip = new Image(getStakesChip());
+                ImageView chipView = ViewManager.defaultView(chip, CELL);
+                lbl.setGraphic(chipView);
+                lbl.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            } else if(e.getButton() == MouseButton.SECONDARY) {
+                lbl.setContentDisplay(ContentDisplay.TEXT_ONLY);
+                lbl.setGraphic(null);
+            }
+        });
+        r.getChildren().add(lbl);
+        return r;
+    }
+
+    /**
+     * Helper-Methode für eine sichtbare Zelle, mit der sich interagieren lässt
+     * @param text Text in der Zelle
+     * @param textScale Größe des Textes
+     * @param x Spalte der Tabelle
+     * @param y Zeile der Tabelle
+     * @param span_x Spannweite in x-Richtung
+     * @param span_y Spannweite in y-Richtung
+     * @param parent Tabelle
+     * @return Zelle
+     */
+    private static Pane createVisibleCell(String text, double textScale, int x, int y, int span_x, int span_y, GridPane parent) {
+        Pane r = createInvisibleCell(x, y, span_x, span_y, parent);
+        Label lbl = (Label) r.getChildren().getFirst();
+        lbl.prefWidthProperty().unbind();
+        lbl.prefWidthProperty().bind(r.widthProperty().add(CELL_ABS));
+        lbl.prefHeightProperty().unbind();
+        lbl.prefHeightProperty().bind(r.heightProperty().add(CELL_ABS));
+        lbl.translateXProperty().bind(CELL_ABS.divide(-2));
+        lbl.translateYProperty().bind(CELL_ABS.divide(-2));
+        lbl.setText(text);
+        lbl.setId("betting-table");
+        lbl.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpt", ViewManager.getInstance().windowHeightProperty().divide(CELL / 2 * textScale)));
+        return r;
+    }
 }

@@ -58,3 +58,7 @@
     -fx-border-color: white;
     -fx-alignment: center;
 }
+
+#invisible-cell {
+    -fx-font-size: 1px;
+}
