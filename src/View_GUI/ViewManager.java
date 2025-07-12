@@ -95,6 +95,8 @@ public class ViewManager {
      */
     public void setView(int view) {
         MoneyFrame.stopStakesAnimation(); // no stakes selection cross scenes plz
+        MusicManager.playBackgroundMusic("src/assets/music/background3.wav");
+
         switch (view) {
             case LOGIN_MENU -> {
                 setCurrentNode(LoginView.getPane());
