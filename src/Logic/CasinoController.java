@@ -63,6 +63,22 @@ public class CasinoController {
         return newStakes;
     }
 
+    public static int getNextStakes(int raiseOrReduce, int stakes) {
+        int stakesIndex;
+        for(stakesIndex = 0; stakesIndex < stakeValues.length; stakesIndex++) {
+            if(stakeValues[stakesIndex] == stakes) {
+                break; // setzt stakesIndex auf den momentanen Wert des Einsatzes
+            }
+        }
+        if(stakesIndex == stakeValues.length - 1) {
+            return DEFAULT_STAKES; // wenn es den Einsatz nicht in der Liste gibt, sollte aber nicht vorkommen
+        }
+        if((stakesIndex == stakeValues.length - 2 && raiseOrReduce > 0) || (stakesIndex == 0 && raiseOrReduce < 0)) {
+            return stakes; // wenn der Einsatz bereits der höchste/niedrigste ist
+        }
+        return raiseOrReduce > 0 ? stakeValues[stakesIndex + 1] : stakeValues[stakesIndex - 1];
+    }
+
     /**
      * überprüft ob der vergelichswert den Kontostand überschreitet
      * @param vergleichsWert
