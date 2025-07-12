@@ -23,15 +23,22 @@ public class CasinoView {
     public static Node getPane() {
         BorderPane root = new BorderPane();
 
-        Label lblHeading = new Label("Spielauswahl");
-        lblHeading.setPadding(new Insets(50, 0, 0, 0));
+        ImageView img0 = ViewManager.defaultView(new Image("file:src/assets/casino_sign_animated.gif"), 5);
+        //ImageView img4 = ViewManager.defaultView(new Image("file:src/assets/las_vegas_sign_transparent.gif"), 5);
 
-        // dumme animation, vielleicht integrieren mit neuem gif
-        ImageView casinoLogo = new ImageView(new Image("src/assets/animation.gif"));
+        StackPane topPane = new StackPane();
+        topPane.getChildren().addAll(img0);
 
-        root.setTop(new BorderPane(lblHeading));
+            // Bild 4 (am Rand oben links)
+        //StackPane.setAlignment(img4, Pos.TOP_LEFT);
 
-        HBox selection = new HBox();
+            // Bild 0 (zentriert oben)
+        StackPane.setAlignment(img0, Pos.TOP_CENTER);
+
+        // in das BorderPane setzen
+        root.setTop(topPane);
+
+       HBox selection = new HBox();
 
         // show slot machine selection button
         ImageView img = ViewManager.defaultView(new Image("src/assets/Slot machine final logo .png"), 3);
