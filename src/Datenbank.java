@@ -84,7 +84,7 @@ public class Datenbank {
         } catch (FileNotFoundException ignored) {}
 
         // add user to file
-        final int startMoney = 10000;
+        final int startMoney = 250;
         try {
             FileWriter writer = new FileWriter(FILE, true);
             GCMParameterSpec spec = generateIV();

@@ -33,6 +33,8 @@ public class ViewManager {
 
     private final BorderPane msglayer;
 
+    private final BorderPane decolayer;
+
     private final StackPane topBar;
 
     private static ViewManager instance;
@@ -76,14 +78,16 @@ public class ViewManager {
         msglayer.setId("text-pane");
         msglayer.setVisible(false);
 
+        decolayer = new BorderPane();
+        decolayer.setBackground(new Background(new BackgroundImage(new Image("src/assets/Background.png"), null, null, null, null)));
+
         topBar = new StackPane();
 
         BorderPane defaultPane = new BorderPane();
-        defaultPane.setBackground(new Background(new BackgroundImage(new Image("src/assets/Background.png"), null, null, null, null)));
         defaultPane.centerProperty().bind(currentNodeProperty());
         defaultPane.setTop(topBar);
 
-        StackPane root = new StackPane(defaultPane, msglayer, fxlayer);
+        StackPane root = new StackPane(decolayer, defaultPane, msglayer, fxlayer);
 
         defaultScene = new Scene(root);
         defaultScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("View.css")).toExternalForm());
@@ -106,6 +110,12 @@ public class ViewManager {
     public BorderPane getMsgLayer() { return msglayer; }
 
     /**
+     * gibt die Ebene, auf der ggf. Dekorationen angezeigt werden
+     * @return Deko Layer
+     */
+    public BorderPane getDecoLayer() { return decolayer; }
+
+    /**
      * zeigt eine Information an
      * @param text info
      */
@@ -123,6 +133,7 @@ public class ViewManager {
      */
     public void setView(int view) {
         MoneyFrame.stopStakesAnimation(); // no stakes selection cross scenes plz
+        decolayer.setCenter(null);
 
         switch (view) {
             case LOGIN_MENU -> {
@@ -194,7 +205,7 @@ public class ViewManager {
         stage.setScene(getDefaultScene());
         stage.setMaximized(true);
         stage.setMinHeight(500);
-        stage.setMinWidth(700);
+        stage.setMinWidth(750);
         stage.setMaxHeight(1080);
         stage.setMaxWidth(1920);
         stage.show();

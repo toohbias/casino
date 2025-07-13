@@ -8,7 +8,7 @@ public class CasinoController {
 
     private static final int[] stakeValues = {1, 2, 5, 10, 25, 100, 500, 1000, 5000, -1};
 
-    public static final int DEFAULT_STAKES = 100;
+    public static final int DEFAULT_STAKES = 5;
 
     private final IntegerProperty money;
 

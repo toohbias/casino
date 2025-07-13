@@ -146,6 +146,22 @@ public class SlotView {
         root.setBottom(new BorderPane(hbox));
 
         ViewManager.getInstance().getFXLayer().setCenter(MoneyEffect.getRoot());
+
+        // Frame
+        HBox frame = new HBox();
+        ImageView frameLeft = ViewManager.defaultView(new Image("src/assets/FrameLeft.png"), 1);
+        frameLeft.fitWidthProperty().bind(ViewManager.getInstance().windowWidthProperty().divide(3));
+        Region space = new Region();
+        HBox.setHgrow(space, Priority.ALWAYS);
+        ImageView frameRight = ViewManager.defaultView(new Image("src/assets/FrameRight.png"), 1);
+        frameRight.fitWidthProperty().bind(ViewManager.getInstance().windowWidthProperty().divide(3));
+        frame.getChildren().addAll(frameLeft, space, frameRight);
+        // Shine
+        ImageView shine = ViewManager.defaultView(new Image("src/assets/Shinev2.png"), 1);
+
+        StackPane decoration = new StackPane(shine, frame);
+        ViewManager.getInstance().getDecoLayer().setCenter(decoration);
+
         return root;
     }
 

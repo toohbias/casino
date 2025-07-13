@@ -74,7 +74,7 @@ public class CasinoView {
      * @return Knopf mit passender margin
      */
     public static Node getBackButton() {
-        ImageView backView = ViewManager.defaultView(new Image("src/assets/Pfeilzurück.png"), 10);
+        ImageView backView = ViewManager.defaultView(new Image("src/assets/Back button.png"), 10);
         Button backButton = new Button("", backView);
         backButton.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.MAIN_MENU));
         BorderPane wrapper = new BorderPane(backButton);
