@@ -63,6 +63,8 @@ public class ViewManager {
         windowWidth = new SimpleDoubleProperty();
         windowHeight = new SimpleDoubleProperty();
 
+        MusicManager.playBackgroundMusic("src/assets/music/backgroundfinal.wav");
+
         currentNode = new SimpleObjectProperty<>();
 
         fxlayer = new BorderPane();
@@ -95,7 +97,6 @@ public class ViewManager {
      */
     public void setView(int view) {
         MoneyFrame.stopStakesAnimation(); // no stakes selection cross scenes plz
-        MusicManager.playBackgroundMusic("src/assets/music/background3.wav");
 
         switch (view) {
             case LOGIN_MENU -> {
