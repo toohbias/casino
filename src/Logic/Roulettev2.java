@@ -28,7 +28,8 @@ public class Roulettev2 {
     public void spin(int einsatz) throws IllegalAccessException {
         if (einsatz > ViewManager.getInstance().getController().getMoney().get()) {
             // meldung zu wenig geld
-            throw new IllegalAccessException("Sie haben nicht die liquiden Mittel, bitte laden sie ihren Kontostand in unserem Shop auf");
+            ViewManager.getInstance().displayErrorMessage("Sie haben nicht die liquiden Mittel, bitte laden sie ihren Kontostand in unserem Shop auf");
+            return;
         }
         ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() - einsatz); // Geld abziehen
         //animation start

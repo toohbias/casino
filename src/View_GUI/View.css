@@ -62,3 +62,26 @@
 #invisible-cell {
     -fx-font-size: 1px;
 }
+
+#info-pane {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-background-radius: 10px;
+    -fx-border-color: white;
+    -fx-border-radius: 10px;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+}
+
+#error-pane {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-background-radius: 10px;
+    -fx-border-color: #940303;
+    -fx-text-fill: #940303;
+    -fx-border-radius: 10px;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+}
+
+#text-pane {
+    -fx-background-color: rgba(0, 0, 0, 0.3);
+}

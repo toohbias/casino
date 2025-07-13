@@ -31,6 +31,8 @@ public class ViewManager {
 
     private final BorderPane fxlayer;
 
+    private final BorderPane msglayer;
+
     private final StackPane topBar;
 
     private static ViewManager instance;
@@ -70,6 +72,10 @@ public class ViewManager {
         fxlayer = new BorderPane();
         fxlayer.setPickOnBounds(false);
 
+        msglayer = new BorderPane();
+        msglayer.setId("text-pane");
+        msglayer.setVisible(false);
+
         topBar = new StackPane();
 
         BorderPane defaultPane = new BorderPane();
@@ -77,7 +83,7 @@ public class ViewManager {
         defaultPane.centerProperty().bind(currentNodeProperty());
         defaultPane.setTop(topBar);
 
-        StackPane root = new StackPane(defaultPane, fxlayer);
+        StackPane root = new StackPane(defaultPane, msglayer, fxlayer);
 
         defaultScene = new Scene(root);
         defaultScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("View.css")).toExternalForm());
@@ -87,9 +93,29 @@ public class ViewManager {
         controller = new CasinoController();
     }
 
-    public BorderPane getFXLayer() {
-        return fxlayer;
-    }
+    /**
+     * gibt die Ebene, auf dem die Effekte angezeigt werden, z.B. der {@code MoneyEffect}
+     * @return FX Layer
+     */
+    public BorderPane getFXLayer() { return fxlayer; }
+
+    /**
+     * gibt die Ebene, auf der Nachrichten und Fehlermeldungen angezeigt werden
+     * @return Message Layer
+     */
+    public BorderPane getMsgLayer() { return msglayer; }
+
+    /**
+     * zeigt eine Information an
+     * @param text info
+     */
+    public void displayInfoMessage(String text) { TextLayer.displayMessage(text, "info-pane"); }
+
+    /**
+     * zeigt einen Fehler an
+     * @param text error
+     */
+    public void displayErrorMessage(String text) { TextLayer.displayMessage(text, "error-pane"); }
 
     /**
      * Setzt den Inhalt des Fensters
@@ -195,12 +221,8 @@ public class ViewManager {
      * und am Ende wieder entsperrt werden kann, da dies vom Timing der Threads abhängt
      */
     public void leverPulled(int einsatz, ToggleButton slotArm) {
-        try {
             MoneyFrame.stopStakesAnimation();
             slotMachine.spin(einsatz, slotArm);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace(); // TODO: das ist der Fehler mit den liquiden Mitteln
-        }
     }
 
     /**

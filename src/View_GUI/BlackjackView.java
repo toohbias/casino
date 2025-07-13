@@ -67,10 +67,6 @@ public class BlackjackView {
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(30, 0, 0, 0)); // mittig über Einsatzfeld
 
-        // Einsatzfeld (tiefer)
-        Label einsatzFehler = new Label();
-        einsatzFehler.setStyle("-fx-text-fill: red;");
-
         HBox einsatzBox = new HBox(10);
         einsatzBox.setAlignment(Pos.CENTER);
         einsatzBox.setPadding(new Insets(50, 0, 0, 0));
@@ -81,9 +77,9 @@ public class BlackjackView {
 
         // Gewinn-/Verloren-Labels
         Label gewonnenLabel = new Label();
-        gewonnenLabel.textProperty().bind(game.GewonnenText);
+        gewonnenLabel.textProperty().bind(Blackjack.GewonnenText);
         Label verlorenLabel = new Label();
-        verlorenLabel.textProperty().bind(game.VerlorenText);
+        verlorenLabel.textProperty().bind(Blackjack.VerlorenText);
 
         // Punkteanzeige – jetzt ganz unten
         HBox punktestandBox = new HBox();
@@ -112,21 +108,20 @@ public class BlackjackView {
         newGameButton.setOnAction(e -> {
             String eingabe = einsatzFeld.getText();
             if (!eingabe.matches("\\d+")) {
-                einsatzFehler.setText("Bitte gib eine gültige Zahl ein.");
+                ViewManager.getInstance().displayInfoMessage("Bitte gib eine gültige Zahl ein.");
                 return;
             }
 
             int betrag = Integer.parseInt(eingabe);
             if (betrag <= 0) {
-                einsatzFehler.setText("Der Einsatz muss größer als 0 sein.");
+                ViewManager.getInstance().displayInfoMessage("Der Einsatz muss größer als 0 sein.");
                 return;
             }
 
             if (ViewManager.getInstance().getController().getMoney().get() < betrag) {
-                einsatzFehler.setText("Nicht genügend Geld für diesen Einsatz.");
+                ViewManager.getInstance().displayInfoMessage("Nicht genügend Geld für diesen Einsatz.");
                 return;
             }
-            einsatzFehler.setText("");
             einsatzFeld.clear();
             game.newGame(betrag);
 
@@ -168,11 +163,10 @@ public class BlackjackView {
         confirmView.imageProperty().bind(Bindings.when(confirmView.pressedProperty()).then(confirmPressed).otherwise(confirm));
         confirmView.setOnMouseClicked(e ->{
         if (ViewManager.getInstance().getController().getMoney().get() < stakes.get() ) {
-            einsatzFehler.setText("Nicht genügend Geld für diesen Einsatz.");
+            ViewManager.getInstance().displayInfoMessage("Nicht genügend Geld für diesen Einsatz.");
             return;
         }
 
-        einsatzFehler.setText("");
         einsatzFeld.clear();
         game.newGame(stakes.get());
 
@@ -208,7 +202,6 @@ public class BlackjackView {
                 buttonBox,
                 einsatzBox,
                 stake,
-                einsatzFehler,
                 gewonnenLabel,
                 verlorenLabel,
                 punktestandBox

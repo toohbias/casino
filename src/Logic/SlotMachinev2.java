@@ -26,12 +26,13 @@ public class SlotMachinev2 {
     }
 
     @SuppressWarnings("BusyWait") // Bei Thread.sleep(), wartet ja nicht aktiv auf etwas
-    public void spin(int einsatz, ToggleButton slotArm) throws IllegalAccessException {
+    public void spin(int einsatz, ToggleButton slotArm) {
         if (einsatz > ViewManager.getInstance().getController().getMoney().get()) {
             // Slot Arm wieder freigeben
             slotArm.setSelected(false);
             slotArm.setDisable(false);
-            throw new IllegalAccessException("Sie haben nicht die liquiden Mittel, bitte laden sie ihren Kontostand in unserem Shop auf");
+            ViewManager.getInstance().displayInfoMessage("Sie haben nicht die liquiden Mittel, bitte laden sie ihren Kontostand in unserem Shop auf");
+            return;
         }
         ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() - einsatz); // Geld abziehen
         slotArm.setDisable(true);
