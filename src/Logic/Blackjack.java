@@ -16,7 +16,7 @@ public class Blackjack {
     private final List<Integer> playerHand = new ArrayList<>();
     private final List<Integer> dealerHand = new ArrayList<>();
     private final Stack<Integer> deck = new Stack<>();
-    private BooleanProperty gameOver = new SimpleBooleanProperty(false);
+    private final BooleanProperty gameOver = new SimpleBooleanProperty(true);
     public static final StringProperty VerlorenText = new SimpleStringProperty("");
     public static final StringProperty GewonnenText = new SimpleStringProperty("");
     private int AktulerGestzterWert;

@@ -56,8 +56,8 @@ public class BlackjackView {
         // Buttons (größer, übereinander, zentriert)
         Button hitButton = new Button("Karte nehmen");
         Button standButton = new Button("Bleiben");
-        hitButton.disableProperty().bind(game.isGameOver().not());
-        standButton.disableProperty().bind(game.isGameOver().not());
+        hitButton.disableProperty().bind(game.isGameOver());
+        standButton.disableProperty().bind(game.isGameOver());
         hitButton.visibleProperty().bind(hitButton.disabledProperty().not());
         standButton.visibleProperty().bind(hitButton.disabledProperty().not());
         hitButton.setPrefSize(200, 50);
@@ -151,7 +151,7 @@ public class BlackjackView {
         // when pressed: raise stakes
         arrowUpView.imageProperty().bind(Bindings.when(arrowUpView.pressedProperty()).then(arrowUpPressed).otherwise(arrowUp));
         arrowUpView.setOnMouseClicked(e -> stakes.set(CasinoController.getNextStakes(1,stakes.get())));
-        arrowUpView.disableProperty().bind(game.isGameOver());
+        arrowUpView.disableProperty().bind(game.isGameOver().not());
 
         Image arrowDown = new Image("src/assets/ButtonDownv2.png");
         Image arrowDownPressed = new Image("src/assets/ButtonDownPressedv2.png");
@@ -159,7 +159,7 @@ public class BlackjackView {
         // when pressed: reduce stakes
         arrowDownView.imageProperty().bind(Bindings.when(arrowDownView.pressedProperty()).then(arrowDownPressed).otherwise(arrowDown));
         arrowDownView.setOnMouseClicked(e -> stakes.set(CasinoController.getNextStakes(-1,stakes.get())));
-        arrowDownView.disableProperty().bind(game.isGameOver());
+        arrowDownView.disableProperty().bind(game.isGameOver().not());
 
         Image confirm = new Image("src/assets/RoundButtonv2.png");
         Image confirmPressed = new Image("src/assets/RoundButtonPressedv2.png");
