@@ -8,19 +8,22 @@ import java.io.File;
 
 public class MusicManager {
     private static Clip clip;
+    private static Clip soundClip;
 
     public static void playBackgroundMusic(String filepath) {
         try {
             File musicPath = new File(filepath);
 
             if (!musicPath.exists()) {
-                return;
+                System.out.println("File existiert nicht");
             }
 
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(musicPath);
-            clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
-            clip.loop(Clip.LOOP_CONTINUOUSLY);
+            else {
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(musicPath);
+                clip = AudioSystem.getClip();
+                clip.open(audioInputStream);
+                clip.loop(Clip.LOOP_CONTINUOUSLY);
+            }
 
         } catch (Exception e) {
 
@@ -28,7 +31,28 @@ public class MusicManager {
         }
     }
 
-    public static void stopBackgroundMusic() {
+    public static void playSoundEffect(String filepath) {
+        try {
+            File musicPath = new File(filepath);
+
+            if (!musicPath.exists()) {
+                System.out.println("File existiert nicht");
+            }
+
+            else {
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(musicPath);
+                soundClip = AudioSystem.getClip();
+                soundClip.open(audioInputStream);
+            }
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    public static void stopBackgroundMusic() {                //braucht man nicht aber man kann ja nie wissen
         if (clip != null && clip.isRunning()) {
             clip.stop();
 
