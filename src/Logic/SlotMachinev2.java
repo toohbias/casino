@@ -7,6 +7,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.ToggleButton;
 import src.View_GUI.MoneyEffect;
+import src.View_GUI.MusicManager;
 import src.View_GUI.ViewManager;
 
 public class SlotMachinev2 {
@@ -35,6 +36,9 @@ public class SlotMachinev2 {
         ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() - einsatz); // Geld abziehen
         slotArm.setDisable(true);
         slotArm.setSelected(true);
+
+        MusicManager.playSoundEffect("src/assets/soundEffects/slotMachineSpinningSoundLeiser.wav", -6f);
+        MusicManager.playSoundEffect("src/assets/soundEffects/slotStartingsound1.wav", -4f);
 
         // 3 threads, die die Bilder animieren
         Thread t1 = new Thread(() -> {
@@ -128,6 +132,8 @@ public class SlotMachinev2 {
             // macht die animation im money frame
             ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + gewinn);
 
+            MusicManager.playSoundEffect("src/assets/soundEffects/slotMachineWining1.wav", 0.0f);
+
             System.out.println("Herzlichen Glückwunsch sie haben " + gewinn + " V-Bucks gewonnen");
             System.out.println("Ihr neuer Kontostand beträgt " + ViewManager.getInstance().getController().getMoney().get() + " V-Bucks");
             // coin animation
@@ -142,6 +148,7 @@ public class SlotMachinev2 {
 //                anim.interrupt();
             }).start();
         } else {
+
             System.out.println("Niemals Aufgeben (" + ViewManager.getInstance().getController().getMoney().get() + ")");
         }
     }

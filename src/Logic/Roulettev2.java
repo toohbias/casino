@@ -1,6 +1,7 @@
 package src.Logic;
 
 import src.View_GUI.MoneyEffect;
+import src.View_GUI.MusicManager;
 import src.View_GUI.ViewManager;
 
 import javafx.application.Platform;
@@ -31,6 +32,10 @@ public class Roulettev2 {
         }
         ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() - einsatz); // Geld abziehen
         //animation start
+
+        MusicManager.playSoundEffect("src/assets/soundEffects/rouletteSpinning.wav", 0.0f);    //soll starten wenn der thread beginnt (sound geht 3 sekunden )
+        MusicManager.playSoundEffect("src/assets/soundEffects/rouletteLanding.wav", 0.0f);   // soll starten wenn der ball kurz vor dem landen ist, am besten also nach 3 sek wenn der andere sound vorbei ist(sound geht 2 sek))
+        //Die sounds gehen zsm 5 sek, wäre geil wenn dann die animation auch 5 sek geht
 
         // 1 thread, der die rotation der scheibe animiert
 

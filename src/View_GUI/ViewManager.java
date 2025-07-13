@@ -63,7 +63,7 @@ public class ViewManager {
         windowWidth = new SimpleDoubleProperty();
         windowHeight = new SimpleDoubleProperty();
 
-        MusicManager.playBackgroundMusic("src/assets/music/backgroundfinal.wav");
+        MusicManager.playBackgroundMusic("src/assets/music/backgroundfinal.wav", +6f);
 
         currentNode = new SimpleObjectProperty<>();
 

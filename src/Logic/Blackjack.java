@@ -4,6 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import src.View_GUI.MusicManager;
 import src.View_GUI.ViewManager;
 
 import java.util.*;
@@ -27,6 +28,9 @@ public class Blackjack {
     }
 
     public void newGame(int betrag) {
+
+        MusicManager.playSoundEffect("src/assets/soundEffects/deckShuffle.wav", +3f);
+
         deck.clear();
         playerHand.clear();
         dealerHand.clear();
@@ -60,6 +64,7 @@ public class Blackjack {
     }
 
     private int drawCard() {
+        MusicManager.playSoundEffect("src/assets/soundEffects/drawingCard.wav", +3f);
         while (true) {
             int card = random.nextInt(52) + 1;
             if (deck.contains(card)) {
@@ -86,6 +91,7 @@ public class Blackjack {
         }
 
         if (dealerValue > 21) {
+            MusicManager.playSoundEffect("src/assets/soundEffects/bing.wav", +4f);
             GewonnenText.set("Dealer hat überkauft! Du hast gewonnen.");
             VerlorenText.set("");
             controller.win(AktulerGestzterWert * 2);
@@ -93,6 +99,7 @@ public class Blackjack {
         }
 
         if (playerValue > dealerValue) {
+            MusicManager.playSoundEffect("src/assets/soundEffects/bing.wav", +4f);
             GewonnenText.set("Herzlichen Glückwunsch! Du hast gewonnen.");
             VerlorenText.set("");
             controller.win(AktulerGestzterWert * 2);

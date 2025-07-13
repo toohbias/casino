@@ -4,53 +4,51 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.AudioInputStream;
 import java.io.File;
+import javax.sound.sampled.*;
 
 
 public class MusicManager {
     private static Clip clip;
     private static Clip soundClip;
 
-    public static void playBackgroundMusic(String filepath) {
+    public static void playBackgroundMusic(String filepath, float volumeDb) {
         try {
-            File musicPath = new File(filepath);
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(filepath));
+            clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
 
-            if (!musicPath.exists()) {
-                System.out.println("File existiert nicht");
+            // Lautstärke einstellen
+            if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                gainControl.setValue(volumeDb);  // -10.0f = leiser, 0.0f = Original, +6.0f = lauter
             }
 
-            else {
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(musicPath);
-                clip = AudioSystem.getClip();
-                clip.open(audioInputStream);
-                clip.loop(Clip.LOOP_CONTINUOUSLY);
-            }
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
     }
 
-    public static void playSoundEffect(String filepath) {
+    public static void playSoundEffect(String filepath, float volumeDb) {
         try {
-            File musicPath = new File(filepath);
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(filepath));
+            soundClip = AudioSystem.getClip();
+            soundClip.open(audioInputStream);
 
-            if (!musicPath.exists()) {
-                System.out.println("File existiert nicht");
+            // Lautstärke einstellen
+            if (soundClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                FloatControl gainControl = (FloatControl) soundClip.getControl(FloatControl.Type.MASTER_GAIN);
+                gainControl.setValue(volumeDb);
             }
 
-            else {
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(musicPath);
-                soundClip = AudioSystem.getClip();
-                soundClip.open(audioInputStream);
-            }
-
+            soundClip.start();
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
     }
+
 
     public static void stopBackgroundMusic() {                //braucht man nicht aber man kann ja nie wissen
         if (clip != null && clip.isRunning()) {
