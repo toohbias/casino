@@ -154,7 +154,7 @@ public class BlackjackView {
             updateCardLabels(game, playerHandLabel, dealerHandLabel, playerValueLabel, dealerValueLabel);
         });
 
-        ImageView desk = new ImageView(new Image("src/assets/Blackjack desk .png"));
+        ImageView desk = new ImageView(new Image("src/assets/Deskcardsv4.png"));
         desk.setPreserveRatio(true);
         desk.fitHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().subtract(ViewManager.getInstance().getTopBar().heightProperty()));
         ViewManager.getInstance().getDecoLayer().setBottom(new BorderPane(desk));
