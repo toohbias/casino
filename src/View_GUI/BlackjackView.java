@@ -1,8 +1,8 @@
 package src.View_GUI;
 
+import com.sun.javafx.scene.layout.region.Margins;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -10,7 +10,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -39,20 +38,23 @@ public class BlackjackView {
         HBox topLabels = new HBox(10);
         topLabels.setPadding(new Insets(20, 100, 0, 100));
 
-        Label dealerLabel = new Label("Dealer Karten");
+        Label dealerLabel = new Label("Dealer");
+        dealerLabel.setMaxWidth(200);
+        dealerLabel.setMinWidth(200);
         dealerLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: white;");
+        /*
         HBox dealerBox = new HBox(dealerLabel);
         dealerBox.setAlignment(Pos.TOP_LEFT);
         HBox.setHgrow(dealerBox, Priority.ALWAYS);
+         */
 
-        Label playerLabel = new Label("Spieler Karten");
-        playerLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: white;");
+        /*
         HBox playerBox = new HBox(playerLabel);
         playerBox.setAlignment(Pos.TOP_RIGHT);
         HBox.setHgrow(playerBox, Priority.ALWAYS);
-
-        topLabels.getChildren().addAll(dealerBox, playerBox);
-        root.setTop(topLabels);
+         */
+        //topLabels.getChildren().addAll(dealerBox, playerBox);
+        //root.setTop(topLabels);
 
         // Unsichtbare Labels
         Label dealerHandLabel = new Label();
@@ -62,27 +64,73 @@ public class BlackjackView {
 
         // Punkte
         Label dealerValueLabel = new Label();
-        dealerValueLabel.setStyle("-fx-font-size: 36px;");
-        Label playerValueLabel = new Label();
-        playerValueLabel.setStyle("-fx-font-size: 36px;");
+        dealerValueLabel.setStyle("-fx-font-size: 20px;");
+        HBox.setMargin(dealerLabel, new Insets(5, 20, 5, 20));
+        dealerLabel.setAlignment(Pos.CENTER_RIGHT);
+        dealerValueLabel.setMaxWidth(200);
+        dealerValueLabel.setMinWidth(200);
+        HBox.setMargin(dealerValueLabel, new Insets(5, 20, 5, 20));
+        dealerValueLabel.setAlignment(Pos.CENTER_LEFT);
 
+        /*
         HBox punktestandBox = new HBox(10,
                 new HBox(dealerValueLabel), new Region(), new HBox(playerValueLabel)
         );
         punktestandBox.setPadding(new Insets(0, 100, 10, 100));
         HBox.setHgrow(punktestandBox.getChildren().get(1), Priority.ALWAYS);
+        */
+        // Karten anzeigen Player
+        HBox playerHand = new HBox();
 
-        // Karten anzeigen
-        HBox playerHand = new HBox(5);
-        playerHand.setAlignment(Pos.CENTER);
+        Label playerLabel = new Label("Spieler");
+        playerLabel.setAlignment(Pos.CENTER_RIGHT);
+        HBox.setMargin(playerLabel, new Insets(5, 20, 5, 20));
+        playerLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
+        playerLabel.setMaxWidth(200);
+        playerLabel.setMinWidth(200);
+
+        playerHand.getChildren().add(playerLabel);
+        playerHand.setTranslateY(95);
+        //playerHand.setBackground(new Background(new BackgroundImage(new Image("src/assets/Deskcardsv5.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT)));
+        playerHand.setAlignment(Pos.TOP_CENTER);
         IntegerProperty[] playerIndices = game.getPlayerProperty();
-        for (int i = 0; i < 5; i++) {
+
+        for (int i = 0; i < 4; i++) {
             ImageView cardView = new ImageView();
-            cardView.setFitWidth(50);
-            cardView.setFitHeight(50);
+            cardView.setPreserveRatio(true);
+            cardView.setFitWidth(80);
             cardView.imageProperty().bind(Bindings.valueAt(cards, playerIndices[i]));
+            HBox.setMargin(cardView,new Insets(5,45,5,45));
             playerHand.getChildren().add(cardView);
         }
+        Label playerValueLabel = new Label();
+        playerValueLabel.setStyle("-fx-font-size: 20px;");
+        playerValueLabel.setMaxWidth(200);
+        playerValueLabel.setMinWidth(200);
+        HBox.setMargin(playerValueLabel, new Insets(5, 20, 5, 20));
+        playerValueLabel.setAlignment(Pos.CENTER_LEFT);
+
+        playerHand.getChildren().add(playerValueLabel);
+
+
+        // Karten anzeigen Dealer
+        HBox DealerHand = new HBox();
+        DealerHand.setTranslateY(-20);
+        //playerHand.setBackground(new Background(new BackgroundImage(new Image("src/assets/Deskcardsv5.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT)));
+        DealerHand.setAlignment(Pos.BOTTOM_CENTER);
+        IntegerProperty[] DealerIndices = game.getDealerProperty();
+        DealerHand.getChildren().add(dealerLabel);
+
+        for (int i = 0; i < 4; i++) {
+            ImageView cardView2 = new ImageView();
+            cardView2.setPreserveRatio(true);
+            cardView2.setFitWidth(80);
+            cardView2.imageProperty().bind(Bindings.valueAt(cards, DealerIndices[i]));
+            HBox.setMargin(cardView2,new Insets(5,45,5,45));
+            DealerHand.getChildren().add(cardView2);
+        }
+        DealerHand.getChildren().add(dealerValueLabel);
+
 
         // Buttons: Karte nehmen / Bleiben
         Button hitButton = new Button("Karte nehmen");
@@ -128,16 +176,14 @@ public class BlackjackView {
         raiseAndLowerStakes.setSpacing(10);
         HBox stake = new HBox(raiseAndLowerStakes, confirmView);
         stake.setAlignment(Pos.CENTER);
+        stake.getChildren().add(buttonBox);
         stake.setSpacing(30);
 
         // Center zusammensetzen.
         VBox centerBox = new VBox(15,
-                buttonBox,
-                playerHand,
+                DealerHand,
                 stake,
-                gewonnenLabel,
-                verlorenLabel,
-                punktestandBox
+                playerHand
         );
         centerBox.setAlignment(Pos.CENTER);
         centerBox.setPadding(new Insets(10));

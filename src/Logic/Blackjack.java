@@ -22,10 +22,17 @@ public class Blackjack {
     public static final StringProperty GewonnenText = new SimpleStringProperty("");
     private int AktulerGestzterWert;
     private IntegerProperty[] playerPropertys;
+    private IntegerProperty[] dealerPropertys;
 
     public Blackjack() {
         VerlorenText.set("");
         GewonnenText.set("");
+
+        dealerPropertys = new IntegerProperty[5];
+        for (int i = 0; i < 5; i++) {
+            dealerPropertys[i] = new SimpleIntegerProperty(0);
+        }
+
         playerPropertys = new IntegerProperty[5];
         for (int i = 0; i < 5; i++) {
             playerPropertys[i] = new SimpleIntegerProperty(0);
@@ -58,7 +65,8 @@ public class Blackjack {
         if (isGameOver().get()) {
             auswertung();
         } else {
-            playerHand.add(drawCardPlayer());
+            //playerHand.add(drawCardPlayer());
+            drawCardPlayer();
         }
         if (getHandValue(playerHand) > 21) {
             gameOver.set(true);
@@ -75,33 +83,20 @@ public class Blackjack {
         MusicManager.playSoundEffect("src/assets/soundEffects/drawingCard.wav", +3f);
 
         while (true) {
-            int card = random.nextInt(52) + 1;
+            int card = random.nextInt(52) + 1; // Zufallszahl z 0<= z < 52
 
             if (deck.contains(card)) {
                 deck.remove((Integer) card);
                 dealerHand.add(card);
 
-                ImageView cardImage = new ImageView(new Image("src/assets/" + card + ".png"));
-
-                if (dealerHand.size() == 1) {
-                    cardImage.setTranslateX(-300);
-                    cardImage.setTranslateY(-200);
-                } else if (dealerHand.size() == 2) {
-                    cardImage.setTranslateX(-240);
-                    cardImage.setTranslateY(-200);
-                } else if (dealerHand.size() == 3) {
-                    cardImage.setTranslateX(-180);
-                    cardImage.setTranslateY(-200);
-                } else if (dealerHand.size() == 4) {
-                    cardImage.setTranslateX(-120);
-                    cardImage.setTranslateY(-200);
-                } else if (dealerHand.size() == 5) {
-                    cardImage.setTranslateX(-60);
-                    cardImage.setTranslateY(-200);
+                int index = dealerHand.size() - 1;
+                if (index < 4) {
+                    dealerPropertys[index].set(card);
+                }
+                else {
                     gameOver.set(true);
                     auswertung();
                 }
-
                 return card;
             }
         }
@@ -110,19 +105,17 @@ public class Blackjack {
         MusicManager.playSoundEffect("src/assets/soundEffects/drawingCard.wav", +3f);
 
         while (true) {
-            int card = random.nextInt(52) + 1;
+            int card = random.nextInt(52) + 1; // Zufallszahl z 0<= z < 52
 
             if (deck.contains(card)) {
                 deck.remove((Integer) card);
-
-                playerHand.add(card); // nur einmal aufrufen!
+                playerHand.add(card);
 
                 int index = playerHand.size() - 1;
-                if (index < playerPropertys.length) {
+                if (index < 4) {
                     playerPropertys[index].set(card);
                 }
-
-                if (playerHand.size() == 5) {
+               else {
                     gameOver.set(true);
                     auswertung();
                 }
@@ -146,7 +139,7 @@ public class Blackjack {
         }
 
         while (dealerValue < 17) {
-            dealerHand.add(drawCardDealer());
+            drawCardDealer();
             dealerValue = getHandValue(dealerHand);
         }
 
@@ -188,36 +181,30 @@ public class Blackjack {
 
     public int getHandValue(List<Integer> hand) {
         int value = 0;
-
+        int assCount=0;
+        System.out.println("___________");
         for (int card : hand) {
-            int normalizedCard = card - 1; // Korrigiere den Index
-
-            if (normalizedCard <= 3) { // 2
-                value += 2;
-            } else if (normalizedCard <= 7) { // 3
-                value += 3;
-            } else if (normalizedCard <= 11) { // 4
-                value += 4;
-            } else if (normalizedCard <= 15) { // 5
-                value += 5;
-            } else if (normalizedCard <= 19) { // 6
-                value += 6;
-            } else if (normalizedCard <= 23) { // 7
-                value += 7;
-            } else if (normalizedCard <= 27) { // 8
-                value += 8;
-            } else if (normalizedCard <= 31) { // 9
-                value += 9;
-            } else if (normalizedCard <= 47) { // 10, J, Q, K
-                value += 10;
-            } else if (value + 11 > 21){ // Ass
-                value += 1;
+            System.out.println(card);
+            int r = (card-1)/4;
+            if (r< 9 ){
+                value = value + 2 + r;
             }
-            else if (value + 11 <= 21){
-                value += 11;
+            else if (r< 12){
+                value = value + 10;
+            }
+            else if (r==12){
+                assCount++;
             }
         }
-
+        if (assCount>0){
+            value+= (assCount-1);
+            if ( value +11 <= 21){
+                value += 11;
+            }
+            else {
+                value++;
+            }
+        }
         return value;
     }
 
@@ -227,5 +214,8 @@ public class Blackjack {
 
     public IntegerProperty[] getPlayerProperty() {
         return playerPropertys;
+    }
+    public IntegerProperty[] getDealerProperty() {
+        return dealerPropertys;
     }
 }
