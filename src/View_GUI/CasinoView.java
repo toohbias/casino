@@ -53,7 +53,7 @@ public class CasinoView {
         selection.getChildren().add(rouletteImage);
 
         //zeige BlackJack selcetion button
-        ImageView img3 = ViewManager.defaultView(new Image("src/assets/BlackJackTest.png"), 3);
+        ImageView img3 = ViewManager.defaultView(new Image("src/assets/Black jack logo.png"), 3);
         Button BlackJackImage = new Button("BlackJack", img3);
         BlackJackImage.setContentDisplay(ContentDisplay.TOP);
         BlackJackImage.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.BLACKJACK_VIEW));

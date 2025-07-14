@@ -103,7 +103,7 @@ public class RouletteView {
 
     /**
      * hier wird die Szene von der Wette zum Spiel gesetzt,
-     * und zwar in {@code Roulettev2.spin(int Einsatz)}, damit eine Pleite abgefangen werden kann,
+     * und zwar in {@code Roulettev2.spin(int einsatz)}, damit eine Pleite abgefangen werden kann,
      * bevor der Szenenwechsel erfolgt
      */
     public static void setGameView() {
