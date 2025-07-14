@@ -8,15 +8,12 @@ import src.View_GUI.RouletteView;
 import src.View_GUI.ViewManager;
 
 import javafx.application.Platform;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.control.ToggleButton;
 
 import java.util.Random;
 
 public class Roulettev2 {
 
-    public DoubleProperty deskRotation, ballRotation;
+    public DoubleProperty deskRotation, ballRotation, speedHeight;
 
     public static int zufallszahl(int max) {
         return new Random().nextInt(max);
@@ -26,6 +23,7 @@ public class Roulettev2 {
         // init DoubleProperties for spin()
         deskRotation = new SimpleDoubleProperty(0);
         ballRotation = new SimpleDoubleProperty(0);
+        speedHeight = new SimpleDoubleProperty(2.6);
     }
 
     @SuppressWarnings("BusyWait") // Bei Thread.sleep(), wartet ja nicht aktiv auf etwas
@@ -45,6 +43,24 @@ public class Roulettev2 {
         //Die sounds gehen zsm 5 sek, wäre geil wenn dann die animation auch 5 sek geht
 
         // 1 thread, der die rotation der scheibe animiert
+        new Thread(() -> {
+            double timer = 0.0;
+            long timestep = 10;
+            while(speedHeight.get() <= 3.4) {
+                double currentValue = 0.0001 * Math.pow(timer, 6);
+                speedHeight.set(currentValue + 2.6);
+
+                Platform.runLater(() -> {
+                    deskRotation.set(deskRotation.get() + (-currentValue + 2.6));
+                    ballRotation.set(ballRotation.get() - (-currentValue + 2.6));
+                });
+
+                timer += timestep / 1000.0;
+                try {
+                    Thread.sleep(timestep);
+                } catch (InterruptedException ignored) {}
+            }
+        }).start();
 
 
             // Gewinn bestimmen

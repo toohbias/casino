@@ -41,11 +41,13 @@ public class RouletteView {
     private static int stakes = CasinoController.DEFAULT_STAKES;
 
     /**
-     * DoubleProperties, an die der Rotationswinkel der Scheibe und des Balls gebunden sind.
+     * DoubleProperties, an die der Rotationswinkel der Scheibe und des Balls
+     * sowie die Entfernung vom Ball zum Mittelpunkt gebunden sind.
      * Diese werden mit {@code Roulettev2.spin(int einsatz)} gesteuert.
      */
     public static DoubleProperty DESK_ROTATION = new SimpleDoubleProperty(0);
     public static DoubleProperty BALL_ROTATION = new SimpleDoubleProperty(0);
+    public static DoubleProperty SPEED_HEIGHT = new SimpleDoubleProperty(2.6); // 2.6 default, 3.4 should stop spinning, until 4
 
     private static final BorderPane root = new BorderPane();
 
@@ -93,7 +95,7 @@ public class RouletteView {
         startBtn.setOnMouseClicked(e -> ViewManager.getInstance().rouletteSpinned(stakes));
 
         HBox bets = new HBox();
-        bets.getChildren().addAll(stakeButtons, new StackPane(getBettingTable()), startBtn);
+        bets.getChildren().addAll(stakeButtons, getBettingTable(), startBtn);
         bets.spacingProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(25));
         bets.setAlignment(Pos.CENTER);
 
@@ -110,7 +112,13 @@ public class RouletteView {
         ImageView desk = ViewManager.defaultView(new Image("src/assets/Roulette Desk.png"), 1.8);
         desk.rotateProperty().bind(DESK_ROTATION);
 
-        ImageView ball = ViewManager.defaultView(new Image("src/assets/Roulette Ball.png"), 50);
+        ImageView ballView = ViewManager.defaultView(new Image("src/assets/Roulette Ball.png"), 50);
+        Pane spacing = new Pane();
+        spacing.prefHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(SPEED_HEIGHT));
+        spacing.setMaxWidth(1);
+//        spacing.setBackground(new Background(new BackgroundFill(Paint.valueOf("rgba(0, 0, 0, 0.5)"), null, null)));
+        VBox ball = new VBox(spacing, ballView);
+        ball.setAlignment(Pos.CENTER);
         ball.rotateProperty().bind(BALL_ROTATION);
 
         StackPane game = new StackPane(desk, ball);
