@@ -49,9 +49,9 @@ public class Blackjack {
             playerPropertys[i].set(0);
         }
 
-        playerHand.add(drawCardPlayer());
-        playerHand.add(drawCardPlayer());
-        dealerHand.add(drawCardDealer());
+        drawCardPlayer();
+        drawCardPlayer();
+        drawCardDealer();
     }
 
     public void playerHit() {
@@ -114,10 +114,13 @@ public class Blackjack {
 
             if (deck.contains(card)) {
                 deck.remove((Integer) card);
-                playerHand.add(card);
 
-                ImageView cardImage = new ImageView(new Image("src/assets/" + card + ".png"));
-                playerPropertys[playerHand.size()-1].set(card);
+                playerHand.add(card); // nur einmal aufrufen!
+
+                int index = playerHand.size() - 1;
+                if (index < playerPropertys.length) {
+                    playerPropertys[index].set(card);
+                }
 
                 if (playerHand.size() == 5) {
                     gameOver.set(true);
@@ -127,8 +130,6 @@ public class Blackjack {
             }
         }
     }
-
-
 
     public void auswertung() {
         int playerValue = getHandValue(playerHand);
@@ -178,24 +179,34 @@ public class Blackjack {
 
     public int getHandValue(List<Integer> hand) {
         int value = 0;
-        int aces = 0;
 
         for (int card : hand) {
-            int rank = ((card - 1) % 13) + 1;
+            int normalizedCard = card - 1; // Korrigiere den Index
 
-            if (rank >= 2 && rank <= 10) {
-                value += rank;
-            } else if (rank >= 11 && rank <= 13) {
+            if (normalizedCard <= 3) { // 2
+                value += 2;
+            } else if (normalizedCard <= 7) { // 3
+                value += 3;
+            } else if (normalizedCard <= 11) { // 4
+                value += 4;
+            } else if (normalizedCard <= 15) { // 5
+                value += 5;
+            } else if (normalizedCard <= 19) { // 6
+                value += 6;
+            } else if (normalizedCard <= 23) { // 7
+                value += 7;
+            } else if (normalizedCard <= 27) { // 8
+                value += 8;
+            } else if (normalizedCard <= 31) { // 9
+                value += 9;
+            } else if (normalizedCard <= 47) { // 10, J, Q, K
                 value += 10;
-            } else if (rank == 1) {
-                value += 11;
-                aces++;
+            } else if (value + 11 > 21){ // Ass
+                value += 1;
             }
-        }
-
-        while (value > 21 && aces > 0) {
-            value -= 10;
-            aces--;
+            else if (value + 11 <= 21){
+                value += 11;
+            }
         }
 
         return value;

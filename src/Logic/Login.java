@@ -18,7 +18,7 @@ public class Login {
     public static void login(String username, String password) {
         Datenbank datenbank = Datenbank.getInstance();
         if (username.trim().isEmpty() || password.trim().isEmpty()) {// entfernt Müll Leerzeichen
-            ViewManager.getInstance().displayErrorMessage("Bruder falsche Eingabe!");
+            ViewManager.getInstance().displayErrorMessage("Falsche Eingabe!");
         }
         else {
             if (anmeldung.get()) {
@@ -26,7 +26,7 @@ public class Login {
                     ViewManager.getInstance().getController().setMoney(datenbank.getMoney());
                     ViewManager.getInstance().setView(ViewManager.MAIN_MENU);
                 } else {
-                    ViewManager.getInstance().displayErrorMessage("Bruder du hast keinen Account!!!");
+                    ViewManager.getInstance().displayErrorMessage("Gehe zu Registrieren und erstelle dir einen Account");
                 }
             } else {
                 if(is18.get()){
@@ -34,7 +34,7 @@ public class Login {
                     ViewManager.getInstance().getController().setMoney(datenbank.getMoney());
                     ViewManager.getInstance().setView(ViewManager.MAIN_MENU);
                 } else {
-                    ViewManager.getInstance().displayErrorMessage("Bruder du hast einen Account!!!");
+                    ViewManager.getInstance().displayErrorMessage("Gehe zu anmelden, da ein Account bereits vorliegt");
                 }}
                 else{
                     ViewManager.getInstance().displayErrorMessage("Bist du nicht 18????");
