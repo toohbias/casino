@@ -1,9 +1,9 @@
 package src.Logic;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import src.View_GUI.BlackjackView;
 import src.View_GUI.MusicManager;
 import src.View_GUI.ViewManager;
 
@@ -21,10 +21,15 @@ public class Blackjack {
     public static final StringProperty VerlorenText = new SimpleStringProperty("");
     public static final StringProperty GewonnenText = new SimpleStringProperty("");
     private int AktulerGestzterWert;
+    private IntegerProperty[] playerPropertys;
 
     public Blackjack() {
         VerlorenText.set("");
         GewonnenText.set("");
+        playerPropertys = new IntegerProperty[5];
+        for (int i = 0; i < 5; i++) {
+            playerPropertys[i] = new SimpleIntegerProperty(0);
+        }
     }
 
     public void newGame(int betrag) {
@@ -40,17 +45,20 @@ public class Blackjack {
         for (int i = 1; i <= 52; i++) {
             deck.push(i);
         }
+        for (int i = 0; i < 5; i++) {
+            playerPropertys[i].set(0);
+        }
 
-        playerHand.add(drawCard());
-        playerHand.add(drawCard());
-        dealerHand.add(drawCard());
+        playerHand.add(drawCardPlayer());
+        playerHand.add(drawCardPlayer());
+        dealerHand.add(drawCardDealer());
     }
 
     public void playerHit() {
         if (isGameOver().get()) {
             auswertung();
         } else {
-            playerHand.add(drawCard());
+            playerHand.add(drawCardPlayer());
         }
         if (getHandValue(playerHand) > 21) {
             gameOver.set(true);
@@ -63,16 +71,64 @@ public class Blackjack {
         auswertung();
     }
 
-    private int drawCard() {
+    private int drawCardDealer() {
         MusicManager.playSoundEffect("src/assets/soundEffects/drawingCard.wav", +3f);
+
         while (true) {
             int card = random.nextInt(52) + 1;
+
             if (deck.contains(card)) {
                 deck.remove((Integer) card);
+                dealerHand.add(card);
+
+                ImageView cardImage = new ImageView(new Image("src/assets/" + card + ".png"));
+
+                if (dealerHand.size() == 1) {
+                    cardImage.setTranslateX(-300);
+                    cardImage.setTranslateY(-200);
+                } else if (dealerHand.size() == 2) {
+                    cardImage.setTranslateX(-240);
+                    cardImage.setTranslateY(-200);
+                } else if (dealerHand.size() == 3) {
+                    cardImage.setTranslateX(-180);
+                    cardImage.setTranslateY(-200);
+                } else if (dealerHand.size() == 4) {
+                    cardImage.setTranslateX(-120);
+                    cardImage.setTranslateY(-200);
+                } else if (dealerHand.size() == 5) {
+                    cardImage.setTranslateX(-60);
+                    cardImage.setTranslateY(-200);
+                    gameOver.set(true);
+                    auswertung();
+                }
+
                 return card;
             }
         }
     }
+    private int drawCardPlayer() {
+        MusicManager.playSoundEffect("src/assets/soundEffects/drawingCard.wav", +3f);
+
+        while (true) {
+            int card = random.nextInt(52) + 1;
+
+            if (deck.contains(card)) {
+                deck.remove((Integer) card);
+                playerHand.add(card);
+
+                ImageView cardImage = new ImageView(new Image("src/assets/" + card + ".png"));
+                playerPropertys[playerHand.size()-1].set(card);
+
+                if (playerHand.size() == 5) {
+                    gameOver.set(true);
+                    auswertung();
+                }
+                return card;
+            }
+        }
+    }
+
+
 
     public void auswertung() {
         int playerValue = getHandValue(playerHand);
@@ -86,7 +142,7 @@ public class Blackjack {
         }
 
         while (dealerValue < 17) {
-            dealerHand.add(drawCard());
+            dealerHand.add(drawCardDealer());
             dealerValue = getHandValue(dealerHand);
         }
 
@@ -147,5 +203,9 @@ public class Blackjack {
 
     public BooleanProperty isGameOver() {
         return gameOver;
+    }
+
+    public IntegerProperty[] getPlayerProperty() {
+        return playerPropertys;
     }
 }

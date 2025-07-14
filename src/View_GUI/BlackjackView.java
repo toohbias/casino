@@ -3,6 +3,8 @@ package src.View_GUI;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -16,20 +18,27 @@ import src.Logic.Blackjack;
 import src.Logic.CasinoController;
 import javafx.beans.value.ChangeListener;
 
-import javax.swing.event.ChangeEvent;
+import java.util.Arrays;
 
 
 public class BlackjackView {
 
+    private static ObservableList<Image> cards =null;
     public static Node getPane() {
         Blackjack game = new Blackjack();
+        if (cards == null) {
+            Image im []= new Image[53];
+            im[0]=null;
+            for (int i=1;i<53;i++){
+                im[i]=new Image("src/assets/" +i + ".png");
+            }
+            cards = FXCollections.observableArrayList(im);
+        }
 
         BorderPane root = new BorderPane();
 
-
-        // Top: Überschriften
         HBox topLabels = new HBox();
-        topLabels.setPadding(new Insets(20, 100, 0, 100)); // symmetrisch vom Rand
+        topLabels.setPadding(new Insets(20, 100, 0, 100));
         topLabels.setSpacing(10);
 
         Label dealerLabel = new Label("Dealer Karten");
@@ -53,7 +62,7 @@ public class BlackjackView {
         Label playerHandLabel = new Label();
         playerHandLabel.setVisible(false);
 
-        // Buttons (größer, übereinander, zentriert)
+        // Buttons zum spielen
         Button hitButton = new Button("Karte nehmen");
         Button standButton = new Button("Bleiben");
         hitButton.disableProperty().bind(game.isGameOver());
@@ -81,7 +90,7 @@ public class BlackjackView {
         Label verlorenLabel = new Label();
         verlorenLabel.textProperty().bind(Blackjack.VerlorenText);
 
-        // Punkteanzeige – jetzt ganz unten
+        // Punkteanzeige
         HBox punktestandBox = new HBox();
         punktestandBox.setPadding(new Insets(30, 100, 10, 100));
         punktestandBox.setSpacing(10);
@@ -160,6 +169,7 @@ public class BlackjackView {
         Image confirmPressed = new Image("src/assets/RoundButtonPressedv2.png");
         ImageView confirmView = ViewManager.defaultView(confirm, 25);
         // when pressed: confirm stakes
+        confirmView.disableProperty().bind(game.isGameOver().not());
         confirmView.imageProperty().bind(Bindings.when(confirmView.pressedProperty()).then(confirmPressed).otherwise(confirm));
         confirmView.setOnMouseClicked(e ->{
         if (ViewManager.getInstance().getController().getMoney().get() < stakes.get() ) {
@@ -193,6 +203,19 @@ public class BlackjackView {
         stake.spacingProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(12.5));
         stake.setAlignment(Pos.CENTER);
 
+        //Karten
+        HBox playerHand = new HBox(5);
+        playerHand.setAlignment(Pos.CENTER);
+        IntegerProperty index []= game.getPlayerProperty();
+        for (int i=0;i<5;i++){
+            ImageView im = new ImageView();
+            im.setFitWidth(50);
+            im.setFitHeight(50);
+            im.imageProperty().bind(Bindings.valueAt(cards,index[i] ));
+            playerHand.getChildren().add(im);
+        }
+
+
 
         // Zentrum zusammenbauen
         VBox centerBox = new VBox(10);
@@ -201,6 +224,7 @@ public class BlackjackView {
         centerBox.getChildren().addAll(
                 buttonBox,
                 einsatzBox,
+                playerHand,
                 stake,
                 gewonnenLabel,
                 verlorenLabel,
