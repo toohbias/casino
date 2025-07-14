@@ -30,7 +30,7 @@ public class RouletteView {
     /**
      * wie groß die Zellen proportional zum Fenster sind
      */
-    private static final double CELL = 40;
+    private static final double CELL = 30;
     private static final int CELLS_X = 27;
     private static final int CELLS_Y = 11;
     private static final DoubleProperty CELL_ABS = new SimpleDoubleProperty();
@@ -41,17 +41,80 @@ public class RouletteView {
     private static int stakes = CasinoController.DEFAULT_STAKES;
 
     /**
+     * DoubleProperties, an die der Rotationswinkel der Scheibe und des Balls gebunden sind.
+     * Diese werden mit {@code Roulettev2.spin(int einsatz)} gesteuert.
+     */
+    public static DoubleProperty DESK_ROTATION = new SimpleDoubleProperty(0);
+    public static DoubleProperty BALL_ROTATION = new SimpleDoubleProperty(0);
+
+    private static final BorderPane root = new BorderPane();
+
+    /**
      * Roulette-Szene
      * hier drin kann der Spieler Roulette spielen
      * @return Szene
      */
     public static Node getPane() {
-        BorderPane root = new BorderPane();
-        root.setBottom(new StackPane(getBettingTable()));
-        Image roulette = new Image("src/assets/Roulette Desk.png");
-        ImageView rouletteView = ViewManager.defaultView(roulette, 1.8);
-        root.setCenter(rouletteView);
+        // buttons for setting the stake and to confirm
+        Image arrowUp = new Image("src/assets/ButtonUpv2.png");
+        Image arrowUpPressed = new Image("src/assets/ButtonUpPressedv2.png");
+        ImageView arrowUpView = ViewManager.defaultView(arrowUp, CELL);
+        // when pressed: raise stakes
+        arrowUpView.imageProperty().bind(Bindings.when(arrowUpView.pressedProperty()).then(arrowUpPressed).otherwise(arrowUp));
+        arrowUpView.setOnMouseClicked(e -> stakes = ViewManager.getInstance().setStake(1, stakes));
+
+        Image arrowDown = new Image("src/assets/ButtonDownv2.png");
+        Image arrowDownPressed = new Image("src/assets/ButtonDownPressedv2.png");
+        ImageView arrowDownView = ViewManager.defaultView(arrowUp, CELL);
+        // when pressed: reduce stakes
+        arrowDownView.imageProperty().bind(Bindings.when(arrowDownView.pressedProperty()).then(arrowDownPressed).otherwise(arrowDown));
+        arrowDownView.setOnMouseClicked(e -> stakes = ViewManager.getInstance().setStake(-1, stakes));
+
+        Image confirm = new Image("src/assets/RoundButtonv2.png");
+        Image confirmPressed = new Image("src/assets/RoundButtonPressedv2.png");
+        ImageView confirmView = ViewManager.defaultView(confirm, CELL * 0.8);
+        // when pressed: confirm stakes
+        confirmView.imageProperty().bind(Bindings.when(confirmView.pressedProperty()).then(confirmPressed).otherwise(confirm));
+        confirmView.setOnMouseClicked(e -> ViewManager.getInstance().setStake(0, stakes));
+
+        VBox stakeButtons = new VBox(arrowUpView, confirmView, arrowDownView);
+        stakeButtons.prefHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(CELL * 2).multiply(CELLS_Y));
+        stakeButtons.spacingProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(CELL * 2));
+        stakeButtons.setAlignment(Pos.CENTER);
+
+        // start button
+        ImageView start = new ImageView(new Image("src/assets/Roullete Wheel.png"));
+        start.setPreserveRatio(true);
+        start.fitWidthProperty().bind(stakeButtons.widthProperty());
+        Label startBtn = new Label("start", start);
+        startBtn.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpt", ViewManager.getInstance().windowHeightProperty().divide(CELL / 2 * 3)));
+        startBtn.setContentDisplay(ContentDisplay.TOP);
+        // when pressed: start game
+        startBtn.setOnMouseClicked(e -> ViewManager.getInstance().rouletteSpinned(stakes));
+
+        HBox bets = new HBox();
+        bets.getChildren().addAll(stakeButtons, new StackPane(getBettingTable()), startBtn);
+        bets.spacingProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(25));
+        bets.setAlignment(Pos.CENTER);
+
+        root.setCenter(bets);
         return root;
+    }
+
+    /**
+     * hier wird die Szene von der Wette zum Spiel gesetzt,
+     * und zwar in {@code Roulettev2.spin(int Einsatz)}, damit eine Pleite abgefangen werden kann,
+     * bevor der Szenenwechsel erfolgt
+     */
+    public static void setGameView() {
+        ImageView desk = ViewManager.defaultView(new Image("src/assets/Roulette Desk.png"), 1.8);
+        desk.rotateProperty().bind(DESK_ROTATION);
+
+        ImageView ball = ViewManager.defaultView(new Image("src/assets/Roulette Ball.png"), 50);
+        ball.rotateProperty().bind(BALL_ROTATION);
+
+        StackPane game = new StackPane(desk, ball);
+        root.setCenter(game);
     }
 
     /**

@@ -1,7 +1,10 @@
 package src.Logic;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import src.View_GUI.MoneyEffect;
 import src.View_GUI.MusicManager;
+import src.View_GUI.RouletteView;
 import src.View_GUI.ViewManager;
 
 import javafx.application.Platform;
@@ -13,24 +16,27 @@ import java.util.Random;
 
 public class Roulettev2 {
 
-    public IntegerProperty zufallszahlwürfel;
+    public DoubleProperty deskRotation, ballRotation;
 
     public static int zufallszahl(int max) {
         return new Random().nextInt(max);
     }
 
     public Roulettev2() {
-        // init IntProperties for spin()
-        zufallszahlwürfel = new SimpleIntegerProperty(0);
+        // init DoubleProperties for spin()
+        deskRotation = new SimpleDoubleProperty(0);
+        ballRotation = new SimpleDoubleProperty(0);
     }
 
     @SuppressWarnings("BusyWait") // Bei Thread.sleep(), wartet ja nicht aktiv auf etwas
-    public void spin(int einsatz) throws IllegalAccessException {
+    public void spin(int einsatz) {
         if (einsatz > ViewManager.getInstance().getController().getMoney().get()) {
             // meldung zu wenig geld
             ViewManager.getInstance().displayErrorMessage("Sie haben nicht die liquiden Mittel, bitte laden sie ihren Kontostand in unserem Shop auf");
             return;
         }
+        RouletteView.setGameView();
+
         ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() - einsatz); // Geld abziehen
         //animation start
 

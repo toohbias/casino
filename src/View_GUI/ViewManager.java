@@ -13,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import src.Logic.CasinoController;
 import src.Logic.Login;
+import src.Logic.Roulettev2;
 import src.Logic.SlotMachinev2;
 import java.util.Objects;
 
@@ -48,6 +49,7 @@ public class ViewManager {
     public static final int BLACKJACK_VIEW = 5;
     // Logic: Szene
     private final SlotMachinev2 slotMachine;
+    private final Roulettev2 roulette;
 
     private final CasinoController controller;
 
@@ -93,6 +95,7 @@ public class ViewManager {
         defaultScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("View.css")).toExternalForm());
 
         slotMachine = new SlotMachinev2();
+        roulette = new Roulettev2();
 
         controller = new CasinoController();
     }
@@ -169,6 +172,9 @@ public class ViewManager {
             }
             case ROULETTE_VIEW ->{
                 setCurrentNode(RouletteView.getPane());
+                // binds the symbols of the view to the rng in Roulette
+                RouletteView.DESK_ROTATION.bind(roulette.deskRotation);
+                RouletteView.BALL_ROTATION.bind(roulette.ballRotation);
 
                 setShowBack(true);
                 setShowMoney(true);
@@ -230,10 +236,23 @@ public class ViewManager {
      * <p>
      * der {@code ToggleButton} ist notwendig, damit der Knopf am Anfang der animation gesperrt
      * und am Ende wieder entsperrt werden kann, da dies vom Timing der Threads abhängt
+     * @param einsatz Einsatz
+     * @param slotArm ToggleButton
      */
     public void leverPulled(int einsatz, ToggleButton slotArm) {
-            MoneyFrame.stopStakesAnimation();
-            slotMachine.spin(einsatz, slotArm);
+        MoneyFrame.stopStakesAnimation();
+        slotMachine.spin(einsatz, slotArm);
+    }
+
+    /**
+     * wird von RouletteView aufgerufen, wenn der spieler start klickt
+     * und reicht einfach die Methode aus Roulette {@code roulette.spin(int einsatz)} durch
+     * die nötigen Bindings wurden schon in {@code setView(int view)} gesetzt
+     * @param einsatz Einsatz
+     */
+    public void rouletteSpinned(int einsatz) {
+        MoneyFrame.stopStakesAnimation();
+        roulette.spin(einsatz);
     }
 
     /**
@@ -309,6 +328,10 @@ public class ViewManager {
         ((BorderPane) (topBar.getChildren().getFirst())).getLeft().setVisible(show);
     }
 
+    /**
+     * gibt der Stage die Szene
+     * @return Szene
+     */
     public Scene getDefaultScene() { return defaultScene; }
 
     /**
