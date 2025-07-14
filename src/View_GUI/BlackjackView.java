@@ -81,7 +81,8 @@ public class BlackjackView {
         */
         // Karten anzeigen Player
         HBox playerHand = new HBox();
-
+        playerHand.setMaxHeight(140);
+        playerHand.setMinHeight(140);
         Label playerLabel = new Label("Spieler");
         playerLabel.setAlignment(Pos.CENTER_RIGHT);
         HBox.setMargin(playerLabel, new Insets(5, 20, 5, 20));
@@ -90,7 +91,7 @@ public class BlackjackView {
         playerLabel.setMinWidth(200);
 
         playerHand.getChildren().add(playerLabel);
-        playerHand.setTranslateY(95);
+        playerHand.setTranslateY(90);
         //playerHand.setBackground(new Background(new BackgroundImage(new Image("src/assets/Deskcardsv5.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT)));
         playerHand.setAlignment(Pos.TOP_CENTER);
         IntegerProperty[] playerIndices = game.getPlayerProperty();
@@ -115,7 +116,9 @@ public class BlackjackView {
 
         // Karten anzeigen Dealer
         HBox DealerHand = new HBox();
-        DealerHand.setTranslateY(-20);
+        DealerHand.setMinHeight(140);
+        DealerHand.setMaxHeight(140);
+        DealerHand.setTranslateY(15);
         //playerHand.setBackground(new Background(new BackgroundImage(new Image("src/assets/Deskcardsv5.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT)));
         DealerHand.setAlignment(Pos.BOTTOM_CENTER);
         IntegerProperty[] DealerIndices = game.getDealerProperty();
@@ -192,11 +195,13 @@ public class BlackjackView {
         // Button-Aktionen
         hitButton.setOnAction(e -> {
             game.playerHit();
+            System.out.println(playerHand.getHeight());
             updateCardLabels(game, playerHandLabel, dealerHandLabel, playerValueLabel, dealerValueLabel);
         });
 
         standButton.setOnAction(e -> {
             game.playerStand();
+            System.out.println(playerHand.getHeight());
             updateCardLabels(game, playerHandLabel, dealerHandLabel, playerValueLabel, dealerValueLabel);
         });
 

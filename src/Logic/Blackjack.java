@@ -54,6 +54,7 @@ public class Blackjack {
         }
         for (int i = 0; i < 5; i++) {
             playerPropertys[i].set(0);
+            dealerPropertys[i].set(0);
         }
 
         drawCardPlayer();
@@ -93,10 +94,6 @@ public class Blackjack {
                 if (index < 4) {
                     dealerPropertys[index].set(card);
                 }
-                else {
-                    gameOver.set(true);
-                    auswertung();
-                }
                 return card;
             }
         }
@@ -113,16 +110,15 @@ public class Blackjack {
 
                 int index = playerHand.size() - 1;
                 if (index < 4) {
-                    playerPropertys[index].set(card);
+                    playerPropertys[index].set(card);}
                 }
-               else {
-                    gameOver.set(true);
-                    auswertung();
-                }
+            if (playerHand.size() == 4) {
+                   gameOver.set(true);
+                   auswertung();
+               }
                 return card;
             }
         }
-    }
 
     public void auswertung() {
         int playerValue = getHandValue(playerHand);
@@ -138,9 +134,15 @@ public class Blackjack {
             return;
         }
 
-        while (dealerValue < 17) {
-            drawCardDealer();
-            dealerValue = getHandValue(dealerHand);
+        while (dealerValue < 17)
+        {
+            if (dealerHand.size() < 4) {
+                drawCardDealer();
+                dealerValue = getHandValue(dealerHand);
+            }
+            else {
+                break;
+            }
         }
 
         if (dealerValue > 21) {
@@ -182,9 +184,7 @@ public class Blackjack {
     public int getHandValue(List<Integer> hand) {
         int value = 0;
         int assCount=0;
-        System.out.println("___________");
         for (int card : hand) {
-            System.out.println(card);
             int r = (card-1)/4;
             if (r< 9 ){
                 value = value + 2 + r;
