@@ -41,7 +41,7 @@ public class BlackjackView {
         Label dealerLabel = new Label("Dealer");
         dealerLabel.setMaxWidth(200);
         dealerLabel.setMinWidth(200);
-        dealerLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: white;");
+        dealerLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
         /*
         HBox dealerBox = new HBox(dealerLabel);
         dealerBox.setAlignment(Pos.TOP_LEFT);
@@ -91,9 +91,11 @@ public class BlackjackView {
         playerLabel.setMinWidth(200);
 
         playerHand.getChildren().add(playerLabel);
-        playerHand.setTranslateY(90);
+        playerHand.setTranslateY(117);
         //playerHand.setBackground(new Background(new BackgroundImage(new Image("src/assets/Deskcardsv5.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT)));
         playerHand.setAlignment(Pos.TOP_CENTER);
+
+        //Player Bild erstellen
         IntegerProperty[] playerIndices = game.getPlayerProperty();
 
         for (int i = 0; i < 4; i++) {
@@ -118,9 +120,9 @@ public class BlackjackView {
         HBox DealerHand = new HBox();
         DealerHand.setMinHeight(140);
         DealerHand.setMaxHeight(140);
-        DealerHand.setTranslateY(15);
+        DealerHand.setTranslateY(-14);
         //playerHand.setBackground(new Background(new BackgroundImage(new Image("src/assets/Deskcardsv5.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT)));
-        DealerHand.setAlignment(Pos.BOTTOM_CENTER);
+        DealerHand.setAlignment(Pos.TOP_CENTER);
         IntegerProperty[] DealerIndices = game.getDealerProperty();
         DealerHand.getChildren().add(dealerLabel);
 
@@ -144,7 +146,11 @@ public class BlackjackView {
         standButton.disableProperty().bind(game.isGameOver());
         hitButton.visibleProperty().bind(hitButton.disabledProperty().not());
         standButton.visibleProperty().bind(hitButton.disabledProperty().not());
-        VBox buttonBox = new VBox(15, hitButton, standButton);
+        HBox buttonBox = new HBox(15, hitButton, standButton);
+        buttonBox.setMinHeight(140);
+        buttonBox.setMaxHeight(140);
+        buttonBox.setTranslateY(30);
+        buttonBox.setTranslateX(30);
         buttonBox.setAlignment(Pos.CENTER);
 
         // Gewinn-/Verloren-Labels
@@ -179,7 +185,8 @@ public class BlackjackView {
         raiseAndLowerStakes.setSpacing(10);
         HBox stake = new HBox(raiseAndLowerStakes, confirmView);
         stake.setAlignment(Pos.CENTER);
-        stake.getChildren().add(buttonBox);
+        stake.getChildren().addAll(hitButton,standButton);
+        stake.setTranslateY(35);
         stake.setSpacing(30);
 
         // Center zusammensetzen.
