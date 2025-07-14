@@ -113,6 +113,12 @@ public class ViewManager {
     public BorderPane getMsgLayer() { return msglayer; }
 
     /**
+     * gibt die Ebene, auf der die TopBar angezeigt wird
+     * @return Top Bar
+     */
+    public StackPane getTopBar() { return topBar; }
+
+    /**
      * gibt die Ebene, auf der ggf. Dekorationen angezeigt werden
      * @return Deko Layer
      */
@@ -136,7 +142,7 @@ public class ViewManager {
      */
     public void setView(int view) {
         MoneyFrame.stopStakesAnimation(); // no stakes selection cross scenes plz
-        decolayer.setCenter(null);
+        decolayer.getChildren().clear();
 
         switch (view) {
             case LOGIN_MENU -> {
@@ -170,11 +176,12 @@ public class ViewManager {
                 setShowMoney(true);
                 setShowShop(true);
             }
-            case ROULETTE_VIEW ->{
+            case ROULETTE_VIEW -> {
                 setCurrentNode(RouletteView.getPane());
                 // binds the symbols of the view to the rng in Roulette
                 RouletteView.DESK_ROTATION.bind(roulette.deskRotation);
                 RouletteView.BALL_ROTATION.bind(roulette.ballRotation);
+                RouletteView.SPEED_HEIGHT.bind(roulette.speedHeight);
 
                 setShowBack(true);
                 setShowMoney(true);
@@ -188,7 +195,7 @@ public class ViewManager {
                 setShowShop(false);
             }
             case BLACKJACK_VIEW -> {
-            setCurrentNode(BlackjackView.getPane());
+                setCurrentNode(BlackjackView.getPane());
 
                 setShowBack(true);
                 setShowMoney(true);
