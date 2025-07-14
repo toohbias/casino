@@ -137,6 +137,9 @@ public class Blackjack {
         CasinoController controller = ViewManager.getInstance().getController();
 
         if (playerValue > 21) {
+
+            MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
+
             VerlorenText.set("Du hast überkauft! Du hast verloren.");
             GewonnenText.set("");
             return;
@@ -161,9 +164,15 @@ public class Blackjack {
             VerlorenText.set("");
             controller.win(AktulerGestzterWert * 2);
         } else if (playerValue < dealerValue) {
+
+            MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
+
             VerlorenText.set("Leider verloren. Dealer hat gewonnen.");
             GewonnenText.set("");
         } else {
+
+            MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
+
             VerlorenText.set("Du hast leider verloren, probiere es noch mal");
             GewonnenText.set("");
         }
