@@ -137,53 +137,64 @@ public class Blackjack {
 
     public void auswertung() {
         int playerValue = getHandValue(playerHand);
-        int dealerValue = getHandValue(dealerHand);
 
         if (playerValue > 21) {
-            MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
-            VerlorenText.set("Du hast überkauft! Du hast verloren.");
-            GewonnenText.set("");
+            Platform.runLater(() -> {
+                MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
+                VerlorenText.set("Du hast überkauft! Du hast verloren.");
+                GewonnenText.set("");
+            });
             return;
         }
 
-        while (dealerValue < 17 && dealerHand.size() < 4) {
-            drawCardDealer();
-            dealerValue = getHandValue(dealerHand);
-        }
+        // Separate Thread für die schrittweise Dealer-Auswertung und verzögerten Effekt
+        new Thread(() -> {
+            int dealerValue = getHandValue(dealerHand);
 
-        if (dealerValue > 21) {
-            MusicManager.playSoundEffect("src/assets/soundEffects/bing.wav", +4f);
-            zeigeGewinnAnimation();
-            GewonnenText.set("Dealer hat überkauft! Du hast gewonnen.");
-            VerlorenText.set("");
-            ViewManager.getInstance().getController().win(
-                    ViewManager.getInstance().getController().getMoney().get() + (AktulerGestzterWert * 2)
-            );
-            return;
-        }
+            try {
+                while (dealerValue < 17 && dealerHand.size() < 4) {
+                    Thread.sleep(1000); // 1 Sekunde Verzögerung zwischen Karten
+                    Platform.runLater(this::drawCardDealer); // Karte ziehen im UI-Thread
+                    dealerValue = getHandValue(dealerHand); // neu berechnen
+                }
 
-        if (playerValue > dealerValue) {
-            MusicManager.playSoundEffect("src/assets/soundEffects/bing.wav", +4f);
-            zeigeGewinnAnimation();
-            GewonnenText.set("Herzlichen Glückwunsch! Du hast gewonnen.");
-            VerlorenText.set("");
-            ViewManager.getInstance().getController().win(
-                    ViewManager.getInstance().getController().getMoney().get() + (AktulerGestzterWert * 2)
-            );
-        } else if (playerValue < dealerValue) {
-            MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
-            VerlorenText.set("Leider verloren. Dealer hat gewonnen.");
-            GewonnenText.set("");
-            // KEIN weiterer Abzug nötig – Einsatz wurde bereits abgezogen
-        } else {
-            MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
-            VerlorenText.set("Unentschieden! Dein Einsatz wurde zurückerstattet.");
-            GewonnenText.set("");
-            // Einsatz zurückzahlen
-            ViewManager.getInstance().getController().win(
-                    ViewManager.getInstance().getController().getMoney().get() + AktulerGestzterWert
-            );
-        }
+                Thread.sleep(1500); // 1.5 Sekunden Verzögerung vor Ergebnisanzeige
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            int finalDealerValue = dealerValue;
+            Platform.runLater(() -> {
+                if (finalDealerValue > 21) {
+                    MusicManager.playSoundEffect("src/assets/soundEffects/bing.wav", +4f);
+                    zeigeGewinnAnimation();
+                    GewonnenText.set("Dealer hat überkauft! Du hast gewonnen.");
+                    VerlorenText.set("");
+                    ViewManager.getInstance().getController().win(
+                            ViewManager.getInstance().getController().getMoney().get() + (AktulerGestzterWert * 2)
+                    );
+                } else if (playerValue > finalDealerValue) {
+                    MusicManager.playSoundEffect("src/assets/soundEffects/bing.wav", +4f);
+                    zeigeGewinnAnimation();
+                    GewonnenText.set("Herzlichen Glückwunsch! Du hast gewonnen.");
+                    VerlorenText.set("");
+                    ViewManager.getInstance().getController().win(
+                            ViewManager.getInstance().getController().getMoney().get() + (AktulerGestzterWert * 2)
+                    );
+                } else if (playerValue < finalDealerValue) {
+                    MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
+                    VerlorenText.set("Leider verloren. Dealer hat gewonnen.");
+                    GewonnenText.set("");
+                } else {
+                    MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
+                    VerlorenText.set("Unentschieden! Dein Einsatz wurde zurückerstattet.");
+                    GewonnenText.set("");
+                    ViewManager.getInstance().getController().win(
+                            ViewManager.getInstance().getController().getMoney().get() + AktulerGestzterWert
+                    );
+                }
+            });
+        }).start();
     }
 
     public List<Integer> getPlayerHand() {
