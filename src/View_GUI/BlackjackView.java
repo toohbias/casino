@@ -202,13 +202,13 @@ public class BlackjackView {
         // Button-Aktionen
         hitButton.setOnAction(e -> {
             game.playerHit();
-            System.out.println(playerHand.getHeight());
+            //System.out.println(playerHand.getHeight());
             updateCardLabels(game, playerHandLabel, dealerHandLabel, playerValueLabel, dealerValueLabel);
         });
 
         standButton.setOnAction(e -> {
             game.playerStand();
-            System.out.println(playerHand.getHeight());
+            //System.out.println(playerHand.getHeight());
             updateCardLabels(game, playerHandLabel, dealerHandLabel, playerValueLabel, dealerValueLabel);
         });
 
@@ -216,6 +216,8 @@ public class BlackjackView {
         desk.setPreserveRatio(true);
         desk.fitHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().subtract(ViewManager.getInstance().getTopBar().heightProperty()));
         ViewManager.getInstance().getDecoLayer().setBottom(new BorderPane(desk));
+
+        ViewManager.getInstance().getFXLayer().setCenter(MoneyEffect.getRoot());
 
         return root;
     }

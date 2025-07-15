@@ -1,9 +1,11 @@
 package src.Logic;
 
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import src.View_GUI.BlackjackView;
+import src.View_GUI.MoneyEffect;
 import src.View_GUI.MusicManager;
 import src.View_GUI.ViewManager;
 
@@ -123,7 +125,7 @@ public class Blackjack {
     public void auswertung() {
         int playerValue = getHandValue(playerHand);
         int dealerValue = getHandValue(dealerHand);
-        CasinoController controller = ViewManager.getInstance().getController();
+
 
         if (playerValue > 21) {
 
@@ -147,27 +149,29 @@ public class Blackjack {
 
         if (dealerValue > 21) {
             MusicManager.playSoundEffect("src/assets/soundEffects/bing.wav", +4f);
+            zeigeGewinnAnimation();
             GewonnenText.set("Dealer hat überkauft! Du hast gewonnen.");
             VerlorenText.set("");
-            controller.win(AktulerGestzterWert * 2);
+            ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + (AktulerGestzterWert * 2));
             return;
         }
 
         if (playerValue > dealerValue) {
             MusicManager.playSoundEffect("src/assets/soundEffects/bing.wav", +4f);
+            zeigeGewinnAnimation();
             GewonnenText.set("Herzlichen Glückwunsch! Du hast gewonnen.");
+
             VerlorenText.set("");
-            controller.win(AktulerGestzterWert * 2);
+            ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + (AktulerGestzterWert * 2));
         } else if (playerValue < dealerValue) {
 
             MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
-
+            ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() - AktulerGestzterWert);
             VerlorenText.set("Leider verloren. Dealer hat gewonnen.");
             GewonnenText.set("");
         } else {
 
             MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
-
             VerlorenText.set("Du hast leider verloren, probiere es noch mal");
             GewonnenText.set("");
         }
@@ -217,5 +221,15 @@ public class Blackjack {
     }
     public IntegerProperty[] getDealerProperty() {
         return dealerPropertys;
+    }
+
+    private void zeigeGewinnAnimation() {
+        new Thread(() -> {
+            MoneyEffect.animate(100);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException ignored) {}
+            Platform.runLater(MoneyEffect::stop);
+        }).start();
     }
 }
