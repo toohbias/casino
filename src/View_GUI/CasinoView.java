@@ -22,21 +22,15 @@ public class CasinoView {
         BorderPane root = new BorderPane();
 
         ImageView img0 = ViewManager.defaultView(new Image("file:src/assets/casino_sign_animated.gif"), 5);
-        //ImageView img4 = ViewManager.defaultView(new Image("file:src/assets/las_vegas_sign_transparent.gif"), 5);
 
         StackPane topPane = new StackPane();
         topPane.getChildren().addAll(img0);
-
-            // Bild 4 (am Rand oben links)
-        //StackPane.setAlignment(img4, Pos.TOP_LEFT);
-
-            // Bild 0 (zentriert oben)
         StackPane.setAlignment(img0, Pos.TOP_CENTER);
 
         // in das BorderPane setzen
         root.setTop(topPane);
 
-       HBox selection = new HBox();
+        HBox selection = new HBox();
 
         // show slot machine selection button
         ImageView img = ViewManager.defaultView(new Image("src/assets/Slot machine final logo .png"), 3);
@@ -52,7 +46,7 @@ public class CasinoView {
         rouletteImage.setOnAction(e -> ViewManager.getInstance().setView(ViewManager.ROULETTE_VIEW));
         selection.getChildren().add(rouletteImage);
 
-        //zeige BlackJack selcetion button
+        // show BlackJack selection button
         ImageView img3 = ViewManager.defaultView(new Image("src/assets/Black jack logo.png"), 3);
         Button BlackJackImage = new Button("BlackJack", img3);
         BlackJackImage.setContentDisplay(ContentDisplay.TOP);

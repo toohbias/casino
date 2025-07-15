@@ -1,6 +1,5 @@
 package src.View_GUI;
 
-import com.sun.javafx.scene.layout.region.Margins;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -19,6 +18,8 @@ import src.Logic.CasinoController;
 public class BlackjackView {
 
     private static ObservableList<Image> cards = null;
+
+    private static int stakes = CasinoController.DEFAULT_STAKES;
 
     public static Node getPane() {
         Blackjack game = new Blackjack();
@@ -123,13 +124,13 @@ public class BlackjackView {
 
 
         // Einsätze erhöhen/senken
-        IntegerProperty stakes = new SimpleIntegerProperty(CasinoController.DEFAULT_STAKES);
+//        IntegerProperty stakes = new SimpleIntegerProperty(CasinoController.DEFAULT_STAKES);
         ImageView arrowUpView = createStakeButton("ButtonUpv2.png", "ButtonUpPressedv2.png");
-        arrowUpView.setOnMouseClicked(e -> stakes.set(CasinoController.getNextStakes(1, stakes.get())));
+        arrowUpView.setOnMouseClicked(e -> stakes = ViewManager.getInstance().setStake(1, stakes));
         arrowUpView.disableProperty().bind(game.isGameOver().not());
 
         ImageView arrowDownView = createStakeButton("ButtonDownv2.png", "ButtonDownPressedv2.png");
-        arrowDownView.setOnMouseClicked(e -> stakes.set(CasinoController.getNextStakes(-1, stakes.get())));
+        arrowDownView.setOnMouseClicked(e -> stakes = ViewManager.getInstance().setStake(-1, stakes));
         arrowDownView.disableProperty().bind(game.isGameOver().not());
 
         // Start-Button: Cards Stack + Label
@@ -142,11 +143,12 @@ public class BlackjackView {
         startGameBox.setAlignment(Pos.CENTER);
         startGameBox.setSpacing(5);
         startGameBox.setOnMouseClicked(e -> {
-            if (ViewManager.getInstance().getController().getMoney().get() < stakes.get()) {
+            ViewManager.getInstance().setStake(0, stakes);
+            if (ViewManager.getInstance().getController().getMoney().get() < stakes) {
                 ViewManager.getInstance().displayInfoMessage("Nicht genügend Geld für diesen Einsatz.");
                 return;
             }
-            game.newGame(stakes.get());
+            game.newGame(stakes);
             updateCardLabels(game, playerHandLabel, dealerHandLabel, playerValueLabel, dealerValueLabel);
         });
         startGameBox.disableProperty().bind(game.isGameOver().not());

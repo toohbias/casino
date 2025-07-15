@@ -9,9 +9,7 @@ import src.View_GUI.ViewManager;
 
 import javafx.application.Platform;
 
-import java.awt.Point;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 public class Roulettev2 {
 
@@ -20,7 +18,7 @@ public class Roulettev2 {
     private static final int[] numbers = {0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27,
                                           13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1,
                                           20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3,
-                                          26};
+                                          26, 0};
 
     /**
      * Anfangs-Abstand des Balles zur Scheibe
@@ -45,8 +43,10 @@ public class Roulettev2 {
     }
 
     @SuppressWarnings("BusyWait") // Bei Thread.sleep(), wartet ja nicht aktiv auf etwas
-    public void spin(HashMap<Point, Integer> einsatz) {
-        final int einsatzTotal = einsatz.values().stream().reduce(0, Integer::sum);
+    public void spin(Collection<Bet> einsatz) {
+//        final int einsatzTotal = einsatz.values().stream().reduce(0, Integer::sum);
+        final int einsatzTotal = einsatz.stream().map(bet -> bet.stakes).reduce(0, Integer::sum);
+        System.out.println(einsatzTotal);
         if (einsatzTotal > ViewManager.getInstance().getController().getMoney().get()) {
             // meldung zu wenig geld
             ViewManager.getInstance().displayErrorMessage("Sie haben nicht die liquiden Mittel, bitte laden sie ihren Kontostand in unserem Shop auf");
@@ -61,7 +61,7 @@ public class Roulettev2 {
 
         ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() - einsatzTotal); // Geld abziehen
 
-        double speedMultiplier = new Random().nextDouble(0, 1.5);
+        double speedMultiplier = new Random().nextDouble(0.000, 1.500);
 
         // 1 thread, der die rotation der scheibe animiert
         new Thread(() -> {
@@ -125,42 +125,16 @@ public class Roulettev2 {
             }
             berechnen(result, einsatz);
         }).start();
-
     }
 
-    public static void berechnen(int result, HashMap<Point, Integer> bets) {
-        int totalerGewinn = 0;
+    public static void berechnen(int result, Collection<Bet> bets) {
+        int gewinn = bets.stream().filter(bet -> bet.numbers.contains(result)).map(bet -> bet.stakes * bet.payout).reduce(0, Integer::sum); // avg rust line
 
-        // Reihen
-        if(result % 3 == 0 && result != 0 && bets.containsKey(new Point(26, 1))) { totalerGewinn += bets.get(new Point(26, 1)) * 3; }
-        if((result + 1) % 3 == 0 && bets.containsKey(new Point(26, 3))) { totalerGewinn += bets.get(new Point(26, 3)) * 3; }
-        if((result + 2) % 3 == 0 && bets.containsKey(new Point(26, 5))) { totalerGewinn += bets.get(new Point(26, 5)) * 3; }
-
-        // Dutzend
-        if(result <= 12 && result != 0 && bets.containsKey(new Point(2, 7))) { totalerGewinn += bets.get(new Point(2, 7)) * 3; }
-        if(result > 12 && result <= 24 && bets.containsKey(new Point(10, 7))) { totalerGewinn += bets.get(new Point(10, 7)) * 3; }
-        if(result > 24 && bets.containsKey(new Point(18, 7))) { totalerGewinn += bets.get(new Point(18, 7)) * 3; }
-
-        // Halbe
-        if(result <= 18 && result != 0 && bets.containsKey(new Point(2, 9))) { totalerGewinn += bets.get(new Point(2, 9)) * 2; }
-        if(result > 18 && bets.containsKey(new Point(22, 9))) { totalerGewinn += bets.get(new Point(22, 9)) * 2; }
-
-        // Gerade
-        if(result % 2 == 0 && result != 0 && bets.containsKey(new Point(6, 9))) { totalerGewinn += bets.get(new Point(6, 9)) * 2; }
-        if(result % 2 == 1 && bets.containsKey(new Point(18, 9))) { totalerGewinn += bets.get(new Point(18, 9)) * 2; }
-
-        // Farbe
-        if(!RouletteView.BLACK.contains(result) && result != 0 && bets.containsKey(new Point(10, 9))) { totalerGewinn += bets.get(new Point(10, 9)) * 2; }
-        if(RouletteView.BLACK.contains(result) && bets.containsKey(new Point(14, 9))) { totalerGewinn += bets.get(new Point(14, 9)) * 2; }
-
-        // TODO inner bets
-
-        if(totalerGewinn > 0) {
+        if(gewinn > 0) {
             // macht die animation im money frame
-            int finalTotalerGewinn = totalerGewinn;
-            Platform.runLater(() -> ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + finalTotalerGewinn));
+            Platform.runLater(() -> ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + gewinn));
 
-            System.out.println("Herzlichen Glückwunsch sie haben " + totalerGewinn + " V-Bucks gewonnen");
+            System.out.println("Herzlichen Glückwunsch sie haben " + gewinn + " V-Bucks gewonnen");
             System.out.println("Ihr neuer Kontostand beträgt " + ViewManager.getInstance().getController().getMoney().get() + " V-Bucks");
             // coin animation
             new Thread(() -> {
@@ -184,4 +158,81 @@ public class Roulettev2 {
         }
     }
 
+    public static class Bet {
+        public List<Integer> numbers;
+        public final int stakes;
+        public int payout;
+
+        public Bet(int x, int y, int stakes) {
+            this.stakes = stakes;
+            numbers = new ArrayList<>();
+            if(x == 0 && y == 1) { // Zahl 0
+                payout = 36;
+                numbers.add(0);
+            } else if(x == 26) { // Reihen
+                payout = 3;
+                for(int i = 1 + (6 - y) / 2; i <= 36; i+=3) {
+                    numbers.add(i);
+                }
+            } else if(y == 7) { // Dutzend
+                payout = 3;
+                for(int i = 1; i <= 12; i++) {
+                    numbers.add(i + 12 * ((x - 2) / 8));
+                }
+            } else if(y == 9) {
+                payout = 2;
+                switch(x) {
+                    case 2: { for(int i = 1; i <= 18; i++) { numbers.add(i); } break; } // unteres Halb
+                    case 22: { for(int i = 19; i <= 36; i++) { numbers.add(i); } break; } // oberes Halb
+                    case 6: { for(int i = 2; i <= 36; i+=2) { numbers.add(i); } break; } // Gerade
+                    case 18: { for(int i = 1; i <= 35; i+=2) { numbers.add(i); } break; } // Ungerade
+                    case 10: { numbers.addAll(RouletteView.RED); break; } // Rot
+                    case 14: { numbers.addAll(RouletteView.BLACK); break; } // Schwarz
+                }
+            } else {
+                if(x % 2 == 0 && y % 2 == 1) { // Ganze Zahlen
+                    numbers.add((x / 2 - 1) * 3 + (3 - (y / 2)));
+                    payout = 36;
+                } else if(y == 0) {
+                    for (int i = 0; i < 3; i++) {
+                        numbers.add(3 * (x / 2) - i);
+                    }
+                    if (x % 2 == 1) { // Doppelte Strasse
+                        for (int i = 0; i < 3; i++) {
+                            numbers.add(3 * ((x + 1) / 2) - i);
+                        }
+                        payout = 6;
+                    } else { // Strasse
+                        payout = 12;
+                    }
+                } else if(x == 1) { // Felder mit 0 zu handlen ist bisschen schwer deshalb separat
+                    numbers.add(0);
+                    switch(y) {
+                        case 1: { numbers.add(3); payout = 18; break; }
+                        case 2: { numbers.add(3); numbers.add(2); payout = 12; break; }
+                        case 3: { numbers.add(2); payout = 18; break; }
+                        case 4: { numbers.add(2); numbers.add(1); payout = 12; break; }
+                        case 5: { numbers.add(1); payout = 18; break; }
+                    }
+                } else if(x % 2 == 1 && y % 2 == 1) { // horizontaler Split
+                    numbers.add(((x - 1) / 2 - 1) * 3 + (3 - (y / 2)));
+                    numbers.add(((x + 1) / 2 - 1) * 3 + (3 - (y / 2)));
+                    payout = 18;
+                } else if(x % 2 == 0 && y % 2 == 0) { // vertikaler Split
+                    numbers.add((x / 2 - 1) * 3 + (3 - ((y - 1) / 2)));
+                    numbers.add((x / 2 - 1) * 3 + (3 - ((y + 1) / 2)));
+                    payout = 18;
+                } else { // Ecke
+                    numbers.add(((x - 1) / 2 - 1) * 3 + (3 - ((y - 1) / 2)));
+                    numbers.add(((x + 1) / 2 - 1) * 3 + (3 - ((y - 1) / 2)));
+                    numbers.add(((x - 1) / 2 - 1) * 3 + (3 - ((y + 1) / 2)));
+                    numbers.add(((x + 1) / 2 - 1) * 3 + (3 - ((y + 1) / 2)));
+                    payout = 9;
+                }
+            }
+            System.out.print(x + " " + y + ": ");
+            numbers.forEach(n -> System.out.print(n + " "));
+            System.out.println();
+        }
+    }
 }

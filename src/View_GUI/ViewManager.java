@@ -16,7 +16,7 @@ import src.Logic.Login;
 import src.Logic.Roulettev2;
 import src.Logic.SlotMachinev2;
 
-import java.awt.Point;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -256,11 +256,11 @@ public class ViewManager {
 
     /**
      * wird von RouletteView aufgerufen, wenn der spieler start klickt
-     * und reicht einfach die Methode aus Roulette {@code roulette.spin(HashMap<Point, Integer> einsatz)} durch
+     * und reicht einfach die Methode aus Roulette {@code roulette.spin(Collection<Bet> einsatz)} durch
      * die nötigen Bindings wurden schon in {@code setView(int view)} gesetzt
      * @param einsatz Einsatz
      */
-    public void rouletteSpinned(HashMap<Point, Integer> einsatz) {
+    public void rouletteSpinned(Collection<Roulettev2.Bet> einsatz) {
         MoneyFrame.stopStakesAnimation();
         roulette.spin(einsatz);
     }

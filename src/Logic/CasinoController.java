@@ -35,7 +35,6 @@ public class CasinoController {
     public void win(int money) {
         MoneyFrame.stopStakesAnimation(); // bug, wenn man den Einsatz ändert während man gewinnt
         MoneyFrame.animateMoneyFrame(this.money.get(), money);
-        this.money.set(money);
     }
 
     /**

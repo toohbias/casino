@@ -13,6 +13,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import src.Logic.CasinoController;
+import src.Logic.Roulettev2;
 
 import java.awt.Point;
 
@@ -31,6 +32,11 @@ public class RouletteView {
     public static final HashSet<Integer> BLACK = new HashSet<>(Arrays.asList(6, 15, 24, 33, 2, 8, 11, 17, 20, 26, 29, 35, 4, 10, 13, 22, 28, 31));
 
     /**
+     * alle Felder, die rot sind
+     */
+    public static final HashSet<Integer> RED = new HashSet<>(Arrays.asList(3, 9, 12, 18, 21, 27, 30, 36, 5, 14, 23, 32, 1, 7, 16, 19, 25, 34));
+
+    /**
      * wie groß die Zellen proportional zum Fenster sind
      */
     private static final double CELL = 30;
@@ -46,12 +52,12 @@ public class RouletteView {
     /**
      * abgeschlossene Wetten
      */
-    private static HashMap<Point, Integer> bets; // POJO war mir jetzt zu blöd, Point geht auch für x/y
+    private static HashMap<Integer, Roulettev2.Bet> bets;
 
     /**
      * DoubleProperties, an die der Rotationswinkel der Scheibe und des Balls
      * sowie die Entfernung vom Ball zum Mittelpunkt gebunden sind.
-     * Diese werden mit {@code Roulettev2.spin(HashMap<Point, Integer> einsatz)} gesteuert.
+     * Diese werden mit {@code Roulettev2.spin(Collection<Bet> einsatz)} gesteuert.
      */
     public static DoubleProperty DESK_ROTATION = new SimpleDoubleProperty(0);
     public static DoubleProperty BALL_ROTATION = new SimpleDoubleProperty(0);
@@ -102,7 +108,7 @@ public class RouletteView {
         startBtn.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpt", ViewManager.getInstance().windowHeightProperty().divide(CELL / 2 * 3)));
         startBtn.setContentDisplay(ContentDisplay.TOP);
         // when pressed: start game
-        startBtn.setOnMouseClicked(e -> ViewManager.getInstance().rouletteSpinned(bets));
+        startBtn.setOnMouseClicked(e -> ViewManager.getInstance().rouletteSpinned(bets.values()));
 
         // wetten
         bets = new HashMap<>();
@@ -121,7 +127,7 @@ public class RouletteView {
 
     /**
      * hier wird die Szene von der Wette zum Spiel gesetzt,
-     * und zwar in {@code Roulettev2.spin(HashMap<Point, Integer> einsatz)}, damit eine Pleite abgefangen werden kann,
+     * und zwar in {@code Roulettev2.spin(Collection<Bet> einsatz)}, damit eine Pleite abgefangen werden kann,
      * bevor der Szenenwechsel erfolgt
      */
     public static void setGameView() {
@@ -284,11 +290,11 @@ public class RouletteView {
                 ImageView chipView = ViewManager.defaultView(chip, CELL);
                 lbl.setGraphic(chipView);
                 lbl.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-                bets.put(new Point(x, y), stakes);
+                bets.put(x * 100 + y, new Roulettev2.Bet(x, y, stakes));
             } else if(e.getButton() == MouseButton.SECONDARY) {
                 lbl.setContentDisplay(ContentDisplay.TEXT_ONLY);
                 lbl.setGraphic(null);
-                bets.remove(new Point(x, y));
+                bets.remove(x * 100 + y);
             }
         });
         r.getChildren().add(lbl);
