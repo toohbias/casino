@@ -42,6 +42,17 @@ public class Blackjack {
     }
 
     public void newGame(int betrag) {
+        // Falls zu wenig Geld vorhanden ist
+        if (betrag > ViewManager.getInstance().getController().getMoney().get()) {
+            VerlorenText.set("Nicht genug Geld für diesen Einsatz.");
+            GewonnenText.set("");
+            return;
+        }
+
+        // Einsatz sofort abziehen
+        ViewManager.getInstance().getController().setMoney(
+                ViewManager.getInstance().getController().getMoney().get() - betrag
+        );
 
         MusicManager.playSoundEffect("src/assets/soundEffects/deckShuffle.wav", +3f);
 
@@ -54,6 +65,7 @@ public class Blackjack {
         for (int i = 1; i <= 52; i++) {
             deck.push(i);
         }
+
         for (int i = 0; i < 5; i++) {
             playerPropertys[i].set(0);
             dealerPropertys[i].set(0);
@@ -63,6 +75,7 @@ public class Blackjack {
         drawCardPlayer();
         drawCardDealer();
     }
+
 
     public void playerHit() {
         if (isGameOver().get()) {
@@ -126,25 +139,16 @@ public class Blackjack {
         int playerValue = getHandValue(playerHand);
         int dealerValue = getHandValue(dealerHand);
 
-
         if (playerValue > 21) {
-
             MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
-
             VerlorenText.set("Du hast überkauft! Du hast verloren.");
             GewonnenText.set("");
             return;
         }
 
-        while (dealerValue < 17)
-        {
-            if (dealerHand.size() < 4) {
-                drawCardDealer();
-                dealerValue = getHandValue(dealerHand);
-            }
-            else {
-                break;
-            }
+        while (dealerValue < 17 && dealerHand.size() < 4) {
+            drawCardDealer();
+            dealerValue = getHandValue(dealerHand);
         }
 
         if (dealerValue > 21) {
@@ -152,7 +156,9 @@ public class Blackjack {
             zeigeGewinnAnimation();
             GewonnenText.set("Dealer hat überkauft! Du hast gewonnen.");
             VerlorenText.set("");
-            ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + (AktulerGestzterWert * 2));
+            ViewManager.getInstance().getController().win(
+                    ViewManager.getInstance().getController().getMoney().get() + (AktulerGestzterWert * 2)
+            );
             return;
         }
 
@@ -160,20 +166,23 @@ public class Blackjack {
             MusicManager.playSoundEffect("src/assets/soundEffects/bing.wav", +4f);
             zeigeGewinnAnimation();
             GewonnenText.set("Herzlichen Glückwunsch! Du hast gewonnen.");
-
             VerlorenText.set("");
-            ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + (AktulerGestzterWert * 2));
+            ViewManager.getInstance().getController().win(
+                    ViewManager.getInstance().getController().getMoney().get() + (AktulerGestzterWert * 2)
+            );
         } else if (playerValue < dealerValue) {
-
             MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
-            ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() - AktulerGestzterWert);
             VerlorenText.set("Leider verloren. Dealer hat gewonnen.");
             GewonnenText.set("");
+            // KEIN weiterer Abzug nötig – Einsatz wurde bereits abgezogen
         } else {
-
             MusicManager.playSoundEffect("src/assets/soundEffects/BlackJackLoss.wav", 0.0f);
-            VerlorenText.set("Du hast leider verloren, probiere es noch mal");
+            VerlorenText.set("Unentschieden! Dein Einsatz wurde zurückerstattet.");
             GewonnenText.set("");
+            // Einsatz zurückzahlen
+            ViewManager.getInstance().getController().win(
+                    ViewManager.getInstance().getController().getMoney().get() + AktulerGestzterWert
+            );
         }
     }
 
@@ -224,12 +233,14 @@ public class Blackjack {
     }
 
     private void zeigeGewinnAnimation() {
+        Platform.runLater(() -> MoneyEffect.animate(100)); // Aufruf im JavaFX-Thread
+
         new Thread(() -> {
-            MoneyEffect.animate(100);
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException ignored) {}
-            Platform.runLater(MoneyEffect::stop);
+
+            Platform.runLater(MoneyEffect::stop); // auch im JavaFX-Thread
         }).start();
     }
 }

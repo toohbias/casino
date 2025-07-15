@@ -42,19 +42,6 @@ public class BlackjackView {
         dealerLabel.setMaxWidth(200);
         dealerLabel.setMinWidth(200);
         dealerLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
-        /*
-        HBox dealerBox = new HBox(dealerLabel);
-        dealerBox.setAlignment(Pos.TOP_LEFT);
-        HBox.setHgrow(dealerBox, Priority.ALWAYS);
-         */
-
-        /*
-        HBox playerBox = new HBox(playerLabel);
-        playerBox.setAlignment(Pos.TOP_RIGHT);
-        HBox.setHgrow(playerBox, Priority.ALWAYS);
-         */
-        //topLabels.getChildren().addAll(dealerBox, playerBox);
-        //root.setTop(topLabels);
 
         // Unsichtbare Labels
         Label dealerHandLabel = new Label();
@@ -72,13 +59,6 @@ public class BlackjackView {
         HBox.setMargin(dealerValueLabel, new Insets(5, 20, 5, 20));
         dealerValueLabel.setAlignment(Pos.CENTER_LEFT);
 
-        /*
-        HBox punktestandBox = new HBox(10,
-                new HBox(dealerValueLabel), new Region(), new HBox(playerValueLabel)
-        );
-        punktestandBox.setPadding(new Insets(0, 100, 10, 100));
-        HBox.setHgrow(punktestandBox.getChildren().get(1), Priority.ALWAYS);
-        */
         // Karten anzeigen Player
         HBox playerHand = new HBox();
         playerHand.setMaxHeight(140);
@@ -91,11 +71,10 @@ public class BlackjackView {
         playerLabel.setMinWidth(200);
 
         playerHand.getChildren().add(playerLabel);
-        playerHand.setTranslateY(117);
-        //playerHand.setBackground(new Background(new BackgroundImage(new Image("src/assets/Deskcardsv5.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT)));
+        playerHand.setTranslateY(87);
         playerHand.setAlignment(Pos.TOP_CENTER);
 
-        //Player Bild erstellen
+        // Player Bild erstellen
         IntegerProperty[] playerIndices = game.getPlayerProperty();
 
         for (int i = 0; i < 4; i++) {
@@ -103,7 +82,7 @@ public class BlackjackView {
             cardView.setPreserveRatio(true);
             cardView.setFitWidth(80);
             cardView.imageProperty().bind(Bindings.valueAt(cards, playerIndices[i]));
-            HBox.setMargin(cardView,new Insets(5,45,5,45));
+            HBox.setMargin(cardView, new Insets(5, 45, 5, 45));
             playerHand.getChildren().add(cardView);
         }
         Label playerValueLabel = new Label();
@@ -115,13 +94,11 @@ public class BlackjackView {
 
         playerHand.getChildren().add(playerValueLabel);
 
-
         // Karten anzeigen Dealer
         HBox DealerHand = new HBox();
-        DealerHand.setMinHeight(140);
-        DealerHand.setMaxHeight(140);
-        DealerHand.setTranslateY(-14);
-        //playerHand.setBackground(new Background(new BackgroundImage(new Image("src/assets/Deskcardsv5.png"),BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,BackgroundSize.DEFAULT)));
+        DealerHand.setMinHeight(120);
+        DealerHand.setMaxHeight(120);
+        DealerHand.setTranslateY(20);
         DealerHand.setAlignment(Pos.TOP_CENTER);
         IntegerProperty[] DealerIndices = game.getDealerProperty();
         DealerHand.getChildren().add(dealerLabel);
@@ -131,11 +108,10 @@ public class BlackjackView {
             cardView2.setPreserveRatio(true);
             cardView2.setFitWidth(80);
             cardView2.imageProperty().bind(Bindings.valueAt(cards, DealerIndices[i]));
-            HBox.setMargin(cardView2,new Insets(5,45,5,45));
+            HBox.setMargin(cardView2, new Insets(5, 45, 5, 45));
             DealerHand.getChildren().add(cardView2);
         }
         DealerHand.getChildren().add(dealerValueLabel);
-
 
         // Buttons: Karte nehmen / Bleiben
         Button hitButton = new Button("Karte nehmen");
@@ -144,20 +120,7 @@ public class BlackjackView {
         standButton.setPrefSize(200, 50);
         hitButton.disableProperty().bind(game.isGameOver());
         standButton.disableProperty().bind(game.isGameOver());
-        hitButton.visibleProperty().bind(hitButton.disabledProperty().not());
-        standButton.visibleProperty().bind(hitButton.disabledProperty().not());
-        HBox buttonBox = new HBox(15, hitButton, standButton);
-        buttonBox.setMinHeight(140);
-        buttonBox.setMaxHeight(140);
-        buttonBox.setTranslateY(30);
-        buttonBox.setTranslateX(30);
-        buttonBox.setAlignment(Pos.CENTER);
 
-        // Gewinn-/Verloren-Labels
-        Label gewonnenLabel = new Label();
-        gewonnenLabel.textProperty().bind(Blackjack.GewonnenText);
-        Label verlorenLabel = new Label();
-        verlorenLabel.textProperty().bind(Blackjack.VerlorenText);
 
         // Einsätze erhöhen/senken
         IntegerProperty stakes = new SimpleIntegerProperty(CasinoController.DEFAULT_STAKES);
@@ -169,8 +132,16 @@ public class BlackjackView {
         arrowDownView.setOnMouseClicked(e -> stakes.set(CasinoController.getNextStakes(-1, stakes.get())));
         arrowDownView.disableProperty().bind(game.isGameOver().not());
 
-        ImageView confirmView = createStakeButton("RoundButtonv2.png", "RoundButtonPressedv2.png");
-        confirmView.setOnMouseClicked(e -> {
+        // Start-Button: Cards Stack + Label
+        ImageView startGameView = new ImageView(new Image("src/assets/Cards Stack.png"));
+        startGameView.setFitWidth(80);
+        startGameView.setPreserveRatio(true);
+        Label startLabel = new Label("Spiel starten");
+        startLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px;");
+        VBox startGameBox = new VBox(startGameView, startLabel);
+        startGameBox.setAlignment(Pos.CENTER);
+        startGameBox.setSpacing(5);
+        startGameBox.setOnMouseClicked(e -> {
             if (ViewManager.getInstance().getController().getMoney().get() < stakes.get()) {
                 ViewManager.getInstance().displayInfoMessage("Nicht genügend Geld für diesen Einsatz.");
                 return;
@@ -178,16 +149,23 @@ public class BlackjackView {
             game.newGame(stakes.get());
             updateCardLabels(game, playerHandLabel, dealerHandLabel, playerValueLabel, dealerValueLabel);
         });
-        confirmView.disableProperty().bind(game.isGameOver().not());
+        startGameBox.disableProperty().bind(game.isGameOver().not());
 
         VBox raiseAndLowerStakes = new VBox(arrowUpView, arrowDownView);
         raiseAndLowerStakes.setAlignment(Pos.CENTER);
         raiseAndLowerStakes.setSpacing(10);
-        HBox stake = new HBox(raiseAndLowerStakes, confirmView);
+        raiseAndLowerStakes.disableProperty().bind(game.isGameOver().not());
+
+        // stake: deine originale Struktur, nur kein translateX/Y
+        HBox stake = new HBox(raiseAndLowerStakes, startGameBox);
         stake.setAlignment(Pos.CENTER);
-        stake.getChildren().addAll(hitButton,standButton);
-        stake.setTranslateY(35);
+        stake.setTranslateY(50);
         stake.setSpacing(30);
+
+        stake.getChildren().addAll(hitButton, standButton);
+        stake.setMinHeight(140);
+        stake.setMaxHeight(140);
+        stake.setPadding(new Insets(0, 0, 0, 30));  // Padding links, damit nicht am Rand klebt
 
         // Center zusammensetzen.
         VBox centerBox = new VBox(15,
@@ -202,13 +180,11 @@ public class BlackjackView {
         // Button-Aktionen
         hitButton.setOnAction(e -> {
             game.playerHit();
-            //System.out.println(playerHand.getHeight());
             updateCardLabels(game, playerHandLabel, dealerHandLabel, playerValueLabel, dealerValueLabel);
         });
 
         standButton.setOnAction(e -> {
             game.playerStand();
-            //System.out.println(playerHand.getHeight());
             updateCardLabels(game, playerHandLabel, dealerHandLabel, playerValueLabel, dealerValueLabel);
         });
 
