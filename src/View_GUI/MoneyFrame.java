@@ -142,13 +142,14 @@ public class MoneyFrame {
         public void run() {
             int opacity = 0;
             while(isStakesAnimationRunning) {
+                int finalOpacity = opacity;
+                Platform.runLater(() -> moneyLbl.setTextFill(Paint.valueOf("rgba(0, 0, 0, " + ((float) Math.abs(finalOpacity % 20 - 10) / 15 + 0.2) + ")")));
+                opacity++;
                 try {
-                    moneyLbl.setTextFill(Paint.valueOf("rgba(0, 0, 0, " + ((float) Math.abs(opacity % 20 - 10) / 15 + 0.2) + ")"));
-                    opacity++;
                     Thread.sleep(40);
                 } catch(InterruptedException ignored) {}
             }
-            moneyLbl.setTextFill(Paint.valueOf("#000000"));
+            Platform.runLater(() -> moneyLbl.setTextFill(Paint.valueOf("#000000")));
             interrupt();
         }
     }

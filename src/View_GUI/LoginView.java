@@ -12,7 +12,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
-import src.Logic.Login;
 
 /**
  * wrappt die {@code getPane()}-Methode für den Login

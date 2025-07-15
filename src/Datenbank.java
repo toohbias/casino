@@ -1,13 +1,16 @@
 package src;
 
+import src.View_GUI.ViewManager;
+
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
@@ -30,7 +33,7 @@ public class Datenbank {
 
     private int userPos = -1;
 
-    private final File FILE;
+    private Path FILE;
 
     private static Datenbank instance;
 
@@ -42,10 +45,13 @@ public class Datenbank {
     }
 
     private Datenbank() {
-        // get project root path and FILE
-        final String PATH = Objects.requireNonNull(getClass().getResource("/")).getPath();
-        final String FILENAME = "DATA";
-        FILE = new File(PATH + File.separator + FILENAME);
+        try {
+            Path storageDir = Paths.get(System.getProperty("user.home"), ".javino");
+            Files.createDirectories(storageDir);
+            FILE = storageDir.resolve("DATA");
+        } catch (IOException e) {
+            ViewManager.getInstance().displayErrorMessage("Anmeldung war nicht erfolgreich!");
+        }
     }
 
     public boolean signUp(String username, String password) {
@@ -81,12 +87,12 @@ public class Datenbank {
                 userPos = -1; // damit updateMoney() beim Schließen das Geld nicht resetten kann
                 return false;
             }
-        } catch (FileNotFoundException ignored) {}
+        } catch (IOException ignored) {}
 
         // add user to file
         final int startMoney = 250;
         try {
-            FileWriter writer = new FileWriter(FILE, true);
+            FileWriter writer = new FileWriter(FILE.toFile(), true);
             GCMParameterSpec spec = generateIV();
             SecretKey key = getKeyFromPassword(unhashed);
             writer.write(hashed + ":" + encode(spec.getIV()) + ":" + encrypt(String.valueOf(startMoney), key, spec) + System.lineSeparator());
@@ -144,7 +150,7 @@ public class Datenbank {
                 return false;
             }
             return true;
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             System.err.println("File doesn't exist!");
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
                  InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException |
@@ -181,7 +187,7 @@ public class Datenbank {
             }
             scanner.close();
 
-            FileWriter writer = new FileWriter(FILE);
+            FileWriter writer = new FileWriter(FILE.toFile());
             writer.write(newContent.toString());
             writer.close();
             System.out.println("File successfully updated!");
