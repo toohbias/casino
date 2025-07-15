@@ -9,6 +9,8 @@ import src.View_GUI.ViewManager;
 
 import javafx.application.Platform;
 
+import java.awt.Point;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Roulettev2 {
@@ -43,8 +45,9 @@ public class Roulettev2 {
     }
 
     @SuppressWarnings("BusyWait") // Bei Thread.sleep(), wartet ja nicht aktiv auf etwas
-    public void spin(int einsatz) {
-        if (einsatz > ViewManager.getInstance().getController().getMoney().get()) {
+    public void spin(HashMap<Point, Integer> einsatz) {
+        final int einsatzTotal = einsatz.values().stream().reduce(0, Integer::sum);
+        if (einsatzTotal > ViewManager.getInstance().getController().getMoney().get()) {
             // meldung zu wenig geld
             ViewManager.getInstance().displayErrorMessage("Sie haben nicht die liquiden Mittel, bitte laden sie ihren Kontostand in unserem Shop auf");
             return;
@@ -56,12 +59,11 @@ public class Roulettev2 {
 
         RouletteView.setGameView();
 
-        ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() - einsatz); // Geld abziehen
+        ViewManager.getInstance().getController().setMoney(ViewManager.getInstance().getController().getMoney().get() - einsatzTotal); // Geld abziehen
 
         double speedMultiplier = new Random().nextDouble(0, 1.5);
 
         // 1 thread, der die rotation der scheibe animiert
-        final int[] result = new int[1]; // muss so sein damit ich im Thread darein schreiben kann
         new Thread(() -> {
             double timer = 0.0;
             long timestep = 10; // ms
@@ -86,8 +88,7 @@ public class Roulettev2 {
             // schonmal herausfinden, wo der Ball landet, und ihn in die Mitte des Feldes bewegen
             double deskAngleToBall = deskRotation.get() * 2 % 360;
             int numberIndexOnDesk = (int) Math.round(deskAngleToBall * 37.0 / 360.0);
-            result[0] = numbers[numberIndexOnDesk];
-            System.out.println(result[0]);
+            int result = numbers[numberIndexOnDesk];
             Platform.runLater(() -> ballRotation.set(deskRotation.get() - (360.0 / 37.0) * numberIndexOnDesk + 2));
 
             // beide drehen sich gemeinsam
@@ -122,40 +123,64 @@ public class Roulettev2 {
                     Thread.sleep(timestep);
                 } catch (InterruptedException ignored) {}
             }
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException ignored) {}
-            Platform.runLater(() -> ViewManager.getInstance().setView(ViewManager.ROULETTE_VIEW));
+            berechnen(result, einsatz);
         }).start();
-
-
-            // Gewinn bestimmen
-
 
     }
 
-    public static void berechnen(int einsatz, int multiplikator) {
-        if (multiplikator > 0) {
-            int gewinn = einsatz * multiplikator;
+    public static void berechnen(int result, HashMap<Point, Integer> bets) {
+        int totalerGewinn = 0;
 
+        // Reihen
+        if(result % 3 == 0 && result != 0 && bets.containsKey(new Point(26, 1))) { totalerGewinn += bets.get(new Point(26, 1)) * 3; }
+        if((result + 1) % 3 == 0 && bets.containsKey(new Point(26, 3))) { totalerGewinn += bets.get(new Point(26, 3)) * 3; }
+        if((result + 2) % 3 == 0 && bets.containsKey(new Point(26, 5))) { totalerGewinn += bets.get(new Point(26, 5)) * 3; }
+
+        // Dutzend
+        if(result <= 12 && result != 0 && bets.containsKey(new Point(2, 7))) { totalerGewinn += bets.get(new Point(2, 7)) * 3; }
+        if(result > 12 && result <= 24 && bets.containsKey(new Point(10, 7))) { totalerGewinn += bets.get(new Point(10, 7)) * 3; }
+        if(result > 24 && bets.containsKey(new Point(18, 7))) { totalerGewinn += bets.get(new Point(18, 7)) * 3; }
+
+        // Halbe
+        if(result <= 18 && result != 0 && bets.containsKey(new Point(2, 9))) { totalerGewinn += bets.get(new Point(2, 9)) * 2; }
+        if(result > 18 && bets.containsKey(new Point(22, 9))) { totalerGewinn += bets.get(new Point(22, 9)) * 2; }
+
+        // Gerade
+        if(result % 2 == 0 && result != 0 && bets.containsKey(new Point(6, 9))) { totalerGewinn += bets.get(new Point(6, 9)) * 2; }
+        if(result % 2 == 1 && bets.containsKey(new Point(18, 9))) { totalerGewinn += bets.get(new Point(18, 9)) * 2; }
+
+        // Farbe
+        if(!RouletteView.BLACK.contains(result) && result != 0 && bets.containsKey(new Point(10, 9))) { totalerGewinn += bets.get(new Point(10, 9)) * 2; }
+        if(RouletteView.BLACK.contains(result) && bets.containsKey(new Point(14, 9))) { totalerGewinn += bets.get(new Point(14, 9)) * 2; }
+
+        // TODO inner bets
+
+        if(totalerGewinn > 0) {
             // macht die animation im money frame
-            ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + gewinn);
+            int finalTotalerGewinn = totalerGewinn;
+            Platform.runLater(() -> ViewManager.getInstance().getController().win(ViewManager.getInstance().getController().getMoney().get() + finalTotalerGewinn));
 
-            System.out.println("Herzlichen Glückwunsch sie haben " + gewinn + " V-Bucks gewonnen");
+            System.out.println("Herzlichen Glückwunsch sie haben " + totalerGewinn + " V-Bucks gewonnen");
             System.out.println("Ihr neuer Kontostand beträgt " + ViewManager.getInstance().getController().getMoney().get() + " V-Bucks");
             // coin animation
             new Thread(() -> {
-//                Thread anim = new MoneyEffect.AnimationThread();
-//                anim.start();
+//            Thread anim = new MoneyEffect.AnimationThread();
+//            anim.start();
                 MoneyEffect.animate(100);
                 try {
                     Thread.sleep(2000);
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException ignored) {
+                }
                 Platform.runLater(MoneyEffect::stop);
-//                anim.interrupt();
+//            anim.interrupt();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored) {}
+                Platform.runLater(() -> ViewManager.getInstance().setView(ViewManager.ROULETTE_VIEW));
             }).start();
         } else {
-            System.out.println("Niemals Aufgeben");
+            System.out.println("Niemals Aufgeben (" + ViewManager.getInstance().getController().getMoney().get() + ")");
+            Platform.runLater(() -> ViewManager.getInstance().setView(ViewManager.ROULETTE_VIEW));
         }
     }
 

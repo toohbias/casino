@@ -14,7 +14,10 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import src.Logic.CasinoController;
 
+import java.awt.Point;
+
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -25,7 +28,7 @@ public class RouletteView {
     /**
      * alle Felder, die schwarz sind
      */
-    private static final HashSet<Integer> BLACK = new HashSet<>(Arrays.asList(6, 15, 24, 33, 2, 8, 11, 17, 20, 26, 29, 35, 4, 10, 13, 22, 28, 31));
+    public static final HashSet<Integer> BLACK = new HashSet<>(Arrays.asList(6, 15, 24, 33, 2, 8, 11, 17, 20, 26, 29, 35, 4, 10, 13, 22, 28, 31));
 
     /**
      * wie groß die Zellen proportional zum Fenster sind
@@ -41,9 +44,14 @@ public class RouletteView {
     private static int stakes = CasinoController.DEFAULT_STAKES;
 
     /**
+     * abgeschlossene Wetten
+     */
+    private static HashMap<Point, Integer> bets; // POJO war mir jetzt zu blöd, Point geht auch für x/y
+
+    /**
      * DoubleProperties, an die der Rotationswinkel der Scheibe und des Balls
      * sowie die Entfernung vom Ball zum Mittelpunkt gebunden sind.
-     * Diese werden mit {@code Roulettev2.spin(int einsatz)} gesteuert.
+     * Diese werden mit {@code Roulettev2.spin(HashMap<Point, Integer> einsatz)} gesteuert.
      */
     public static DoubleProperty DESK_ROTATION = new SimpleDoubleProperty(0);
     public static DoubleProperty BALL_ROTATION = new SimpleDoubleProperty(0);
@@ -57,6 +65,8 @@ public class RouletteView {
      * @return Szene
      */
     public static Node getPane() {
+        ViewManager.getInstance().setShowBack(true);
+        ViewManager.getInstance().setShowShop(true);
         // buttons for setting the stake and to confirm
         Image arrowUp = new Image("src/assets/ButtonUpv2.png");
         Image arrowUpPressed = new Image("src/assets/ButtonUpPressedv2.png");
@@ -92,12 +102,18 @@ public class RouletteView {
         startBtn.styleProperty().bind(Bindings.format("-fx-font-size: %.2fpt", ViewManager.getInstance().windowHeightProperty().divide(CELL / 2 * 3)));
         startBtn.setContentDisplay(ContentDisplay.TOP);
         // when pressed: start game
-        startBtn.setOnMouseClicked(e -> ViewManager.getInstance().rouletteSpinned(stakes));
+        startBtn.setOnMouseClicked(e -> ViewManager.getInstance().rouletteSpinned(bets));
 
+        // wetten
+        bets = new HashMap<>();
+
+        // scene
         HBox bets = new HBox();
         bets.getChildren().addAll(stakeButtons, getBettingTable(), startBtn);
         bets.spacingProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(25));
         bets.setAlignment(Pos.CENTER);
+
+        ViewManager.getInstance().getFXLayer().setCenter(MoneyEffect.getRoot());
 
         root.setCenter(bets);
         return root;
@@ -105,10 +121,12 @@ public class RouletteView {
 
     /**
      * hier wird die Szene von der Wette zum Spiel gesetzt,
-     * und zwar in {@code Roulettev2.spin(int einsatz)}, damit eine Pleite abgefangen werden kann,
+     * und zwar in {@code Roulettev2.spin(HashMap<Point, Integer> einsatz)}, damit eine Pleite abgefangen werden kann,
      * bevor der Szenenwechsel erfolgt
      */
     public static void setGameView() {
+        ViewManager.getInstance().setShowBack(false);
+        ViewManager.getInstance().setShowShop(false);
         ImageView desk = ViewManager.defaultView(new Image("src/assets/Roulette Desk.png"), 1.8);
         desk.rotateProperty().bind(DESK_ROTATION);
 
@@ -116,7 +134,6 @@ public class RouletteView {
         Pane spacing = new Pane();
         spacing.prefHeightProperty().bind(ViewManager.getInstance().windowHeightProperty().divide(SPEED_HEIGHT));
         spacing.setMaxWidth(1);
-//        spacing.setBackground(new Background(new BackgroundFill(Paint.valueOf("rgba(0, 0, 0, 0.5)"), null, null)));
         VBox ball = new VBox(spacing, ballView);
         ball.setAlignment(Pos.CENTER);
         ball.rotateProperty().bind(BALL_ROTATION);
@@ -267,9 +284,11 @@ public class RouletteView {
                 ImageView chipView = ViewManager.defaultView(chip, CELL);
                 lbl.setGraphic(chipView);
                 lbl.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                bets.put(new Point(x, y), stakes);
             } else if(e.getButton() == MouseButton.SECONDARY) {
                 lbl.setContentDisplay(ContentDisplay.TEXT_ONLY);
                 lbl.setGraphic(null);
+                bets.remove(new Point(x, y));
             }
         });
         r.getChildren().add(lbl);
