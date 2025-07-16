@@ -17,7 +17,7 @@ import src.Logic.CasinoController;
 
 public class BlackjackView {
 
-    private static ObservableList<Image> cards = null;
+    private static ObservableList<ImageView> cards = null;
 
     private static int stakes = CasinoController.DEFAULT_STAKES;
 
@@ -25,11 +25,12 @@ public class BlackjackView {
         Blackjack game = new Blackjack();
 
         if (cards == null) {
-            Image[] im = new Image[53];
+            ImageView[] im = new ImageView[53];
             im[0] = null;
             for (int i = 1; i < 53; i++) {
-                im[i] = new Image("src/assets/" + i + ".png");
+                im[i] = ViewManager.defaultView(new Image("src/assets/" + i + ".png"), 7);
             }
+
             cards = FXCollections.observableArrayList(im);
         }
 
@@ -79,10 +80,8 @@ public class BlackjackView {
         IntegerProperty[] playerIndices = game.getPlayerProperty();
 
         for (int i = 0; i < 4; i++) {
-            ImageView cardView = new ImageView();
-            cardView.setPreserveRatio(true);
-            cardView.setFitWidth(80);
-            cardView.imageProperty().bind(Bindings.valueAt(cards, playerIndices[i]));
+            Label cardView = new Label();
+            cardView.graphicProperty().bind(Bindings.valueAt(cards, playerIndices[i]));
             HBox.setMargin(cardView, new Insets(5, 45, 5, 45));
             playerHand.getChildren().add(cardView);
         }
@@ -105,10 +104,8 @@ public class BlackjackView {
         DealerHand.getChildren().add(dealerLabel);
 
         for (int i = 0; i < 4; i++) {
-            ImageView cardView2 = new ImageView();
-            cardView2.setPreserveRatio(true);
-            cardView2.setFitWidth(80);
-            cardView2.imageProperty().bind(Bindings.valueAt(cards, DealerIndices[i]));
+            Label cardView2 = new Label();
+            cardView2.graphicProperty().bind(Bindings.valueAt(cards, DealerIndices[i].get()));
             HBox.setMargin(cardView2, new Insets(5, 45, 5, 45));
             DealerHand.getChildren().add(cardView2);
         }
